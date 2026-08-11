@@ -1,0 +1,21 @@
+# dataset
+data/raw/
+data/processed/
+
+# model weights
+weights/
+checkpoints/
+
+# training outputs
+runs/
+logs/
+
+# python
+__pycache__/
+*.pyc
+
+# IDE
+.vscode/
+
+# system
+.DS_Store
