@@ -1,0 +1,39 @@
+name: urban_multimodal
+
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+
+dependencies:
+
+  - python=3.10
+
+  # Deep Learning
+  - pytorch
+  - torchvision
+  - torchaudio
+  - pytorch-cuda
+
+  # Basic tools
+  - numpy
+  - pandas
+  - scipy
+
+  # Image
+  - opencv
+  - pillow
+
+  # Visualization
+  - matplotlib
+
+  # Config
+  - pyyaml
+
+  # pip packages
+  - pip
+  - pip:
+      - ultralytics
+      - tqdm
+      - scikit-learn

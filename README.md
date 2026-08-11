@@ -31,14 +31,9 @@
 
 # 3. 环境配置
 
-推荐使用 Python >= 3.8、PyTorch、CUDA、OpenCV、NumPy 以及 Ultralytics YOLO 框架。可通过以下命令安装依赖：
-
 ```bash
-# Conda 环境
-conda env create -f environment.yml
+conda create -n urban_multimodal python=3.10 -y
 conda activate urban_multimodal
-
-# 或使用 pip
 pip install -r requirements.txt
 ```
 
