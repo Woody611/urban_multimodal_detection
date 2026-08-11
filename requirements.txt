@@ -1,0 +1,28 @@
+# Deep Learning Framework
+torch
+torchvision
+torchaudio
+
+# Object Detection
+ultralytics
+
+# Image Processing
+opencv-python
+Pillow
+
+# Data Processing
+numpy
+pandas
+scipy
+
+# Visualization
+matplotlib
+
+# Configuration
+pyyaml
+
+# Progress
+tqdm
+
+# Evaluation
+scikit-learn
