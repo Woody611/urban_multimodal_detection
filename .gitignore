@@ -1,21 +1,47 @@
-# dataset
+# =====================
+# Dataset
+# =====================
 data/raw/
 data/processed/
 
-# model weights
+# =====================
+# Model weights
+# =====================
 weights/
-checkpoints/
+*.pt
+*.pth
+*.ckpt
 
-# training outputs
+# =====================
+# Training results
+# =====================
 runs/
 logs/
+results/
 
-# python
+# =====================
+# Python
+# =====================
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
+# =====================
+# Environment
+# =====================
+.env
+.venv/
+venv/
+
+# =====================
 # IDE
+# =====================
 .vscode/
+.idea/
 
-# system
+# =====================
+# OS
+# =====================
 .DS_Store
+Thumbs.db

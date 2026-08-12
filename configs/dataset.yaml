@@ -1,0 +1,94 @@
+# ============================================================
+# Urban Multi-Modal Object Detection — Dataset Configuration
+# ============================================================
+# 比赛: 面向城市场景的视觉多模态目标检测
+# 数据: 空间对齐的 RGB + Infrared + Depth 三模态图像
+#
+# 数据目录结构说明:
+#   data/
+#   ├── train/
+#   │   ├── rgb/          # *.png   — 可见光三通道 8-bit
+#   │   ├── infrared/     # *.png   — 红外单通道 8-bit
+#   │   ├── depth/        # *.png   — 深度单通道 16-bit
+#   │   └── labels/       # *.txt   — 检测标注
+#   ├── val/
+#   │   ├── rgb/
+#   │   ├── infrared/
+#   │   ├── depth/
+#   │   └── labels/
+#   └── test/
+#       ├── rgb/
+#       ├── infrared/
+#       └── depth/
+#
+# 标注格式 (归一化):
+#   <class_id> <norm_cx> <norm_cy> <norm_w> <norm_h>
+#   所有坐标归一化到 [0, 1]
+# ============================================================
+
+# ---- Dataset root -----------------------------------------
+dataset_root: "data"
+
+# ---- Split paths ------------------------------------------
+#      各组路径相对于 dataset_root
+train:
+  rgb:        "train/rgb"
+  infrared:   "train/infrared"
+  depth:      "train/depth"
+  labels:     "train/labels"
+
+val:
+  rgb:        "val/rgb"
+  infrared:   "val/infrared"
+  depth:      "val/depth"
+  labels:     "val/labels"
+
+test:
+  rgb:        "test/rgb"
+  infrared:   "test/infrared"
+  depth:      "test/depth"
+
+# ---- Modality specs ---------------------------------------
+#     由 PyTorch Dataset 按通道数选用合适的读取方式
+modalities:
+  rgb:
+    ext: ".png"
+    channels: 3
+    dtype: "uint8"
+  infrared:
+    ext: ".png"
+    channels: 1
+    dtype: "uint8"
+  depth:
+    ext: ".png"
+    channels: 1
+    dtype: "uint16"          # 16-bit 深度图
+
+# ---- Label specs ------------------------------------------
+#     标注文件与图像同名 (仅扩展名不同)
+label:
+  ext: ".txt"
+  format: "norm_xywh"        # 归一化中心点 + 宽高 (即 YOLO 格式)
+  delimiter: " "             # 字段分隔符
+  fields:
+    - "class_id"             # int
+    - "norm_center_x"        # float ∈ [0, 1]
+    - "norm_center_y"        # float ∈ [0, 1]
+    - "norm_w"               # float ∈ [0, 1]
+    - "norm_h"               # float ∈ [0, 1]
+
+# ---- Classes ----------------------------------------------
+num_classes: 12
+class_names:
+  0:  "person"
+  1:  "boat"
+  2:  "animal"
+  3:  "seat"
+  4:  "sign"
+  5:  "bicycle"
+  6:  "car"
+  7:  "ball"
+  8:  "light"
+  9:  "garbage_can"
+  10: "uav"
+  11: "tricycle"
