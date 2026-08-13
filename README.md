@@ -29,6 +29,12 @@
 | 10 | uav 无人机 |
 | 11 | tricycle 三轮车 |
 
+### 数据格式说明
+
+- 图像扩展名：`visible` / `infrared` / `depth` 均为 **`.png` 与 `.jpg` 混存**；
+- 标注格式：YOLO 格式 `<class_id> <norm_cx> <norm_cy> <norm_w> <norm_h>`（空格分隔，坐标归一化到 [0,1]）；
+- 数据划分：仅含 `train` 与 `test`，无独立 `val`，验证集需从 `train` 切分。
+
 ---
 
 # 3. 环境配置
@@ -36,7 +42,7 @@
 ```bash
 conda create -n urban_multimodal python=3.10 -y
 conda activate urban_multimodal
-pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu124   # 有独显用 cu124，无独显改 cpu
+pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu124  
 pip install -r requirements.txt
 ```
 
@@ -54,6 +60,15 @@ Urban-MultiModal-Object-Detection
 │
 ├── data
 │   └── raw
+│       ├── train
+│       │   ├── visible/    # 可见光 (RGB)
+│       │   ├── infrared/   # 红外
+│       │   ├── depth/      # 深度
+│       │   └── labels/     # YOLO 格式标注
+│       └── test
+│           ├── visible/
+│           ├── infrared/
+│           └── depth/
 │
 ├── docs
 │   ├── model_design.md
