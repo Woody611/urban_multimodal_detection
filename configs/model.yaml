@@ -2,8 +2,8 @@
 # Urban Multi-Modal Object Detection — Model Configuration
 # ============================================================
 # 两阶段模型设计:
-#   baseline — RGB 单模态目标检测 (验证基础 pipeline)
-#   fusion   — RGB + Infrared + Depth 三模态融合检测
+#   baseline — Visible 单模态目标检测 (验证基础 pipeline)
+#   fusion   — Visible + Infrared + Depth 三模态融合检测
 #
 # 架构: Encoder(s) → [Fusion] → Neck → Head
 # ============================================================
@@ -18,7 +18,7 @@ input_size: [640, 640]               # [height, width]
 # ============================================================
 # Backbone (特征编码器)
 # ============================================================
-# baseline: 单一 RGB backbone
+# baseline: 单一 Visible backbone
 # fusion:   每个模态独立 backbone，结构相同、输入通道不同
 # ============================================================
 backbone:
@@ -67,5 +67,5 @@ modality:
 # Fusion Module (仅 model_type = "fusion" 时生效)
 # ============================================================
 fusion_method:
-  architecture: "ConcatFusion"         # RGB feature + IR feature + Depth feature concat
+  architecture: "ConcatFusion"         # Visible feature + IR feature + Depth feature concat
   position: "middle"                   # early | middle | late
