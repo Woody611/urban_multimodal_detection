@@ -2,24 +2,20 @@
 # Urban Multi-Modal Object Detection — Dataset Configuration
 # ============================================================
 # 比赛: 面向城市场景的视觉多模态目标检测
-# 数据: 空间对齐的 RGB + Infrared + Depth 三模态图像
+# 数据: 空间对齐的 Visible + Infrared + Depth 三模态图像
 #
 # 数据目录结构说明:
 #   data/
-#   ├── train/
-#   │   ├── rgb/          # *.png   — 可见光三通道 8-bit
-#   │   ├── infrared/     # *.png   — 红外单通道 8-bit
-#   │   ├── depth/        # *.png   — 深度单通道 16-bit
-#   │   └── labels/       # *.txt   — 检测标注
-#   ├── val/
-#   │   ├── rgb/
-#   │   ├── infrared/
-#   │   ├── depth/
-#   │   └── labels/
-#   └── test/
-#       ├── rgb/
-#       ├── infrared/
-#       └── depth/
+#   └── raw/
+#       ├── train/
+#       │   ├── visible/    # *.png / *.jpg — 可见光三通道 8-bit
+#       │   ├── infrared/   # *.png / *.jpg — 红外单通道 8-bit
+#       │   ├── depth/      # *.png / *.jpg — 深度单通道 16-bit
+#       │   └── labels/     # *.txt        — 检测标注
+#       └── test/
+#           ├── visible/    # *.png / *.jpg
+#           ├── infrared/   # *.png / *.jpg
+#           └── depth/      # *.png / *.jpg
 #
 # 标注格式 (归一化):
 #   <class_id> <norm_cx> <norm_cy> <norm_w> <norm_h>
@@ -27,45 +23,41 @@
 # ============================================================
 
 # ---- Dataset root -----------------------------------------
-dataset_root: "data"
+dataset_root: "data/raw"
 
 # ---- Split paths ------------------------------------------
 #      各组路径相对于 dataset_root
 train:
-  rgb:        "train/rgb"
+  visible:    "train/visible"
   infrared:   "train/infrared"
   depth:      "train/depth"
   labels:     "train/labels"
 
-val:
-  rgb:        "val/rgb"
-  infrared:   "val/infrared"
-  depth:      "val/depth"
-  labels:     "val/labels"
+# 注: 原始数据无 val 划分，验证集需由 train 中按比例切分
 
 test:
-  rgb:        "test/rgb"
+  visible:    "test/visible"
   infrared:   "test/infrared"
   depth:      "test/depth"
 
 # ---- Modality specs ---------------------------------------
 #     由 PyTorch Dataset 按通道数选用合适的读取方式
 modalities:
-  rgb:
-    ext: ".png"
+  visible:
+    ext: [".png", ".jpg"]    # 数据中 .png 与 .jpg 混存
     channels: 3
     dtype: "uint8"
   infrared:
-    ext: ".png"
+    ext: [".png", ".jpg"]
     channels: 1
     dtype: "uint8"
   depth:
-    ext: ".png"
+    ext: [".png", ".jpg"]
     channels: 1
     dtype: "uint16"          # 16-bit 深度图
 
 # ---- Label specs ------------------------------------------
-#     标注文件与图像同名 (仅扩展名不同)
+#     标注文件与图像同名 (仅扩展名不同；图像扩展名见 modalities)
 label:
   ext: ".txt"
   format: "norm_xywh"        # 归一化中心点 + 宽高 (即 YOLO 格式)
