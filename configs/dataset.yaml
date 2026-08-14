@@ -27,7 +27,7 @@
 # ============================================================
 
 # ---- Dataset root -----------------------------------------
-dataset_root: "data"
+dataset_root: "data/raw"
 
 # ---- Split paths ------------------------------------------
 #      各组路径相对于 dataset_root
@@ -37,11 +37,7 @@ train:
   depth:      "train/depth"
   labels:     "train/labels"
 
-val:
-  visible:    "val/visible"
-  infrared:   "val/infrared"
-  depth:      "val/depth"
-  labels:     "val/labels"
+# 无独立 val 划分：验证集由 utils.dataset.create_dataloaders 从 train 按 val_ratio 切分
 
 test:
   visible:    "test/visible"
