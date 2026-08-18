@@ -16,8 +16,8 @@ checkpoint）。
     - 当前为 visible 单模态 baseline；红外 / 深度已由 Dataset 加载，但模型未使用
       （留给 fusion 阶段）。
     - 检测头为 anchor-free 解耦头（YOLOX 风格），损失与本约定严格对齐（见 DetectionLoss）。
-    - mAP 评价尚未实现：evaluate 接口已预留，best 模型暂以 val_loss 作为代理指标
-      （见 _validate 中的 TODO）。
+    - 验证阶段输出 val_loss + mAP@0.5 + mAP@0.5:0.95（见 _validate 与
+      utils.metrics），best 模型按 best_metric 选择的 mAP 指标保存。
 """
 from __future__ import annotations
 
@@ -43,6 +43,11 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from models import build_model            # noqa: E402
 from utils import create_dataloaders      # noqa: E402
+from utils.metrics import (               # noqa: E402
+    compute_map,
+    decode_boxes,
+    postprocess,
+)
 
 
 # ============================================================
@@ -98,31 +103,6 @@ def _get_amp_tools(use_amp: bool):
 # ============================================================
 # 损失（anchor-free 解耦头，与 DecoupledHead 输出约定对齐）
 # ============================================================
-
-def _decode_boxes(reg: torch.Tensor, stride: int) -> torch.Tensor:
-    """把 reg 输出解码为像素坐标框。
-
-    reg: [B, 4, fh, fw]，通道顺序 (cx, cy, w, h)，均为线性 logit。
-    解码约定（YOLOv5 风格，数值稳定）:
-        cx = (sigmoid(reg0) * 2 - 0.5 + gx) * stride
-        cy = (sigmoid(reg1) * 2 - 0.5 + gy) * stride
-        w  = (sigmoid(reg2) * 2)^2 * stride
-        h  = (sigmoid(reg3) * 2)^2 * stride
-    返回: [B, fh, fw, 4] 像素坐标 (cx, cy, w, h)。
-    """
-    B, _, fh, fw = reg.shape
-    reg = reg.permute(0, 2, 3, 1).contiguous()          # [B, fh, fw, 4]
-    gy, gx = torch.meshgrid(
-        torch.arange(fh, device=reg.device, dtype=reg.dtype),
-        torch.arange(fw, device=reg.device, dtype=reg.dtype),
-        indexing="ij",
-    )
-    cx = (torch.sigmoid(reg[..., 0]) * 2.0 - 0.5 + gx) * stride
-    cy = (torch.sigmoid(reg[..., 1]) * 2.0 - 0.5 + gy) * stride
-    w = (torch.sigmoid(reg[..., 2]) * 2.0) ** 2 * stride
-    h = (torch.sigmoid(reg[..., 3]) * 2.0) ** 2 * stride
-    return torch.stack([cx, cy, w, h], dim=-1)          # [B, fh, fw, 4]
-
 
 def _bbox_ciou(box1: torch.Tensor, box2: torch.Tensor, eps: float = 1e-7) -> torch.Tensor:
     """Complete-IoU，输入均为 [N, 4] 像素坐标 (cx, cy, w, h)。返回 [N] 的 CIoU。"""
@@ -208,7 +188,7 @@ class DetectionLoss(torch.nn.Module):
         for scale_idx, stride in enumerate(self.strides):
             pred = preds[scale_idx]
             B, _, fh, fw = pred.reg.shape
-            decoded = _decode_boxes(pred.reg, stride)   # [B, fh, fw, 4]
+            decoded = decode_boxes(pred.reg, stride)   # [B, fh, fw, 4]
 
             obj_t = torch.zeros(B, fh, fw, device=device)
             pos_b, pos_j, pos_i, pos_cls = [], [], [], []
@@ -361,31 +341,39 @@ def _set_warmup_lr(optimizer, base_lrs, epoch: int, warmup_epochs: int,
 # ============================================================
 
 class ModelEMA:
-    """指数移动平均权重，用于验证与 best checkpoint，得到更稳定的模型。"""
+    """指数移动平均权重，用于验证与 best checkpoint，得到更稳定的模型。
+
+    注意：按 ``state_dict()`` 逐项同步（而非 ``parameters()``），这样会把
+    BatchNorm 的 running_mean / running_var 等 buffer 也纳入 EMA。否则
+    best.pth 中 BN 统计量会停留在初始化值（running_mean=0 / running_var=1），
+    导致 model.eval() 推断得到退化指标（mAP≈0）。
+    """
 
     def __init__(self, model: torch.nn.Module, decay: float = 0.9999):
         self.ema = copy.deepcopy(model).eval()
         for p in self.ema.parameters():
             p.requires_grad_(False)
         self.decay = decay
+        self.updates = 0
 
     @torch.no_grad()
     def update(self, model: torch.nn.Module):
-        for e, m in zip(self.ema.parameters(), model.parameters()):
-            e.mul_(self.decay).add_(m, alpha=1.0 - self.decay)
+        self.updates += 1
+        # 前期让 EMA 紧跟模型（模型早期变化快），逐步逼近 decay
+        d = min(self.decay, (1 + self.updates) / (10 + self.updates))
+        model_sd = model.state_dict()
+        for k, v in self.ema.state_dict().items():
+            if v.dtype.is_floating_point:
+                v.mul_(d).add_(model_sd[k], alpha=1.0 - d)
+            else:
+                # 非浮点 buffer（如 num_batches_tracked）直接复制
+                v.copy_(model_sd[k])
 
     def state_dict(self):
         return self.ema.state_dict()
 
     def load_state_dict(self, sd):
         self.ema.load_state_dict(sd)
-
-    @torch.no_grad()
-    def swap_into(self, model: torch.nn.Module):
-        """把 EMA 权重临时装载到 model，返回原权重备份用于恢复。"""
-        backup = {k: v.clone() for k, v in model.state_dict().items()}
-        model.load_state_dict(self.ema.state_dict())
-        return backup
 
 
 # ============================================================
@@ -430,17 +418,20 @@ def _train_one_epoch(model, loader, loss_fn, optimizer, scaler, autocast,
 
 
 @torch.no_grad()
-def _validate(model, loader, loss_fn, device, autocast):
-    """验证：返回 metrics 字典。
+def _validate(model, loader, loss_fn, device, autocast,
+              conf_thres: float = 0.001, nms_iou: float = 0.6, max_det: int = 300):
+    """验证：返回 metrics 字典，含 val_loss 与 mAP@0.5 / mAP@0.5:0.95。
 
-    TODO(evaluate): 当前仅返回 val_loss；完整目标检测评价需在此补充：
-        1) 将每尺度 HeadPredictions 解码为 (cx, cy, w, h) 像素框 + 置信度
-           （置信度 = sigmoid(obj) * sigmoid(cls) 最大值）；
-        2) 按类别 + IoU 阈值统计 TP/FP/FN，绘制 PR 曲线；
-        3) 填入 metrics["mAP_0.5"] 与 metrics["mAP_0.5:0.95"]。
+    解码 + NMS + mAP 复用 utils.metrics（与 scripts/evaluate.py 完全一致），
+    预测框与 GT 框都在 640×640 letterbox 像素坐标系下比较。
     """
     model.eval()
     total, n = 0.0, 0
+    predictions = []     # (img_id, cls, score, xyxy)
+    ground_truths = []   # 每图 list[(cls, xyxy)]
+    img_id = 0
+    H, W = loss_fn.input_size
+
     for batch in loader:
         images = batch["visible"].to(device, non_blocking=True)
         labels = batch["label"].to(device, non_blocking=True)
@@ -450,7 +441,30 @@ def _validate(model, loader, loss_fn, device, autocast):
             loss = loss_fn(preds, labels, num_labels)
         total += loss.item() * images.size(0)
         n += images.size(0)
+
+        # 解码预测框并收集
+        batch_dets = postprocess(preds, model.strides, conf_thres, nms_iou, max_det)
+        for b in range(images.size(0)):
+            for det in batch_dets[b]:
+                predictions.append((img_id + b, det[0], det[1], det[2]))
+
+        # 收集 GT（letterbox 归一化坐标 → 像素 xyxy）
+        for b in range(images.size(0)):
+            gts = []
+            for k in range(int(num_labels[b].item())):
+                row = labels[b, k]
+                if row[0] < 0:                      # padding 哨兵
+                    continue
+                cls = int(row[0].item())
+                cx, cy, w, h = row[1].item(), row[2].item(), row[3].item(), row[4].item()
+                gts.append((cls, np.array(
+                    [(cx - w / 2) * W, (cy - h / 2) * H,
+                     (cx + w / 2) * W, (cy + h / 2) * H], dtype=np.float64)))
+            ground_truths.append(gts)
+        img_id += images.size(0)
+
     metrics = {"val_loss": total / max(n, 1)}
+    metrics.update(compute_map(predictions, ground_truths, loss_fn.num_classes))
     return metrics
 
 
@@ -482,14 +496,17 @@ def _save_checkpoint(path, model, optimizer, scheduler, scaler, ema, epoch, best
 
 
 def _save_best(path, model, ema, epoch, best_score):
-    """best checkpoint 保存 EMA 权重（若启用），否则保存原始权重。"""
-    if ema is not None:
-        backup = ema.swap_into(model)
-        torch.save({"model": model.state_dict(), "ema": ema.state_dict(),
-                    "epoch": epoch, "best_score": best_score}, path)
-        model.load_state_dict(backup)
-    else:
-        torch.save({"model": model.state_dict(), "epoch": epoch, "best_score": best_score}, path)
+    """best checkpoint 同时保存原始权重与 EMA 权重（若启用）。
+
+    不再把 EMA 权重临时 swap 进 model（避免改动 model 状态，也避免丢失
+    原始权重的 BN 统计量）；评估时优先加载 EMA、回退原始权重。
+    """
+    torch.save({
+        "model": model.state_dict(),
+        "ema": ema.state_dict() if ema is not None else None,
+        "epoch": epoch,
+        "best_score": best_score,
+    }, path)
 
 
 def _load_checkpoint(path, model, optimizer, scheduler, scaler, ema, device):
@@ -615,7 +632,8 @@ def main():
     print(f"[train] device={device} amp={use_amp} epochs={epochs} "
           f"batch={train_cfg.get('batch_size')} "
           f"opt={train_cfg['optimizer']['type']} sched={train_cfg['scheduler']['type']}")
-    print("[evaluate] mAP 尚未实现，best 模型暂以 val_loss 作为代理指标（越小越好）。")
+    print(f"[evaluate] 验证指标: val_loss + mAP@0.5 + mAP@0.5:0.95；"
+          f"best 模型按 {best_metric_key} 选择（越大越好）。")
 
     # ---- 训练循环 ----
     for epoch in range(start_epoch, epochs):
@@ -631,16 +649,21 @@ def main():
         lr = optimizer.param_groups[0]["lr"]
 
         val_loss = float("nan")
+        map50 = float("nan")
+        map5095 = float("nan")
         if (epoch + 1) % val_interval == 0:
             metrics = _validate(model, loaders["val"], loss_fn, device, autocast)
             val_loss = metrics["val_loss"]
+            map50 = metrics.get("mAP_0.5", float("nan"))
+            map5095 = metrics.get("mAP_0.5:0.95", float("nan"))
             if save_best:
                 score = _best_score(metrics, best_metric_key)
                 if score > best_score:
                     best_score = score
                     _save_best(best_path, model, ema, epoch, best_score)
                     print(f"[checkpoint] 保存最佳模型 best.pth "
-                          f"(epoch={epoch + 1}, val_loss={val_loss:.4f})")
+                          f"(epoch={epoch + 1}, val_loss={val_loss:.4f}, "
+                          f"mAP@0.5={map50:.4f}, mAP@0.5:0.95={map5095:.4f})")
 
         if save_last:
             _save_checkpoint(last_path, model, optimizer, scheduler, scaler, ema,
@@ -651,7 +674,8 @@ def main():
             _prune_checkpoints(save_dir, max_keep)
 
         print(f"Epoch [{epoch + 1}/{epochs}] lr={lr:.6f} "
-              f"train_loss={train_loss:.4f} val_loss={val_loss:.4f}")
+              f"train_loss={train_loss:.4f} val_loss={val_loss:.4f} "
+              f"mAP@0.5={map50:.4f} mAP@0.5:0.95={map5095:.4f}")
         if writer is not None:
             writer.add_scalar("train/loss", train_loss, epoch)
             writer.add_scalar("val/loss", val_loss, epoch)

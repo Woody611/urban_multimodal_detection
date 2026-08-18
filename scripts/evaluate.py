@@ -12,8 +12,8 @@
 依赖：
     models.build_model            — 按 model.yaml 的 model_type 构建检测器
     utils.dataset                 — 复现 create_dataloaders 的 train→val 切分
+    utils.metrics                 — 框解码 / NMS / mAP（与 train.py 共用）
     scripts.train.DetectionLoss   — 复用训练时的损失，保证 val_loss 口径一致
-    scripts.train._decode_boxes   — 复用训练时的框解码约定（cx/cy/w/h → 像素）
 
 说明：
     - 验证集与训练时完全一致：从 train 目录按 val_ratio（默认 0.2）、seed
@@ -48,8 +48,9 @@ from utils.dataset import (                             # noqa: E402
     split_train_val,
     collate_fn,
 )
-# 复用训练脚本中的损失与框解码，保证评估口径与训练一致（不重复实现）
-from scripts.train import DetectionLoss, _decode_boxes  # noqa: E402
+# 复用训练脚本中的损失；框解码 / NMS / mAP 统一在 utils.metrics（与 train.py 共用）
+from scripts.train import DetectionLoss          # noqa: E402
+from utils.metrics import postprocess, compute_ap_list  # noqa: E402
 
 
 # ============================================================
@@ -95,144 +96,6 @@ def _bn_initialized(state_dict, tol: float = 1e-3) -> bool:
         return True  # 无 BN 层，无需检查
     all_at_init = all((torch.abs(t - 1.0) < tol).all().item() for t in rvs)
     return not all_at_init
-
-
-# ============================================================
-# 后处理：解码 + NMS（输出归一化像素坐标 xyxy）
-# ============================================================
-
-def _box_iou_np(boxes1: np.ndarray, boxes2: np.ndarray) -> np.ndarray:
-    """向量化 IoU。boxes1 (N,4)、boxes2 (M,4)，均为 xyxy，返回 (N, M)。"""
-    x1 = np.maximum(boxes1[:, None, 0], boxes2[None, :, 0])
-    y1 = np.maximum(boxes1[:, None, 1], boxes2[None, :, 1])
-    x2 = np.minimum(boxes1[:, None, 2], boxes2[None, :, 2])
-    y2 = np.minimum(boxes1[:, None, 3], boxes2[None, :, 3])
-    inter = np.clip(x2 - x1, 0.0, None) * np.clip(y2 - y1, 0.0, None)
-    area1 = (boxes1[:, 2] - boxes1[:, 0]) * (boxes1[:, 3] - boxes1[:, 1])
-    area2 = (boxes2[:, 2] - boxes2[:, 0]) * (boxes2[:, 3] - boxes2[:, 1])
-    union = area1[:, None] + area2[None, :] - inter
-    return inter / np.maximum(union, np.finfo(np.float32).eps)
-
-
-def _nms_keep(boxes: np.ndarray, scores: np.ndarray, iou_thr: float) -> np.ndarray:
-    """贪心 NMS。boxes (N,4) xyxy、scores (N,)，返回保留的索引（按分数降序）。"""
-    if boxes.shape[0] == 0:
-        return np.zeros(0, dtype=np.int64)
-    order = np.argsort(-scores)
-    keep = []
-    while order.size > 0:
-        i = int(order[0])
-        keep.append(i)
-        if order.size == 1:
-            break
-        ious = _box_iou_np(boxes[order[1:]], boxes[i:i + 1])[:, 0]
-        order = order[1:][ious < iou_thr]
-    return np.asarray(keep, dtype=np.int64)
-
-
-def _postprocess(preds, strides, conf_thres: float, nms_iou: float,
-                 max_det: int = 300):
-    """把多尺度 HeadPredictions 解码为每图检测列表。
-
-    置信度 = sigmoid(obj) * max_c(sigmoid(cls))；每类单独 NMS。
-
-    Returns:
-        list[list[tuple]]，长度为 batch size，每图为
-        ``(class_id, score, xyxy)`` 元组列表（已按分数降序、截断到 max_det）。
-    """
-    B = preds[0].cls.shape[0]
-    per_image = [[] for _ in range(B)]
-
-    for stride, pred in zip(strides, preds):
-        obj = torch.sigmoid(pred.obj)       # [B, 1, fh, fw]
-        cls_p = torch.sigmoid(pred.cls)     # [B, C, fh, fw]
-        score = obj * cls_p                 # [B, C, fh, fw]
-        boxes = _decode_boxes(pred.reg, stride)  # [B, fh, fw, 4] (cx, cy, w, h)
-        xyxy = torch.cat(
-            [boxes[..., :2] - boxes[..., 2:] / 2.0,
-             boxes[..., :2] + boxes[..., 2:] / 2.0], dim=-1)  # [B, fh, fw, 4]
-
-        for b in range(B):
-            # torch.max(dim) 返回 (values, indices)：values=类别最大分，indices=类别下标
-            max_sc, cls_ids = score[b].max(dim=0)  # 各 [fh, fw]
-            keep_mask = max_sc > conf_thres
-            if not keep_mask.any():
-                continue
-            c = cls_ids[keep_mask].cpu().numpy()
-            s = max_sc[keep_mask].cpu().numpy()
-            bx = xyxy[b][keep_mask].cpu().numpy()
-            for cls in np.unique(c):
-                idx = np.where(c == cls)[0]
-                order_idx = idx[np.argsort(-s[idx])]
-                for k in _nms_keep(bx[order_idx], s[order_idx], nms_iou):
-                    kk = int(order_idx[k])
-                    per_image[b].append((int(cls), float(s[kk]), bx[kk]))
-
-    out = []
-    for dets in per_image:
-        dets.sort(key=lambda x: -x[1])
-        out.append(dets[:max_det])
-    return out
-
-
-# ============================================================
-# mAP 计算（COCO 风格，101 点插值 AP）
-# ============================================================
-
-def _ap_class(preds_c, gt_by_img, iou_thr: float) -> float:
-    """单类、单 IoU 阈值的 AP。
-
-    Args:
-        preds_c: list[(img_id, score, box)]，已按 score 降序。
-        gt_by_img: dict {img_id: np.ndarray (M, 4) xyxy}，仅含该类的 GT。
-    """
-    npos = int(sum(len(v) for v in gt_by_img.values()))
-    tp = np.zeros(len(preds_c))
-    fp = np.zeros(len(preds_c))
-    matched = {img: np.zeros(len(v), dtype=bool) for img, v in gt_by_img.items()}
-
-    for i, (img, _score, box) in enumerate(preds_c):
-        box = np.asarray(box, dtype=np.float64)
-        if img in gt_by_img and gt_by_img[img].shape[0] > 0:
-            ious = _box_iou_np(box[None, :], gt_by_img[img])[0]
-            j = int(np.argmax(ious))
-            if ious[j] >= iou_thr and not matched[img][j]:
-                tp[i] = 1.0
-                matched[img][j] = True
-            else:
-                fp[i] = 1.0
-        else:
-            fp[i] = 1.0
-
-    if npos == 0:
-        return float("nan")
-
-    tp_cum = np.cumsum(tp)
-    fp_cum = np.cumsum(fp)
-    recall = tp_cum / npos
-    precision = tp_cum / np.maximum(tp_cum + fp_cum, np.finfo(np.float32).eps)
-
-    ap = 0.0
-    for t in np.linspace(0.0, 1.0, 101):
-        m = precision[recall >= t]
-        ap += float(m.max()) if m.size else 0.0
-    return ap / 101.0
-
-
-def _compute_ap_list(predictions, ground_truths, num_classes: int,
-                     iou_thr: float):
-    """按类别计算 AP，返回长度 num_classes 的列表（无 GT 的类别为 NaN）。"""
-    aps = []
-    for c in range(num_classes):
-        preds_c = [(img, sc, bx) for (img, cls, sc, bx) in predictions if cls == c]
-        preds_c.sort(key=lambda x: -x[1])
-        gt_by_img = {}
-        for img, gts in enumerate(ground_truths):
-            boxes = [bx for (cls, bx) in gts if cls == c]
-            if boxes:
-                gt_by_img[img] = np.asarray(boxes, dtype=np.float64)
-        aps.append(_ap_class(preds_c, gt_by_img, iou_thr) if gt_by_img else float("nan"))
-    return aps
 
 
 # ============================================================
@@ -405,8 +268,8 @@ def main():
             n += images.size(0)
 
             # 解码预测
-            batch_dets = _postprocess(preds, model.strides,
-                                      args.conf_thres, args.iou_thres, args.max_det)
+            batch_dets = postprocess(preds, model.strides,
+                                     args.conf_thres, args.iou_thres, args.max_det)
             for b in range(images.size(0)):
                 for det in batch_dets[b]:
                     predictions.append((img_id + b, det[0], det[1], det[2]))
@@ -431,11 +294,11 @@ def main():
     val_loss = total_loss / max(n, 1)
 
     # ---- mAP ----
-    ap_list_50 = _compute_ap_list(predictions, ground_truths, num_classes, 0.5)
+    ap_list_50 = compute_ap_list(predictions, ground_truths, num_classes, 0.5)
     mAP50 = float(np.nanmean(ap_list_50))
     thr_list = np.arange(0.5, 0.95 + 1e-9, 0.05)
     mAP5095 = float(np.nanmean([
-        _compute_ap_list(predictions, ground_truths, num_classes, t)
+        compute_ap_list(predictions, ground_truths, num_classes, t)
         for t in thr_list
     ]))
 
