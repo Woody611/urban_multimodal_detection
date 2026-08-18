@@ -231,22 +231,23 @@ def create_dataloaders(
 ) -> Dict[str, DataLoader]:
     """构建 train / val / test 三个 DataLoader。
 
-    - val 优先取 dataset.yaml 中的 ``val`` 划分；若配置无 val，则用
-      split_train_val 从 train 按 val_ratio 切分。
+    数据组织遵循 data/raw/{train,test}：test 独立、不参与划分；train 目录内的
+    样本按 val_ratio 在 stem 级别随机切分为 train/val（无独立 val 目录）。
+    同一 stem 的 visible/infrared/depth/label 始终同属一个 split，避免模态错配
+    与 train/val 泄漏。
     """
     cfg = load_dataset_config(cfg_path)
     target_size = tuple(image_size)  # (H, W)
 
-    train_ds = MultiModalDataset(cfg, split="train", target_size=target_size)
-    if "val" in cfg:
-        val_ds = MultiModalDataset(cfg, split="val", target_size=target_size)
-    else:
-        train_stems, val_stems = split_train_val(train_ds.samples, val_ratio, seed)
-        val_set = set(val_stems)
-        train_idx = [i for i, s in enumerate(train_ds.samples) if s not in val_set]
-        val_idx = [i for i, s in enumerate(train_ds.samples) if s in val_set]
-        train_ds = Subset(train_ds, train_idx)
-        val_ds = Subset(MultiModalDataset(cfg, split="train", target_size=target_size), val_idx)
+    # 从 train 目录构建完整数据集，再按 val_ratio 在 stem 级别切分 train/val
+    full_train_ds = MultiModalDataset(cfg, split="train", target_size=target_size)
+    train_stems, val_stems = split_train_val(full_train_ds.samples, val_ratio, seed)
+    val_set = set(val_stems)
+    train_idx = [i for i, s in enumerate(full_train_ds.samples) if s not in val_set]
+    val_idx = [i for i, s in enumerate(full_train_ds.samples) if s in val_set]
+    train_ds = Subset(full_train_ds, train_idx)
+    val_ds = Subset(full_train_ds, val_idx)
+
     test_ds = MultiModalDataset(cfg, split="test", target_size=target_size)
 
     datasets = {"train": train_ds, "val": val_ds, "test": test_ds}

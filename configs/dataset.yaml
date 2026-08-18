@@ -6,20 +6,16 @@
 #
 # 数据目录结构说明:
 #   data/
-#   ├── train/
-#   │   ├── visible/      # *.png / *.jpg — 可见光三通道 8-bit
-#   │   ├── infrared/     # *.png / *.jpg — 红外三通道 8-bit
-#   │   ├── depth/        # *.png / *.jpg — 深度（PNG 单通道 16-bit；JPG 3通道 8-bit 灰度）
-#   │   └── labels/       # *.txt   — 检测标注
-#   ├── val/
-#   │   ├── visible/
-#   │   ├── infrared/
-#   │   ├── depth/
-#   │   └── labels/
-#   └── test/
-#       ├── visible/
-#       ├── infrared/
-#       └── depth/
+#   └── raw/
+#       ├── train/
+#       │   ├── visible/      # *.png / *.jpg — 可见光三通道 8-bit
+#       │   ├── infrared/     # *.png / *.jpg — 红外三通道 8-bit
+#       │   ├── depth/        # *.png / *.jpg — 深度（PNG 单通道 16-bit；JPG 3通道 8-bit 灰度）
+#       │   └── labels/       # *.txt   — 检测标注
+#       └── test/
+#           ├── visible/
+#           ├── infrared/
+#           └── depth/
 #
 # 标注格式 (归一化):
 #   <class_id> <norm_cx> <norm_cy> <norm_w> <norm_h>
