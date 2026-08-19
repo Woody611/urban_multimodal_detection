@@ -7,17 +7,17 @@
 # 数据目录结构说明:
 #   data/
 #   ├── train/
-#   │   ├── rgb/          # *.png   — 可见光三通道 8-bit
-#   │   ├── infrared/     # *.png   — 红外单通道 8-bit
-#   │   ├── depth/        # *.png   — 深度单通道 16-bit
+#   │   ├── visible/      # *.png / *.jpg — 可见光三通道 8-bit
+#   │   ├── infrared/     # *.png / *.jpg — 红外三通道 8-bit
+#   │   ├── depth/        # *.png / *.jpg — 深度（PNG 单通道 16-bit；JPG 3通道 8-bit 灰度）
 #   │   └── labels/       # *.txt   — 检测标注
 #   ├── val/
-#   │   ├── rgb/
+#   │   ├── visible/
 #   │   ├── infrared/
 #   │   ├── depth/
 #   │   └── labels/
 #   └── test/
-#       ├── rgb/
+#       ├── visible/
 #       ├── infrared/
 #       └── depth/
 #
@@ -27,42 +27,42 @@
 # ============================================================
 
 # ---- Dataset root -----------------------------------------
-dataset_root: "data"
+dataset_root: "data/raw"
 
 # ---- Split paths ------------------------------------------
 #      各组路径相对于 dataset_root
 train:
-  rgb:        "train/rgb"
+  visible:    "train/visible"
   infrared:   "train/infrared"
   depth:      "train/depth"
   labels:     "train/labels"
 
-val:
-  rgb:        "val/rgb"
-  infrared:   "val/infrared"
-  depth:      "val/depth"
-  labels:     "val/labels"
+# 无独立 val 划分：验证集由 utils.dataset.create_dataloaders 从 train 按 val_ratio 切分
 
 test:
-  rgb:        "test/rgb"
+  visible:    "test/visible"
   infrared:   "test/infrared"
   depth:      "test/depth"
 
 # ---- Modality specs ---------------------------------------
 #     由 PyTorch Dataset 按通道数选用合适的读取方式
 modalities:
-  rgb:
-    ext: ".png"
+  visible:
+    exts: [".png", ".jpg"]
     channels: 3
     dtype: "uint8"
   infrared:
-    ext: ".png"
-    channels: 1
+    exts: [".png", ".jpg"]
+    channels: 3
     dtype: "uint8"
   depth:
-    ext: ".png"
-    channels: 1
-    dtype: "uint16"          # 16-bit 深度图
+    exts: [".png", ".jpg"]
+    channels: 1                 # PNG：单通道
+    dtype: "uint16"             # PNG：16-bit 深度图
+    jpg:
+      channels: 3               # JPG 实为 3 通道，读取后需转单通道灰度
+      dtype: "uint8"            # 8-bit 灰度深度
+      physical_scale: "unknown" # 灰度值→毫米 的映射未确定
 
 # ---- Label specs ------------------------------------------
 #     标注文件与图像同名 (仅扩展名不同)

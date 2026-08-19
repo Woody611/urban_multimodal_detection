@@ -10,7 +10,7 @@
 
 ---
 
-# 2. 检测类别
+# 2. 数据集类别
 
 项目面向城市复杂环境目标检测任务，包含以下12类目标：
 
@@ -29,6 +29,12 @@
 | 10 | uav 无人机 |
 | 11 | tricycle 三轮车 |
 
+### 数据格式说明
+
+- 图像扩展名：`visible` / `infrared` / `depth` 均为 **`.png` 与 `.jpg` 混存**；
+- 标注格式：YOLO 格式 `<class_id> <norm_cx> <norm_cy> <norm_w> <norm_h>`（空格分隔，坐标归一化到 [0,1]）；
+- 数据划分：仅含 `train` 与 `test`，无独立 `val`，验证集需从 `train` 切分。
+
 ---
 
 # 3. 环境配置
@@ -36,6 +42,7 @@
 ```bash
 conda create -n urban_multimodal python=3.10 -y
 conda activate urban_multimodal
+pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu124  
 pip install -r requirements.txt
 ```
 
@@ -53,6 +60,15 @@ Urban-MultiModal-Object-Detection
 │
 ├── data
 │   └── raw
+│       ├── train
+│       │   ├── visible/    # 可见光 (RGB)
+│       │   ├── infrared/   # 红外
+│       │   ├── depth/      # 深度
+│       │   └── labels/     # YOLO 格式标注
+│       └── test
+│           ├── visible/
+│           ├── infrared/
+│           └── depth/
 │
 ├── docs
 │   ├── model_design.md
@@ -92,11 +108,17 @@ Urban-MultiModal-Object-Detection
 
 # 6. 引用与参考资料
 
-1. Redmon J, et al.  
-   You Only Look Once: Unified, Real-Time Object Detection.
+1. Cao Y, Bin J, Hamari J, et al.  
+   Multimodal Object Detection by Channel Switching and Spatial Attention[C]//Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. 2023: 403-411.
 
-2. Cao Y, et al.  
-   Multimodal Object Detection by Channel Switching and Spatial Attention.
+2. Redmon J, Divvala S, Girshick R, et al.  
+   You Only Look Once: Unified, Real-Time Object Detection[C]//Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2016: 779-788.
 
-3. Tang Z, et al.  
-   Learning Bi-Directional Fusion and Deformation-Sensitive Loss for RGB-T Tiny Object Detection.
+3. Cheng C, Xu T, Wu X J, et al.  
+   EvaNet: Towards More Efficient and Consistent Infrared and Visible Image Fusion Assessment[J]. IEEE Transactions on Pattern Analysis and Machine Intelligence, 2026.
+
+4. Tang Z, Xie Y, Xu T, et al.  
+   Learning Bi-Directional Fusion and Deformation-Sensitive Loss for RGB-T Tiny Object Detection[J]. Information Fusion, 2025: 103985.
+
+5. Zhu X F, Xu T, Pan Y, Gu J, Li X, Lu J, et al.  
+   Collaborating Vision, Depth, and Thermal Signals for Multi-Modal Tracking: Dataset and Algorithm[C]//The Thirty-ninth Annual Conference on Neural Information Processing Systems Datasets and Benchmarks Track, 2025.

@@ -57,6 +57,7 @@ ema:
 
 # ---- Validation ----------------------------------------------
 val_interval: 1                       # 每 N 个 epoch 验证一次
+val_ratio: 0.2                        # 无独立 val 时，从 train 切分的验证集比例
 
 # ---- Evaluation metrics --------------------------------------
 evaluation_metric:
