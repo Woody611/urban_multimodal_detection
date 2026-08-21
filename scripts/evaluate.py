@@ -20,7 +20,8 @@
       （默认 42）在 stem 级别切分，避免数据泄漏与模态错配。
     - mAP 按 COCO 约定实现（101 点插值 AP，类别内取均值，无 GT 的类别忽略），
       在 640×640 的 letterbox 坐标空间中直接比较预测框与 GT 框。
-    - 当前面向 visible 单模态 baseline；若 model_type=fusion 需扩展输入模态。
+    - 支持 model_type="baseline"（visible 单模态）与 "fusion"（visible +
+      infrared + depth 三模态）。
 """
 from __future__ import annotations
 
@@ -201,9 +202,7 @@ def main():
         raise FileNotFoundError(f"权重文件不存在: {weights_path}")
 
     # ---- 模型 ----
-    if str(model_cfg.get("model_type", "baseline")).lower() != "baseline":
-        print("[warn] 当前 evaluate 面向 visible 单模态 baseline，"
-              "fusion 模型需扩展输入模态处理。")
+    model_type = model_cfg.get("model_type", "baseline")
     model = build_model(model_cfg).to(device)
     num_classes = model.num_classes
 
@@ -262,7 +261,15 @@ def main():
             labels = batch["label"].to(device, non_blocking=True)
             num_labels = batch["num_labels"].to(device, non_blocking=True)
 
-            preds = model(images)
+            # baseline 仅用 visible；fusion 用 visible + infrared + depth 三模态
+            if model_type == "fusion":
+                preds = model(
+                    images,
+                    batch["infrared"].to(device, non_blocking=True),
+                    batch["depth"].to(device, non_blocking=True),
+                )
+            else:
+                preds = model(images)
             loss = loss_fn(preds, labels, num_labels)
             total_loss += loss.item() * images.size(0)
             n += images.size(0)

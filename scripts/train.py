@@ -21,6 +21,7 @@ checkpoint）。
 """
 from __future__ import annotations
 
+import argparse
 import contextlib
 import copy
 import math
@@ -381,7 +382,7 @@ class ModelEMA:
 # ============================================================
 
 def _train_one_epoch(model, loader, loss_fn, optimizer, scaler, autocast,
-                     device, epoch, grad_clip, ema):
+                     device, epoch, grad_clip, ema, model_type):
     model.train()
     running, n = 0.0, 0
     pbar = tqdm(loader, desc=f"Train Epoch {epoch + 1}", leave=False)
@@ -392,7 +393,15 @@ def _train_one_epoch(model, loader, loss_fn, optimizer, scaler, autocast,
 
         optimizer.zero_grad(set_to_none=True)
         with autocast:
-            preds = model(images)
+            # baseline 仅用 visible；fusion 用 visible + infrared + depth 三模态
+            if model_type == "fusion":
+                preds = model(
+                    images,
+                    batch["infrared"].to(device, non_blocking=True),
+                    batch["depth"].to(device, non_blocking=True),
+                )
+            else:
+                preds = model(images)
             loss = loss_fn(preds, labels, num_labels)
 
         if scaler is not None:
@@ -418,7 +427,7 @@ def _train_one_epoch(model, loader, loss_fn, optimizer, scaler, autocast,
 
 
 @torch.no_grad()
-def _validate(model, loader, loss_fn, device, autocast,
+def _validate(model, loader, loss_fn, device, autocast, model_type,
               conf_thres: float = 0.001, nms_iou: float = 0.6, max_det: int = 300):
     """验证：返回 metrics 字典，含 val_loss 与 mAP@0.5 / mAP@0.5:0.95。
 
@@ -437,7 +446,15 @@ def _validate(model, loader, loss_fn, device, autocast,
         labels = batch["label"].to(device, non_blocking=True)
         num_labels = batch["num_labels"].to(device, non_blocking=True)
         with autocast:
-            preds = model(images)
+            # baseline 仅用 visible；fusion 用 visible + infrared + depth 三模态
+            if model_type == "fusion":
+                preds = model(
+                    images,
+                    batch["infrared"].to(device, non_blocking=True),
+                    batch["depth"].to(device, non_blocking=True),
+                )
+            else:
+                preds = model(images)
             loss = loss_fn(preds, labels, num_labels)
         total += loss.item() * images.size(0)
         n += images.size(0)
@@ -548,14 +565,31 @@ def _build_writer(cfg: dict):
 # 主流程
 # ============================================================
 
+def _parse_args():
+    """解析命令行参数，支持覆盖配置文件路径（与 evaluate.py 对齐）。
+
+    默认不传参时仍读取 configs/{train,model,dataset}.yaml，保持 Baseline 行为不变。
+    """
+    parser = argparse.ArgumentParser(description="多模态目标检测训练")
+    parser.add_argument("--model_config", type=str, default=None,
+                        help="model.yaml 路径，默认 configs/model.yaml")
+    parser.add_argument("--train_config", type=str, default=None,
+                        help="train.yaml 路径，默认 configs/train.yaml")
+    parser.add_argument("--dataset_config", type=str, default=None,
+                        help="dataset.yaml 路径，默认 configs/dataset.yaml")
+    return parser.parse_args()
+
+
 def main():
     # 使 configs 中的相对路径（dataset_root / save_dir / log_dir）基于项目根解析
     os.chdir(PROJECT_ROOT)
 
+    args = _parse_args()
     cfg_dir = PROJECT_ROOT / "configs"
-    train_cfg = _load_yaml(cfg_dir / "train.yaml")
-    model_cfg = _load_yaml(cfg_dir / "model.yaml")
-    dataset_cfg_path = cfg_dir / "dataset.yaml"     # create_dataloaders 自行加载
+    train_cfg = _load_yaml(args.train_config or cfg_dir / "train.yaml")
+    model_cfg = _load_yaml(args.model_config or cfg_dir / "model.yaml")
+    model_type = model_cfg.get("model_type", "baseline")
+    dataset_cfg_path = str(args.dataset_config or cfg_dir / "dataset.yaml")
 
     # ---- 复现性 / 设备 ----
     seed = int(train_cfg.get("seed", 42))
@@ -641,7 +675,7 @@ def main():
 
         train_loss = _train_one_epoch(
             model, loaders["train"], loss_fn, optimizer, scaler, autocast,
-            device, epoch, grad_clip, ema)
+            device, epoch, grad_clip, ema, model_type)
 
         if epoch >= warmup_epochs and scheduler is not None:
             scheduler.step()
@@ -652,7 +686,8 @@ def main():
         map50 = float("nan")
         map5095 = float("nan")
         if (epoch + 1) % val_interval == 0:
-            metrics = _validate(model, loaders["val"], loss_fn, device, autocast)
+            metrics = _validate(model, loaders["val"], loss_fn, device, autocast,
+                                model_type)
             val_loss = metrics["val_loss"]
             map50 = metrics.get("mAP_0.5", float("nan"))
             map5095 = metrics.get("mAP_0.5:0.95", float("nan"))
