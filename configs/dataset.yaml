@@ -1,90 +1,66 @@
 # ============================================================
-# Urban Multi-Modal Object Detection — Dataset Configuration
+# Urban Multi-Modal Object Detection — YOLOv11-RGBT 数据集配置
 # ============================================================
 # 比赛: 面向城市场景的视觉多模态目标检测
-# 数据: 空间对齐的 RGB + Infrared + Depth 三模态图像
+# 数据: 空间对齐的 RGB(visible) + Infrared + Depth 三模态图像
 #
-# 数据目录结构说明:
-#   data/
-#   └── raw/
-#       ├── train/
-#       │   ├── visible/      # *.png / *.jpg — 可见光三通道 8-bit
-#       │   ├── infrared/     # *.png / *.jpg — 红外三通道 8-bit
-#       │   ├── depth/        # *.png / *.jpg — 深度（PNG 单通道 16-bit；JPG 3通道 8-bit 灰度）
-#       │   └── labels/       # *.txt   — 检测标注
-#       └── test/
-#           ├── visible/
-#           ├── infrared/
-#           └── depth/
+# 本文件兼容 ultralytics YOLO 训练接口 (YOLOv11-RGBT 多模态检测)。
+# ultralytics 只会读取标准字段: path / train / val / test / nc / names。
 #
-# 标注格式 (归一化):
-#   <class_id> <norm_cx> <norm_cy> <norm_w> <norm_h>
-#   所有坐标归一化到 [0, 1]
+# ------------------------------------------------------------------
+# 多模态读取机制 (由 YOLOv11-RGBT fork 实现, 通过 CLI 参数控制, 不写在 YAML):
+#   1. 训练时传入:  use_simotm=RGBT  pairs_rgb_ir=['visible','infrared']
+#   2. 加载器以 `train` 指定的 visible 目录为主输入, 读取 RGB 图像;
+#   3. 第二模态图像由"路径字符串替换"得到 (见下方映射), 并与 RGB 在通道维拼接:
+#         RGB + 红外灰度  -> 4 通道  (use_simotm=RGBT)
+#         RGB + 红外 RGB  -> 6 通道  (use_simotm=RGBRGB6C)
+#
+#   模态路径映射 (relative to `path`):
+#     visible   主输入      -> train/visible    test/visible
+#     infrared  第二模态     -> train/infrared   test/infrared   (pairs_rgb_ir: visible -> infrared)
+#     depth     第二模态(备选) -> train/depth     test/depth      (pairs_rgb_ir: visible -> depth)
+#
+#   注: 该 fork 一次只融合"RGB + 一个第二模态"(红外或深度, 二选一),
+#       不能同时融合三模态。切换第二模态只需把 pairs_rgb_ir 改为
+#       ['visible','depth']。
+# ------------------------------------------------------------------
+#
+# 标注格式 (YOLO, 归一化, 与图像同名仅扩展名不同):
+#   <class_id> <norm_cx> <norm_cy> <norm_w> <norm_h>   (坐标 ∈ [0, 1])
+#
+# 标注查找约定: ultralytics 默认把图像路径中的 `images` 替换为 `labels`
+#   来定位标注文件。若按下方路径 (train/visible) 找不到标注, 请把
+#   `train/labels/*.txt` 移到 `train/visible/` (与可见光图像同目录),
+#   或将目录调整为 `train/images/visible` + `train/labels/visible`。
 # ============================================================
 
-# ---- Dataset root -----------------------------------------
-dataset_root: "data/raw"
+# ---- 数据集根目录 -------------------------------------------
+# ultralytics 建议使用绝对路径 (相对路径会相对其 datasets_dir 解析)。
+path: "C:/Users/30298/Desktop/Urban-Multimodal-Detection/data/raw"
 
-# ---- Split paths ------------------------------------------
-#      各组路径相对于 dataset_root
-train:
-  visible:    "train/visible"
-  infrared:   "train/infrared"
-  depth:      "train/depth"
-  labels:     "train/labels"
+# ---- 划分路径 (relative to `path`, 均指向 visible 主输入) ------
+train: train/visible          # 训练集 (可见光, 主输入)
+val:   test/visible           # 验证集 (占位; test 无标注, 见下)
+test:  test/visible           # 测试集
 
-# 无独立 val 划分：验证集由 utils.dataset.create_dataloaders 从 train 按 val_ratio 切分
+# 说明:
+#   - `train`/`val`/`test` 只需指定 visible 目录; 红外/深度由 pairs_rgb_ir 自动映射。
+#   - 当前数据无独立 val 划分: test 目录没有 labels, 直接用作 val 会恒得 mAP=0。
+#     建议训练前从 train 按比例切分出 val (例如 ultralytics 的 dataset split),
+#     再把上面 `val` 指向切分出的可见光目录。
 
-test:
-  visible:    "test/visible"
-  infrared:   "test/infrared"
-  depth:      "test/depth"
-
-# ---- Modality specs ---------------------------------------
-#     由 PyTorch Dataset 按通道数选用合适的读取方式
-modalities:
-  visible:
-    exts: [".png", ".jpg"]
-    channels: 3
-    dtype: "uint8"
-  infrared:
-    exts: [".png", ".jpg"]
-    channels: 3
-    dtype: "uint8"
-  depth:
-    exts: [".png", ".jpg"]
-    channels: 1                 # PNG：单通道
-    dtype: "uint16"             # PNG：16-bit 深度图
-    jpg:
-      channels: 3               # JPG 实为 3 通道，读取后需转单通道灰度
-      dtype: "uint8"            # 8-bit 灰度深度
-      physical_scale: "unknown" # 灰度值→毫米 的映射未确定
-
-# ---- Label specs ------------------------------------------
-#     标注文件与图像同名 (仅扩展名不同)
-label:
-  ext: ".txt"
-  format: "norm_xywh"        # 归一化中心点 + 宽高 (即 YOLO 格式)
-  delimiter: " "             # 字段分隔符
-  fields:
-    - "class_id"             # int
-    - "norm_center_x"        # float ∈ [0, 1]
-    - "norm_center_y"        # float ∈ [0, 1]
-    - "norm_w"               # float ∈ [0, 1]
-    - "norm_h"               # float ∈ [0, 1]
-
-# ---- Classes ----------------------------------------------
-num_classes: 12
-class_names:
-  0:  "person"
-  1:  "boat"
-  2:  "animal"
-  3:  "seat"
-  4:  "sign"
-  5:  "bicycle"
-  6:  "car"
-  7:  "ball"
-  8:  "light"
-  9:  "garbage_can"
-  10: "uav"
-  11: "tricycle"
+# ---- 类别 (12 类, 顺序即 class id) ---------------------------
+nc: 12
+names:
+  0: person
+  1: boat
+  2: animal
+  3: seat
+  4: sign
+  5: bicycle
+  6: car
+  7: ball
+  8: light
+  9: garbage_can
+  10: uav
+  11: tricycle

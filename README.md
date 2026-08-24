@@ -25,7 +25,7 @@
 | 6 | car 汽车 |
 | 7 | ball 球 |
 | 8 | light 灯 |
-| 9 | garbage can 垃圾桶 |
+| 9 | garbage_can 垃圾桶 |
 | 10 | uav 无人机 |
 | 11 | tricycle 三轮车 |
 
@@ -42,52 +42,65 @@
 ```bash
 conda create -n urban_multimodal python=3.10 -y
 conda activate urban_multimodal
-pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu124  
+# CUDA 版 PyTorch（GPU 训练必需；无 NVIDIA GPU 或仅跑流程可装 CPU 版）
+pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu124
 pip install -r requirements.txt
 ```
+
+说明：
+
+- **本地 fork 的硬依赖**：项目使用仓库内自带的 `ultralytics/` fork（含 RGBT 多模态融合实现），其 `nn/tasks.py`、`nn/modules/attention.py`、`data/base.py` 等直接 `import timm` / `einops` / `efficientnet_pytorch` / `thop` / `psutil`，均已列入 `requirements.txt` 与 `environment.yml`。
+- **GPU 训练需 CUDA 版 torch**：上方的 cu124 安装需 NVIDIA 驱动 ≥ 525.60.13（可用 `nvidia-smi` 确认）。驱动较旧时把 `cu124` 换成 `cu121` 或 `cu118`；无 GPU 则用 CPU 版 `pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1`。
+- **使用本地 fork**：脚本通过 `sys.path` 优先导入仓库根目录的 `ultralytics/`，而非 pip 安装的官方 ultralytics，多模态相关能力以本地 fork 为准。
 
 ---
 
 # 4. 项目目录结构
 
 ```
-Urban-MultiModal-Object-Detection
+Urban-Multimodal-Detection
 
 ├── configs
-│   ├── dataset.yaml
-│   ├── model.yaml
-│   └── train.yaml
+│   ├── dataset.yaml           # ultralytics 数据配置 (path / train / val / test / nc / names)
+│   ├── train.yaml             # 训练超参，由 scripts/train.py 映射到 ultralytics
+│   ├── yolo11_visible.yaml    # YOLOv11 单模态 baseline 模型 (nc=12)
+│   ├── model.yaml             # 自定义模型设计（融合方案参考）
+│   └── model_fusion.yaml      # 三模态融合设计 (fusion_method 等)
 │
 ├── data
-│   └── raw
-│       ├── train
-│       │   ├── visible/    # 可见光 (RGB)
-│       │   ├── infrared/   # 红外
-│       │   ├── depth/      # 深度
-│       │   └── labels/     # YOLO 格式标注
-│       └── test
-│           ├── visible/
-│           ├── infrared/
-│           └── depth/
+│   ├── raw
+│   │   ├── train
+│   │   │   ├── visible/       # 可见光 (RGB)
+│   │   │   ├── infrared/      # 红外
+│   │   │   ├── depth/         # 深度
+│   │   │   └── labels/        # YOLO 格式标注
+│   │   └── test
+│   │       ├── visible/
+│   │       ├── infrared/
+│   │       └── depth/
+│   └── processed              # train.py 切分生成的 visible_split/（不入库）
 │
 ├── docs
 │   ├── model_design.md
 │   └── experiment_log.md
 │
 ├── experiments
-│   ├── baseline
-│   └── fusion
+│   ├── README.md
+│   ├── baseline/              # 各实验材料（配置快照、metrics.json 等）
+│   └── fusion/
 │
 ├── models
+│   ├── attention.py           # CrossModalAttention（未来融合模块）
+│   └── fusion.py              # ConcatFusion（未来融合模块）
 │
 ├── scripts
 │   ├── train.py
-│   ├── predict.py
-│   └── evaluate.py
+│   ├── evaluate.py
+│   └── predict.py
 │
-├── utils
+├── ultralytics                # 本地 fork（含 RGBT 多模态融合实现）
 │
-├── weights
+├── weights                    # 训练权重（已 gitignore）
 │
 ├── README.md
 ├── requirements.txt
