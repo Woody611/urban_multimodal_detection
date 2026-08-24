@@ -5,6 +5,11 @@ torchaudio
 
 # Object Detection
 ultralytics
+timm                  # 本地 ultralytics fork 硬依赖（nn/tasks.py、nn/modules/*.py）
+einops                # 本地 ultralytics fork 硬依赖（nn/modules/attention.py）
+efficientnet_pytorch  # 本地 ultralytics fork 硬依赖（nn/modules/attention.py）
+thop                  # 本地 ultralytics fork 硬依赖（nn/tasks.py、utils/torch_utils.py）
+psutil                # 本地 ultralytics fork 硬依赖（data/base.py）
 
 # Image Processing
 opencv-python

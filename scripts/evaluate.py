@@ -1,136 +1,150 @@
-"""scripts/evaluate.py — 模型评估入口。
+"""scripts/evaluate.py — 模型评估入口（YOLOv11 / ultralytics）。
 
-职责：加载训练好的权重（best.pth / last.pth）→ 构建与训练一致的验证集 →
-在 ``torch.no_grad()`` 下推断 → 输出验证损失（val_loss）与目标检测指标
-（mAP@0.5、mAP@0.5:0.95）。
+职责：加载训练好的 best.pt → 调用 ultralytics 的 ``model.val()`` 在验证集上评估
+→ 输出 mAP@0.5 / mAP@0.5:0.95 / precision / recall（及各类别指标），并把结果
+以机器可读的 metrics.json 保存到 experiments/<实验名>/。
 
-用法（在项目根目录或任意位置均可）:
+不再自实现解码 / NMS / mAP，全部交给 ultralytics 框架处理。
+
+用法:
     python scripts/evaluate.py
-    python scripts/evaluate.py --weights runs/urban_multimodal_det_v1/weights/best.pth
-    python scripts/evaluate.py --dataset_root /path/to/data/raw --device cpu
+    python scripts/evaluate.py --weights runs/urban_multimodal_det_v1/weights/best.pt
+    python scripts/evaluate.py --device cpu --experiment baseline
 
-依赖：
-    models.build_model            — 按 model.yaml 的 model_type 构建检测器
-    utils.dataset                 — 复现 create_dataloaders 的 train→val 切分
-    utils.metrics                 — 框解码 / NMS / mAP（与 train.py 共用）
-    scripts.train.DetectionLoss   — 复用训练时的损失，保证 val_loss 口径一致
-
-说明：
-    - 验证集与训练时完全一致：从 train 目录按 val_ratio（默认 0.2）、seed
-      （默认 42）在 stem 级别切分，避免数据泄漏与模态错配。
-    - mAP 按 COCO 约定实现（101 点插值 AP，类别内取均值，无 GT 的类别忽略），
-      在 640×640 的 letterbox 坐标空间中直接比较预测框与 GT 框。
-    - 支持 model_type="baseline"（visible 单模态）与 "fusion"（visible +
-      infrared + depth 三模态）。
+说明:
+    - 默认权重取 train.yaml checkpoint.save_dir/best.pt（与 train.py 一致）。
+    - 验证集与训练一致：复用 data/processed/visible_split/dataset.yaml（由
+      train.py 按 val_ratio + seed 切分生成）；若不存在则按相同逻辑生成，
+      保证与训练期验证划分完全相同、无数据泄漏。
+    - 结果保存到 experiments/<experiment_name>/metrics.json（按 experiments/README.md
+      规范），并同步打印到终端。
 """
 from __future__ import annotations
 
 import argparse
+import datetime
+import json
 import os
-import random
-import re
 import sys
 from pathlib import Path
 
 import numpy as np
 import torch
-import yaml
-from torch.utils.data import DataLoader, Subset
 
-# 保证 `python scripts/evaluate.py` 时能导入项目内的 models / utils / scripts
+# 保证 `python scripts/evaluate.py` 时能导入项目内的 ultralytics / scripts
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from models import build_model                          # noqa: E402
-from utils.dataset import (                             # noqa: E402
-    load_dataset_config,
-    MultiModalDataset,
-    split_train_val,
-    collate_fn,
+from ultralytics import YOLO  # noqa: E402
+
+# 复用 train.py 的配置读取 / 设备解析 / val 切分，保证评估与训练口径完全一致
+from scripts.train import (  # noqa: E402
+    _load_yaml,
+    _resolve_device,
+    _resolve_template,
+    _split_train_val,
+    _val_has_labels,
 )
-# 复用训练脚本中的损失；框解码 / NMS / mAP 统一在 utils.metrics（与 train.py 共用）
-from scripts.train import DetectionLoss          # noqa: E402
-from utils.metrics import postprocess, compute_ap_list  # noqa: E402
+
+SPLIT_YAML = "data/processed/visible_split/dataset.yaml"
 
 
 # ============================================================
 # 基础工具
 # ============================================================
 
-def _load_yaml(path):
-    """读取 yaml 配置文件，返回解析后的字典。"""
-    with open(path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+def _to_py(v):
+    """递归把 numpy / torch 标量转成 Python 原生类型，便于 json 序列化。"""
+    if isinstance(v, np.floating):
+        return float(v)
+    if isinstance(v, np.integer):
+        return int(v)
+    if isinstance(v, np.ndarray):
+        return [_to_py(x) for x in v.tolist()]
+    if isinstance(v, torch.Tensor):
+        return _to_py(v.detach().cpu().numpy())
+    if isinstance(v, (list, tuple)):
+        return [_to_py(x) for x in v]
+    if isinstance(v, dict):
+        return {str(k): _to_py(x) for k, x in v.items()}
+    return v
 
 
-def _resolve_template(s, cfg):
-    """把路径模板中的 ``${key}`` 替换为顶层同名值（与 train.py 一致）。"""
-    return re.sub(r"\$\{(\w+)\}", lambda m: str(cfg.get(m.group(1), m.group(0))), str(s))
+def _resolve_val_data(dataset_cfg_path: str, dataset_cfg: dict,
+                      train_cfg: dict) -> str:
+    """确定验证数据 yaml：优先复用训练切分，必要时按相同逻辑生成。"""
+    # 1) 训练期已生成的切分直接复用（保证与训练验证集一致）
+    if Path(SPLIT_YAML).exists():
+        return SPLIT_YAML
 
+    # 2) dataset.yaml 的 val 本身有标注则直接用
+    if _val_has_labels(dataset_cfg):
+        return dataset_cfg_path
 
-def _set_seed(seed: int):
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-
-
-def _select_device(device_arg: str) -> torch.device:
-    requested = str(device_arg).lower()
-    if requested.startswith("cuda") and torch.cuda.is_available():
-        return torch.device("cuda:0")
-    if requested.startswith("cuda"):
-        print("[device] CUDA 不可用，自动回退到 CPU。")
-    return torch.device("cpu")
-
-
-def _bn_initialized(state_dict, tol: float = 1e-3) -> bool:
-    """判断权重的 BatchNorm 运行统计量是否为「已训练」状态。
-
-    训练前 BN 的 running_mean=0 / running_var=1；若全部 BN 仍停留在该初值，
-    说明这些运行统计量从未被更新（常见于 EMA 只更新参数、不更新 buffer 的
-    bug），此时用 model.eval() 推断会得到退化结果。返回 False 表示疑似退化。
-    """
-    rvs = [t for k, t in state_dict.items() if k.endswith("running_var")]
-    if not rvs:
-        return True  # 无 BN 层，无需检查
-    all_at_init = all((torch.abs(t - 1.0) < tol).all().item() for t in rvs)
-    return not all_at_init
+    # 3) 否则按 train.yaml 的 val_ratio + seed 切分（与 train.py 相同逻辑）
+    val_ratio = float(train_cfg.get("val_ratio", 0.0))
+    if val_ratio <= 0:
+        # 无标注 val 且不切分 → 直接评估原 val（会恒得 mAP=0）
+        print("[warn] val 无标注且 val_ratio<=0，将直接评估 dataset.yaml 的 val。")
+        return dataset_cfg_path
+    return str(_split_train_val(dataset_cfg, val_ratio,
+                                int(train_cfg.get("seed", 42))))
 
 
 # ============================================================
-# 验证集构建（复现 create_dataloaders 的 train→val 切分）
+# 指标提取
 # ============================================================
 
-def _build_val_loader(dataset_cfg_path, dataset_root, image_size, batch_size,
-                      num_workers, pin_memory, val_ratio, seed):
-    """构建与训练完全一致的验证集 DataLoader。
+def _extract_metrics(metrics) -> dict:
+    """从 ultralytics DetMetrics 提取 mAP / precision / recall 及各类别指标。"""
+    box = metrics.box
+    names = getattr(metrics, "names", None) or getattr(box, "names", {}) or {}
 
-    由于 create_dataloaders 不支持 dataset_root 覆盖，这里手动复现其逻辑：
-    从 train 目录构建完整数据集，按 val_ratio + seed 在 stem 级别切出验证子集。
-    """
-    cfg = load_dataset_config(dataset_cfg_path)
-    if dataset_root:
-        cfg["dataset_root"] = dataset_root
+    mp = float(box.mp)
+    mr = float(box.mr)
+    map50 = float(box.map50)
+    map5095 = float(box.map)
+    fitness = float(getattr(metrics, "fitness", 0.0) or 0.0)
 
-    target_size = tuple(image_size)
-    full_train_ds = MultiModalDataset(cfg, split="train", target_size=target_size)
-    _train_stems, val_stems = split_train_val(full_train_ds.samples, val_ratio, seed)
-    val_set = set(val_stems)
-    val_idx = [i for i, s in enumerate(full_train_ds.samples) if s in val_set]
-    val_ds = Subset(full_train_ds, val_idx)
+    ap_class_index = [int(c) for c in getattr(box, "ap_class_index", [])]
+    p = np.asarray(box.p) if len(box.p) else np.array([])
+    r = np.asarray(box.r) if len(box.r) else np.array([])
+    ap50 = np.asarray(box.ap50) if len(box.ap50) else np.array([])
+    ap = np.asarray(box.ap) if len(box.ap) else np.array([])
 
-    loader = DataLoader(
-        val_ds,
-        batch_size=batch_size,
-        shuffle=False,
-        num_workers=num_workers,
-        pin_memory=pin_memory,
-        collate_fn=collate_fn,
-        drop_last=False,
-    )
-    return loader, len(val_ds)
+    per_class = {}
+    for i, c in enumerate(ap_class_index):
+        per_class[str(c)] = {
+            "name": names.get(c, str(c)),
+            "precision": _to_py(p[i]) if i < len(p) else None,
+            "recall": _to_py(r[i]) if i < len(r) else None,
+            "ap50": _to_py(ap50[i]) if i < len(ap50) else None,
+            "ap50_95": _to_py(ap[i]) if i < len(ap) else None,
+        }
+
+    speed = getattr(metrics, "speed", None)
+    return {
+        "precision": mp,
+        "recall": mr,
+        "mAP50": map50,
+        "mAP50-95": map5095,
+        "fitness": fitness,
+        "per_class": per_class,
+        "speed": _to_py(speed) if speed else None,
+    }
+
+
+# ============================================================
+# 结果保存
+# ============================================================
+
+def _save_results(exp_dir: Path, payload: dict) -> Path:
+    exp_dir.mkdir(parents=True, exist_ok=True)
+    out_path = exp_dir / "metrics.json"
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(_to_py(payload), f, ensure_ascii=False, indent=2)
+    return out_path
 
 
 # ============================================================
@@ -138,204 +152,123 @@ def _build_val_loader(dataset_cfg_path, dataset_root, image_size, batch_size,
 # ============================================================
 
 def _parse_args():
-    parser = argparse.ArgumentParser(description="多模态目标检测模型评估")
+    parser = argparse.ArgumentParser(description="YOLOv11 目标检测模型评估")
     parser.add_argument("--weights", type=str, default=None,
-                        help="权重文件路径；默认取 train.yaml checkpoint.save_dir/best.pth")
-    parser.add_argument("--no_ema", action="store_true",
-                        help="不使用 EMA 权重，改加载 checkpoint 中的原始 'model' 权重")
-    parser.add_argument("--dataset_root", type=str, default=None,
-                        help="覆盖 dataset.yaml 的 dataset_root（默认 data/raw）")
-    parser.add_argument("--dataset_config", type=str, default=None,
+                        help="权重文件路径；默认 train.yaml checkpoint.save_dir/best.pt")
+    parser.add_argument("--dataset_config", type=str, default="configs/dataset.yaml",
                         help="dataset.yaml 路径，默认 configs/dataset.yaml")
-    parser.add_argument("--model_config", type=str, default=None,
-                        help="model.yaml 路径，默认 configs/model.yaml")
-    parser.add_argument("--train_config", type=str, default=None,
+    parser.add_argument("--train_config", type=str, default="configs/train.yaml",
                         help="train.yaml 路径，默认 configs/train.yaml")
     parser.add_argument("--device", type=str, default="cuda",
-                        help="cuda | cpu")
+                        help="cuda | cpu；cuda 时按 train.yaml gpu_ids 选择")
+    parser.add_argument("--experiment", type=str, default=None,
+                        help="结果保存目录名，默认 train.yaml experiment_name")
     parser.add_argument("--batch_size", type=int, default=None,
                         help="覆盖 train.yaml 的 batch_size")
-    parser.add_argument("--num_workers", type=int, default=None,
-                        help="覆盖 train.yaml 的 num_workers")
-    parser.add_argument("--image_size", type=int, nargs=2, default=None,
-                        metavar=("H", "W"), help="覆盖 train.yaml 的 image_size")
-    parser.add_argument("--conf_thres", type=float, default=0.001,
-                        help="置信度阈值（用于构建 PR 曲线）")
-    parser.add_argument("--iou_thres", type=float, default=0.6,
-                        help="NMS 的 IoU 阈值")
-    parser.add_argument("--max_det", type=int, default=300,
-                        help="每张图保留的最大检测数")
+    parser.add_argument("--image_size", type=int, default=None,
+                        help="覆盖 train.yaml 的 image_size")
+    parser.add_argument("--conf", type=float, default=None,
+                        help="置信度阈值（默认走 ultralytics val 的 0.001）")
+    parser.add_argument("--iou", type=float, default=None,
+                        help="NMS 的 IoU 阈值（默认 ultralytics 的 0.7）")
+    parser.add_argument("--max_det", type=int, default=None,
+                        help="每张图保留的最大检测数（默认 300）")
     return parser.parse_args()
 
 
 def main():
-    # 使 configs 中的相对路径（dataset_root / save_dir）基于项目根解析
     os.chdir(PROJECT_ROOT)
 
     args = _parse_args()
-    cfg_dir = PROJECT_ROOT / "configs"
-    train_cfg = _load_yaml(args.train_config or cfg_dir / "train.yaml")
-    model_cfg = _load_yaml(args.model_config or cfg_dir / "model.yaml")
-    dataset_cfg_path = str(args.dataset_config or cfg_dir / "dataset.yaml")
+    train_cfg = _load_yaml(args.train_config)
+    dataset_cfg_path = args.dataset_config
+    dataset_cfg = _load_yaml(dataset_cfg_path)
 
-    seed = int(train_cfg.get("seed", 42))
-    _set_seed(seed)
-    device = _select_device(args.device)
-
-    image_size = (tuple(args.image_size) if args.image_size
-                  else tuple(train_cfg.get("image_size", [640, 640])))
-    batch_size = args.batch_size or int(train_cfg.get("batch_size", 16))
-    num_workers = (args.num_workers if args.num_workers is not None
-                   else int(train_cfg.get("num_workers", 4)))
-    val_ratio = float(train_cfg.get("val_ratio", 0.2))
+    experiment_name = args.experiment or str(
+        train_cfg.get("experiment_name", "urban_multimodal_det_v1"))
+    device = "cpu" if str(args.device).lower() == "cpu" else _resolve_device(train_cfg)
+    _image_size = train_cfg.get("image_size", [640, 640])
+    imgsz = (args.image_size or
+             (int(_image_size[0]) if isinstance(_image_size, (list, tuple)) else int(_image_size)))
+    batch = args.batch_size or int(train_cfg.get("batch_size", 16))
 
     # ---- 权重路径 ----
     if args.weights is None:
         ckpt_cfg = train_cfg.get("checkpoint", {})
         save_dir = PROJECT_ROOT / _resolve_template(
             ckpt_cfg.get("save_dir", "runs/${experiment_name}/weights"), train_cfg)
-        weights_path = save_dir / "best.pth"
+        weights_path = save_dir / "best.pt"
     else:
         weights_path = Path(args.weights)
 
     if not weights_path.exists():
         raise FileNotFoundError(f"权重文件不存在: {weights_path}")
 
-    # ---- 模型 ----
-    model_type = model_cfg.get("model_type", "baseline")
-    model = build_model(model_cfg).to(device)
-    num_classes = model.num_classes
+    # ---- 验证数据 ----
+    data_path = _resolve_val_data(dataset_cfg_path, dataset_cfg, train_cfg)
 
-    # ---- 加载权重（默认优先 EMA，可 --no_ema 强制用原始权重）----
-    ckpt = torch.load(weights_path, map_location=device, weights_only=False)
-    sd_ema = ckpt.get("ema")
-    sd_model = ckpt.get("model")
+    print(f"[evaluate] weights={weights_path}")
+    print(f"[evaluate] data={data_path}")
+    print(f"[evaluate] device={device} imgsz={imgsz} batch={batch}")
 
-    # 选择权重来源；若 EMA 的 BN 运行统计量退化（running_var 恒为 1），
-    # 说明训练期 EMA 未同步 BN buffer（train.py 的已知问题），此时回退到
-    # 仍有有效 BN 统计量的 'model' 权重，否则模型推断会得到退化指标。
-    state_dict = sd_ema if (sd_ema is not None and not args.no_ema) else sd_model
-    source = "ema" if (state_dict is sd_ema) else "model"
-    if state_dict is None:
-        raise ValueError(f"权重文件 {weights_path} 中未找到 'model'/'ema' 字段。")
+    # ---- 加载 best.pt 并验证 ----
+    model = YOLO(str(weights_path))
+    val_kwargs = {
+        "data": data_path,
+        "device": device,
+        "imgsz": imgsz,
+        "batch": batch,
+        "split": "val",
+        "plots": False,
+        "verbose": True,
+    }
+    if args.conf is not None:
+        val_kwargs["conf"] = args.conf
+    if args.iou is not None:
+        val_kwargs["iou"] = args.iou
+    if args.max_det is not None:
+        val_kwargs["max_det"] = args.max_det
 
-    if state_dict is sd_ema and not _bn_initialized(state_dict):
-        if sd_model is not None and _bn_initialized(sd_model):
-            print("[warn] EMA 权重的 BatchNorm 运行统计量处于初值（running_var≈1），"
-                  "疑似训练期 EMA 未同步 BN buffer；已自动回退到 'model' 权重。")
-            state_dict = sd_model
-            source = "model"
-        else:
-            print("[warn] 当前权重 BatchNorm 运行统计量处于初值（running_var≈1），"
-                  "推断结果可能严重退化（mAP≈0）。建议使用 "
-                  "`--weights .../last.pth --no_ema`，或修复 train.py 中 "
-                  "ModelEMA.update 未同步 BN buffer 的问题后重新训练。")
+    metrics = model.val(**val_kwargs)
 
-    try:
-        model.load_state_dict(state_dict, strict=True)
-    except RuntimeError as e:
-        raise RuntimeError(
-            f"权重与当前模型结构不匹配（请确认 model.yaml 与训练时一致）:\n{e}") from e
-    model.eval()
-    epoch = int(ckpt.get("epoch", -1)) + 1
-    best_score = ckpt.get("best_score", None)
-
-    # ---- 验证集（与训练切分一致）----
-    val_loader, n_val = _build_val_loader(
-        dataset_cfg_path, args.dataset_root, image_size, batch_size,
-        num_workers, pin_memory=(device.type == "cuda"),
-        val_ratio=val_ratio, seed=seed)
-
-    # ---- 损失（复用训练口径）----
-    loss_fn = DetectionLoss(num_classes=num_classes, strides=model.strides,
-                            input_size=image_size)
-
-    # ---- 推断 + 指标收集 ----
-    predictions = []     # (img_id, cls, score, xyxy)
-    ground_truths = []   # 每图 list[(cls, xyxy)]
-    total_loss, n, img_id = 0.0, 0, 0
-
-    with torch.no_grad():
-        for batch in val_loader:
-            images = batch["visible"].to(device, non_blocking=True)
-            labels = batch["label"].to(device, non_blocking=True)
-            num_labels = batch["num_labels"].to(device, non_blocking=True)
-
-            # baseline 仅用 visible；fusion 用 visible + infrared + depth 三模态
-            if model_type == "fusion":
-                preds = model(
-                    images,
-                    batch["infrared"].to(device, non_blocking=True),
-                    batch["depth"].to(device, non_blocking=True),
-                )
-            else:
-                preds = model(images)
-            loss = loss_fn(preds, labels, num_labels)
-            total_loss += loss.item() * images.size(0)
-            n += images.size(0)
-
-            # 解码预测
-            batch_dets = postprocess(preds, model.strides,
-                                     args.conf_thres, args.iou_thres, args.max_det)
-            for b in range(images.size(0)):
-                for det in batch_dets[b]:
-                    predictions.append((img_id + b, det[0], det[1], det[2]))
-
-            # 收集 GT（letterbox 归一化坐标 → 640×640 像素 xyxy）
-            H, W = image_size
-            for b in range(images.size(0)):
-                gts = []
-                for k in range(int(num_labels[b].item())):
-                    row = labels[b, k]
-                    if row[0] < 0:                      # padding 哨兵
-                        continue
-                    cls = int(row[0].item())
-                    cx, cy, w, h = row[1].item(), row[2].item(), row[3].item(), row[4].item()
-                    gts.append((cls, np.array(
-                        [(cx - w / 2) * W, (cy - h / 2) * H,
-                         (cx + w / 2) * W, (cy + h / 2) * H], dtype=np.float64)))
-                ground_truths.append(gts)
-
-            img_id += images.size(0)
-
-    val_loss = total_loss / max(n, 1)
-
-    # ---- mAP ----
-    ap_list_50 = compute_ap_list(predictions, ground_truths, num_classes, 0.5)
-    mAP50 = float(np.nanmean(ap_list_50))
-    thr_list = np.arange(0.5, 0.95 + 1e-9, 0.05)
-    mAP5095 = float(np.nanmean([
-        compute_ap_list(predictions, ground_truths, num_classes, t)
-        for t in thr_list
-    ]))
-
-    # ---- 输出 ----
-    dataset_cfg = load_dataset_config(dataset_cfg_path)
-    class_names = dataset_cfg.get("class_names", {})
+    # ---- 提取并展示 ----
+    result = _extract_metrics(metrics)
 
     print("\n" + "=" * 60)
     print("评估结果")
     print("=" * 60)
-    print(f"weights      : {weights_path}")
-    print(f"weight src   : {source} (ema/model)")
-    print(f"epoch        : {epoch if epoch > 0 else 'unknown'}")
-    if best_score is not None:
-        print(f"best_score   : {best_score:.6f} (训练期代理指标, 越大越好)")
-    print(f"device       : {device}")
-    print(f"val samples  : {n_val}")
-    print(f"num preds    : {len(predictions)}")
+    print(f"weights   : {weights_path}")
+    print(f"data      : {data_path}")
+    print(f"device    : {device}")
     print("-" * 60)
-    print(f"val_loss     : {val_loss:.6f}")
-    print(f"mAP@0.5      : {mAP50:.4f}")
-    print(f"mAP@0.5:0.95 : {mAP5095:.4f}")
+    print(f"precision    : {result['precision']:.4f}")
+    print(f"recall       : {result['recall']:.4f}")
+    print(f"mAP@0.5      : {result['mAP50']:.4f}")
+    print(f"mAP@0.5:0.95 : {result['mAP50-95']:.4f}")
     print("-" * 60)
-    print("per-class AP@0.5:")
-    for c in range(num_classes):
-        name = class_names.get(c, str(c))
-        ap = ap_list_50[c]
-        ap_str = f"{ap:.4f}" if np.isfinite(ap) else "n/a (无 GT)"
-        print(f"  {c:>2} {name:<12} {ap_str}")
+    print("per-class (precision / recall / AP@0.5 / AP@0.5:0.95):")
+    for cid, v in result["per_class"].items():
+        def _f(x):
+            return f"{x:.4f}" if isinstance(x, float) else "n/a"
+        print(f"  {cid:>2} {v['name']:<12} {_f(v['precision'])} / {_f(v['recall'])} "
+              f"/ {_f(v['ap50'])} / {_f(v['ap50_95'])}")
     print("=" * 60 + "\n")
+
+    # ---- 保存到 experiments/<experiment>/metrics.json ----
+    payload = {
+        "experiment": experiment_name,
+        "weights": str(weights_path),
+        "data": data_path,
+        "device": device,
+        "imgsz": imgsz,
+        "split": "val",
+        "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "metrics": {k: result[k] for k in ("precision", "recall", "mAP50", "mAP50-95", "fitness")},
+        "per_class": result["per_class"],
+        "speed": result["speed"],
+    }
+    out_path = _save_results(PROJECT_ROOT / "experiments" / experiment_name, payload)
+    print(f"[evaluate] 结果已保存 → {out_path}")
 
 
 if __name__ == "__main__":

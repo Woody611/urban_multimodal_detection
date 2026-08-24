@@ -35,5 +35,10 @@ dependencies:
   - pip
   - pip:
       - ultralytics
+      - timm
+      - einops
+      - efficientnet_pytorch
+      - thop
+      - psutil
       - tqdm
       - scikit-learn
