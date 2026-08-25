@@ -18,7 +18,7 @@
 #   model.train(data="configs/dataset.yaml", ...)
 # ============================================================
 
-ch: 3
+channels: 3
 # Parameters
 nc: 12 # number of classes
 scales: # model compound scaling constants, i.e. 'model=yolo11n.yaml' will call yolo11.yaml with scale 'n'
