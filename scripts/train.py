@@ -97,6 +97,11 @@ def _split_train_val(dataset_cfg, val_ratio: float, seed: int) -> Path:
     已切分过则复用（幂等）。
     """
     src_dir = Path(dataset_cfg["path"]) / str(dataset_cfg["train"])
+    # 标注目录：本项目标签位于 <train父目录>/labels（如 train/labels），
+    # 而非与图像同目录；若不存在则回退到图像同目录（labels 紧邻图像）。
+    labels_src = src_dir.parent / "labels"
+    if not labels_src.is_dir():
+        labels_src = src_dir
     root = PROJECT_ROOT / "data" / "processed" / "visible_split"
     out_yaml = root / "dataset.yaml"
     if out_yaml.exists():
@@ -111,7 +116,8 @@ def _split_train_val(dataset_cfg, val_ratio: float, seed: int) -> Path:
     for p in images:
         split = "val" if p in val_set else "train"
         _link_or_copy(p, root / "images" / split / p.name)
-        _link_or_copy(p.with_suffix(".txt"), root / "labels" / split / p.with_suffix(".txt").name)
+        _link_or_copy(labels_src / p.with_suffix(".txt").name,
+                      root / "labels" / split / p.with_suffix(".txt").name)
 
     yaml.safe_dump(
         {

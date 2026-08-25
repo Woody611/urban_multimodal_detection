@@ -36,7 +36,7 @@
 
 # ---- 数据集根目录 -------------------------------------------
 # ultralytics 建议使用绝对路径 (相对路径会相对其 datasets_dir 解析)。
-path: "C:/Users/30298/Desktop/Urban-Multimodal-Detection/data/raw"
+path: "d:/gyt/AIC/urban_multimodal_detection/data/raw"
 
 # ---- 划分路径 (relative to `path`, 均指向 visible 主输入) ------
 train: train/visible          # 训练集 (可见光, 主输入)
