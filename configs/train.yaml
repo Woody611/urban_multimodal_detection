@@ -5,7 +5,7 @@
 # ============================================================
 
 # ---- Experiment ----------------------------------------------
-experiment_name: "urban_multimodal_det_v1"
+experiment_name: "urban_multimodal_det_yolo11_rgb_baseline"
 seed: 42
 
 # ---- Device --------------------------------------------------
