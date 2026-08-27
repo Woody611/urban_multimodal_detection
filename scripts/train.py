@@ -1,24 +1,37 @@
-"""scripts/train.py — Visible 单模态 Baseline 训练入口（YOLOv11 / ultralytics）。
+"""scripts/train.py — YOLOv11 / YOLOv11-RGBT 训练入口（ultralytics）。
 
 职责：读取 configs/{train,dataset}.yaml → 映射为 ultralytics YOLO.train() 参数 →
-调用 YOLO("configs/yolo11_visible.yaml").train(...) 完成训练。
+调用 YOLO("<model yaml>").train(...) 完成训练。
+
+支持两种模式（由 train.yaml 的 use_simotm 决定）:
+    - visible 单模态 (use_simotm=SimOTMBBS, 默认) → configs/yolo11_visible.yaml +
+      data/processed/visible_split/dataset.yaml
+    - RGBT 双模态 (use_simotm=RGBT) → configs/yolo11_rgbt.yaml (ch=4) +
+      data/processed/rgbt_split/dataset.yaml
 
 不再实现自定义训练循环；训练 / 验证 / checkpoint / EMA / AMP / 学习率调度等
 全部交给 ultralytics 框架处理。
 
 用法:
+    # RGB baseline（单模态）
     python scripts/train.py
     python scripts/train.py --model_config configs/yolo11_visible.yaml \
                             --train_config configs/train.yaml \
                             --dataset_config configs/dataset.yaml
+    # Experiment C: RGBT 双模态
+    python scripts/train.py --model_config configs/yolo11_rgbt.yaml \
+                            --train_config configs/train_rgbt.yaml \
+                            --dataset_config configs/dataset.yaml
 
 说明:
     - 当前数据无独立 val（dataset.yaml 的 val 指向无标注的 test/visible，会恒得
-      mAP=0），故按 train.yaml 的 val_ratio 从 train 切分出带标注的 val 集，
-      生成 data/processed/visible_split/dataset.yaml 作为训练 data。
+      mAP=0），故按 train.yaml 的 val_ratio 从 train 切分出带标注的 val 集：
+      visible 模式生成 data/processed/visible_split/dataset.yaml，
+      RGBT 模式生成 data/processed/rgbt_split/dataset.yaml（visible+infrared 配对）。
     - checkpoint 由 ultralytics 保存到 project/name/weights/{last,best,epoch_*}.pt，
       与 train.yaml 的 checkpoint.save_dir（runs/${experiment_name}/weights）对应。
-    - 不涉及 infrared / depth / fusion，仅 visible 单模态。
+    - 多模态参数 use_simotm / pairs_rgb_ir 由 train.yaml 传入，显式覆盖 ultralytics
+      默认的 SimOTMBBS（3ch），保证 RGBT 实验真正以 4ch [B,G,R,IR] 输入训练。
 """
 from __future__ import annotations
 
@@ -134,6 +147,66 @@ def _split_train_val(dataset_cfg, val_ratio: float, seed: int) -> Path:
     return out_yaml
 
 
+def _split_train_val_rgbt(dataset_cfg, val_ratio: float, seed: int) -> Path:
+    """为 RGBT 双模态切分独立数据，返回 data/processed/rgbt_split/dataset.yaml。
+
+    布局（满足 YOLOv11-RGBT fork 的两条读取约定）:
+      rgbt_split/
+        images/{train,val}/visible/     # 可见光主输入（含 'visible'）
+        images/{train,val}/infrared/    # 红外第二模态（与 visible 同名）
+        labels/{train,val}/visible/     # 标注（与 visible 同名，.txt）
+    约定 1（第二模态路径）: base.py 用 file_path.replace('visible','infrared')
+        得到红外图 → 需 images/{split}/infrared/ 与 images/{split}/visible/ 同名。
+    约定 2（标注路径）: utils.py 的 img2label_paths 把 /images/ 替换为 /labels/
+        再改扩展名为 .txt → 需 labels/{split}/visible/*.txt。
+
+    与 visible_split 使用相同 seed + val_ratio，保证 RGBT 与 RGB baseline 的
+    train/val 划分完全一致、无数据泄漏。已切分过则复用（幂等）。
+    """
+    src_dir = Path(dataset_cfg["path"]) / str(dataset_cfg["train"])  # train/visible
+    infrared_src = src_dir.parent / "infrared"                        # train/infrared
+    labels_src = src_dir.parent / "labels"                            # train/labels
+    if not labels_src.is_dir():
+        labels_src = src_dir
+    if not infrared_src.is_dir():
+        raise FileNotFoundError(f"红外目录不存在，无法生成 RGBT split: {infrared_src}")
+
+    root = PROJECT_ROOT / "data" / "processed" / "rgbt_split"
+    out_yaml = root / "dataset.yaml"
+    if out_yaml.exists():
+        return out_yaml
+
+    images = sorted(p for p in src_dir.iterdir() if p.suffix.lower() in IMG_EXTS)
+    rng = random.Random(seed)
+    rng.shuffle(images)
+    n_val = max(1, int(round(len(images) * val_ratio)))
+    val_set = set(images[:n_val])
+
+    for p in images:
+        split = "val" if p in val_set else "train"
+        # visible 主输入
+        _link_or_copy(p, root / "images" / split / "visible" / p.name)
+        # infrared 第二模态（同名）
+        _link_or_copy(infrared_src / p.name, root / "images" / split / "infrared" / p.name)
+        # 标注（images→labels 替换约定 → labels/{split}/visible/*.txt）
+        _link_or_copy(labels_src / p.with_suffix(".txt").name,
+                      root / "labels" / split / "visible" / p.with_suffix(".txt").name)
+
+    yaml.safe_dump(
+        {
+            "path": str(root),
+            "train": "images/train/visible",
+            "val": "images/val/visible",
+            "nc": dataset_cfg.get("nc", 12),
+            "names": dataset_cfg.get("names"),
+        },
+        open(out_yaml, "w", encoding="utf-8"),
+        allow_unicode=True,
+    )
+    print(f"[data] 已从 train 切分 RGBT val（val_ratio={val_ratio}）→ {out_yaml}")
+    return out_yaml
+
+
 # ============================================================
 # train.yaml → ultralytics 参数映射
 # ============================================================
@@ -156,6 +229,7 @@ def _build_train_kwargs(train_cfg, data_path):
     kwargs = {
         "data": str(data_path),
         "epochs": int(train_cfg.get("epochs", 300)),
+        "patience": int(train_cfg.get("patience", 100)),
         "batch": int(train_cfg.get("batch_size", 16)),
         "imgsz": imgsz,
         "device": _resolve_device(train_cfg),
@@ -178,6 +252,12 @@ def _build_train_kwargs(train_cfg, data_path):
         kwargs["momentum"] = float(opt["momentum"])
     if opt.get("weight_decay") is not None:
         kwargs["weight_decay"] = float(opt["weight_decay"])
+
+    # 多模态: 显式传递 use_simotm / pairs_rgb_ir。
+    # ultralytics 默认 use_simotm=SimOTMBBS（灰度+模糊合并为 3ch）；RGBT 实验必须
+    # 显式覆盖为 RGBT，否则训练/验证会回落到默认 3ch 加载，导致 4ch 模型输入错位。
+    kwargs["use_simotm"] = str(train_cfg.get("use_simotm", "SimOTMBBS"))
+    kwargs["pairs_rgb_ir"] = list(train_cfg.get("pairs_rgb_ir", ["visible", "infrared"]))
 
     return kwargs
 
@@ -209,9 +289,15 @@ def main():
     # ---- data: 无标注 val 时按 val_ratio 切分 train，否则直接用原 dataset.yaml ----
     data_path = dataset_cfg_path
     val_ratio = float(train_cfg.get("val_ratio", 0.0))
+    use_simotm = str(train_cfg.get("use_simotm", "SimOTMBBS"))
     if val_ratio > 0 and not _val_has_labels(dataset_cfg):
-        data_path = str(_split_train_val(
-            dataset_cfg, val_ratio, int(train_cfg.get("seed", 42))))
+        if use_simotm == "RGBT":
+            # RGBT: 独立切分，生成 visible+infrared 配对的 rgbt_split（不碰 visible_split）
+            data_path = str(_split_train_val_rgbt(
+                dataset_cfg, val_ratio, int(train_cfg.get("seed", 42))))
+        else:
+            data_path = str(_split_train_val(
+                dataset_cfg, val_ratio, int(train_cfg.get("seed", 42))))
 
     kwargs = _build_train_kwargs(train_cfg, data_path)
 
@@ -227,6 +313,8 @@ def main():
 
     print(f"[train] model={model_path}")
     print(f"[train] data={data_path}")
+    print(f"[train] use_simotm={kwargs.get('use_simotm')} "
+          f"pairs_rgb_ir={kwargs.get('pairs_rgb_ir')}")
     print(f"[train] device={kwargs['device']} epochs={kwargs['epochs']} "
           f"batch={kwargs['batch']} imgsz={kwargs['imgsz']} "
           f"opt={kwargs['optimizer']} cos_lr={kwargs.get('cos_lr', False)}")
