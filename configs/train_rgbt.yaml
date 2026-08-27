@@ -1,11 +1,17 @@
 # ============================================================
-# Urban Multi-Modal Object Detection — Training Configuration
+# Urban Multi-Modal Object Detection — RGBT 训练配置
 # ============================================================
-# 由 scripts/train.py 读取，配合 dataset.yaml / model.yaml 使用
+# Experiment C：RGB + Infrared 双模态。
+# 基于 configs/train.yaml，仅改动实验名与多模态字段：
+#   experiment_name -> urban_multimodal_det_yolo11_rgbt
+#   use_simotm      -> RGBT
+#   pairs_rgb_ir    -> [visible, infrared]
+# 其余超参数与 RGB baseline 完全一致（epochs/patience/batch/lr/optimizer/scheduler/seed）。
+# 由 scripts/train.py 读取，配合 dataset.yaml / yolo11_rgbt.yaml 使用。
 # ============================================================
 
 # ---- Experiment ----------------------------------------------
-experiment_name: "urban_multimodal_det_yolo11_rgb_baseline"
+experiment_name: "urban_multimodal_det_yolo11_rgbt"
 seed: 42
 
 # ---- Device --------------------------------------------------
@@ -13,7 +19,7 @@ device: "cuda"                       # cuda | cpu
 gpu_ids: [0]                         # 单卡: [0]; 多卡: [0,1,2,3]
 
 # ---- Training hyperparameters --------------------------------
-epochs: 200                           # B1: 300 -> 200 抑制过拟合
+epochs: 200                           # 与 RGB baseline 一致
 patience: 30                          # 早停: 连续 30 epoch 无提升则停止
 batch_size: 16
 image_size: [640, 640]               # [height, width]
@@ -60,9 +66,9 @@ ema:
 val_interval: 1                       # 每 N 个 epoch 验证一次
 val_ratio: 0.2                        # 无独立 val 时，从 train 切分的验证集比例
 
-# ---- 多模态 (单模态 visible baseline 使用默认 SimOTMBBS) -------
-use_simotm: "SimOTMBBS"               # SimOTMBBS = 灰度+3x3 模糊合并为 3ch（RGB baseline）
-pairs_rgb_ir: ["visible", "infrared"] # 仅 RGBT 实验使用；visible 单模态下此字段不生效
+# ---- 多模态 (RGBT) --------------------------------------------
+use_simotm: "RGBT"                    # RGBT = 4ch [B,G,R,IR]; 默认 SimOTMBBS 为 3ch
+pairs_rgb_ir: ["visible", "infrared"] # visible 主输入 -> infrared 第二模态
 
 # ---- Evaluation metrics --------------------------------------
 evaluation_metric:

@@ -1,4 +1,4 @@
-"""scripts/evaluate.py — 模型评估入口（YOLOv11 / ultralytics）。
+"""scripts/evaluate.py — 模型评估入口（YOLOv11 / YOLOv11-RGBT）。
 
 职责：加载训练好的 best.pt → 调用 ultralytics 的 ``model.val()`` 在验证集上评估
 → 输出 mAP@0.5 / mAP@0.5:0.95 / precision / recall（及各类别指标），并把结果
@@ -10,12 +10,19 @@
     python scripts/evaluate.py
     python scripts/evaluate.py --weights runs/urban_multimodal_det_v1/weights/best.pt
     python scripts/evaluate.py --device cpu --experiment baseline
+    # RGBT 双模态 best.pt 验证（use_simotm 默认取 train_rgbt.yaml）
+    python scripts/evaluate.py --weights runs/urban_multimodal_det_yolo11_rgbt/weights/best.pt \
+                               --train_config configs/train_rgbt.yaml
 
 说明:
     - 默认权重取 train.yaml checkpoint.save_dir/best.pt（与 train.py 一致）。
-    - 验证集与训练一致：复用 data/processed/visible_split/dataset.yaml（由
-      train.py 按 val_ratio + seed 切分生成）；若不存在则按相同逻辑生成，
-      保证与训练期验证划分完全相同、无数据泄漏。
+    - 验证集与训练一致：复用 data/processed/{visible_split,rgbt_split}/dataset.yaml
+      （由 train.py 按 val_ratio + seed 切分生成）；RGBT 实验（use_simotm=RGBT）
+      复用 rgbt_split，其余复用 visible_split，保证与训练期验证划分完全相同、
+      无数据泄漏。
+    - 多模态参数 use_simotm / pairs_rgb_ir 显式传入 model.val()（ultralytics 的
+      _reset_ckpt_args 不会从 checkpoint 恢复这两个字段，默认回落 SimOTMBBS），
+      否则 RGBT best.pt 会按 3ch 加载导致输入错位。
     - 结果保存到 experiments/<experiment_name>/metrics.json（按 experiments/README.md
       规范），并同步打印到终端。
 """
@@ -44,10 +51,12 @@ from scripts.train import (  # noqa: E402
     _resolve_device,
     _resolve_template,
     _split_train_val,
+    _split_train_val_rgbt,
     _val_has_labels,
 )
 
 SPLIT_YAML = "data/processed/visible_split/dataset.yaml"
+SPLIT_YAML_RGBT = "data/processed/rgbt_split/dataset.yaml"
 
 
 # ============================================================
@@ -72,11 +81,17 @@ def _to_py(v):
 
 
 def _resolve_val_data(dataset_cfg_path: str, dataset_cfg: dict,
-                      train_cfg: dict) -> str:
-    """确定验证数据 yaml：优先复用训练切分，必要时按相同逻辑生成。"""
+                      train_cfg: dict, use_simotm: str = "SimOTMBBS") -> str:
+    """确定验证数据 yaml：优先复用训练切分，必要时按相同逻辑生成。
+
+    RGBT 实验（use_simotm=RGBT）复用 rgbt_split，否则复用 visible_split，
+    保证验证数据与训练期完全一致、无数据泄漏。
+    """
+    split_yaml = SPLIT_YAML_RGBT if use_simotm == "RGBT" else SPLIT_YAML
+
     # 1) 训练期已生成的切分直接复用（保证与训练验证集一致）
-    if Path(SPLIT_YAML).exists():
-        return SPLIT_YAML
+    if Path(split_yaml).exists():
+        return split_yaml
 
     # 2) dataset.yaml 的 val 本身有标注则直接用
     if _val_has_labels(dataset_cfg):
@@ -88,6 +103,9 @@ def _resolve_val_data(dataset_cfg_path: str, dataset_cfg: dict,
         # 无标注 val 且不切分 → 直接评估原 val（会恒得 mAP=0）
         print("[warn] val 无标注且 val_ratio<=0，将直接评估 dataset.yaml 的 val。")
         return dataset_cfg_path
+    if use_simotm == "RGBT":
+        return str(_split_train_val_rgbt(dataset_cfg, val_ratio,
+                                         int(train_cfg.get("seed", 42))))
     return str(_split_train_val(dataset_cfg, val_ratio,
                                 int(train_cfg.get("seed", 42))))
 
@@ -173,6 +191,10 @@ def _parse_args():
                         help="NMS 的 IoU 阈值（默认 ultralytics 的 0.7）")
     parser.add_argument("--max_det", type=int, default=None,
                         help="每张图保留的最大检测数（默认 300）")
+    parser.add_argument("--use_simotm", type=str, default=None,
+                        help="多模态模式；默认取 train_config 的 use_simotm（SimOTMBBS/RGBT）")
+    parser.add_argument("--pairs_rgb_ir", type=str, default=None,
+                        help="第二模态映射 'a,b'；默认取 train_config 的 pairs_rgb_ir")
     return parser.parse_args()
 
 
@@ -204,11 +226,19 @@ def main():
     if not weights_path.exists():
         raise FileNotFoundError(f"权重文件不存在: {weights_path}")
 
+    # ---- 多模态参数：显式覆盖（否则 val 会回落 SimOTMBBS 默认 3ch） ----
+    use_simotm = args.use_simotm or str(train_cfg.get("use_simotm", "SimOTMBBS"))
+    if args.pairs_rgb_ir:
+        pairs_rgb_ir = [x.strip() for x in args.pairs_rgb_ir.split(",")]
+    else:
+        pairs_rgb_ir = list(train_cfg.get("pairs_rgb_ir", ["visible", "infrared"]))
+
     # ---- 验证数据 ----
-    data_path = _resolve_val_data(dataset_cfg_path, dataset_cfg, train_cfg)
+    data_path = _resolve_val_data(dataset_cfg_path, dataset_cfg, train_cfg, use_simotm)
 
     print(f"[evaluate] weights={weights_path}")
     print(f"[evaluate] data={data_path}")
+    print(f"[evaluate] use_simotm={use_simotm} pairs_rgb_ir={pairs_rgb_ir}")
     print(f"[evaluate] device={device} imgsz={imgsz} batch={batch}")
 
     # ---- 加载 best.pt 并验证 ----
@@ -221,6 +251,8 @@ def main():
         "split": "val",
         "plots": False,
         "verbose": True,
+        "use_simotm": use_simotm,
+        "pairs_rgb_ir": pairs_rgb_ir,
     }
     if args.conf is not None:
         val_kwargs["conf"] = args.conf
