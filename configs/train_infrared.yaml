@@ -1,0 +1,120 @@
+# ============================================================
+# Urban Multi-Modal Object Detection — Infrared 单模态训练配置
+# ============================================================
+# Experiment E：Infrared 红外单模态（复制为 3 通道输入）。
+# 基于 configs/train_depth.yaml，改动实验名 / 多模态字段 / 红外专用超参。
+# 由 scripts/train.py 读取，配合 dataset.yaml / yolo11_visible.yaml（ch=3）使用。
+#
+# Infrared 加载规则（ultralytics/data/{base,dataset,loaders}.py 的 use_simotm=='Infrared' 分支）:
+#   - 读取红外图（IMREAD_UNCHANGED），8-bit/16-bit 自动适配
+#   - 取单通道，统一到 uint8 [0,255]（关键：本 fork 的增强管线对非 16bit 模态用
+#     dtype=np.uint8，trainer 端做 `.float()/255`；返回 float32 [0,1] 会被 Mosaic 截断
+#     为 {0,1}、再在 trainer 端除 255 变 [0,0.004]，导致训练失效）
+#   - 1%/99% 分位数对比度拉伸（增强红外低对比度区域边缘）
+#   - 单通道复制为 3 通道后输入标准 3ch 模型
+# ============================================================
+
+# ---- Experiment ----------------------------------------------
+experiment_name: "urban_multimodal_det_yolo11_infrared"
+seed: 42
+
+# ---- Pretrain -------------------------------------------------
+pretrained: true                     # true=ImageNet 预训练（推荐）；false=从头训练（消融）
+
+# ---- Device --------------------------------------------------
+device: "cuda"                       # cuda | cpu
+gpu_ids: [0]                         # 单卡: [0]; 多卡: [0,1,2,3]
+
+# ---- Training hyperparameters --------------------------------
+epochs: 200
+patience: 30                         # 早停: 连续 30 epoch 无提升则停止
+batch_size: 16
+image_size: [640, 640]               # [height, width]
+num_workers: 4
+
+# ---- Learning rate -------------------------------------------
+learning_rate: 5.0e-3                # 红外域偏移大，用 RGB 的一半，保护预训练 backbone
+warmup_epochs: 5                     # 更长的 warmup，平稳起步
+warmup_start_lr: 1.0e-6
+min_lr_ratio: 0.01                   # 最终 lr = base_lr × min_lr_ratio
+
+# ---- Data augmentation (红外专用，可插入/注释掉做消融) ---------
+# 说明：红外是灰度图，Hue/Saturation 增强无意义（置 0）；保留亮度(V) 与几何增强。
+aug:
+  hsv_h: 0.0                         # 灰度图无 Hue，关闭
+  hsv_s: 0.0                         # 灰度图无 Saturation，关闭
+  hsv_v: 0.3                         # 亮度增强（红外增益漂移），略低于 RGB 默认 0.4
+  degrees: 0.0                       # 旋转（沿用 RGB 默认）
+  translate: 0.1                     # 平移
+  scale: 0.5                         # 缩放
+  shear: 0.0                         # 剪切
+  perspective: 0.0                   # 透视
+  flipud: 0.0                        # 上下翻转
+  fliplr: 0.5                        # 左右翻转（目标检测关键增强，保留）
+  mosaic: 0.5                        # 降低 mosaic（低纹理红外对强 mosaic 敏感，1.0 -> 0.5）
+  mixup: 0.0                         # mixup 对灰度红外是噪声，保持关闭
+  copy_paste: 0.0                    # 复制粘贴增强关闭
+  erasing: 0.4                       # 随机擦除（沿用默认）
+  close_mosaic: 10                   # 最后 10 epoch 关闭 mosaic（沿用默认）
+
+# ---- Optimizer -----------------------------------------------
+optimizer:
+  type: "SGD"                        # SGD | Adam | AdamW
+  momentum: 0.937
+  weight_decay: 5.0e-4
+  nesterov: true
+  # ---- 参数分组学习率缩放 -----------------------------------
+  param_lr_scales:
+    backbone: 0.1                    # backbone lr = base_lr × 0.1
+    neck: 1.0
+    head: 1.0
+    fusion: 1.0                      # 融合模块 (仅 fusion 模型)
+
+# ---- Scheduler -----------------------------------------------
+scheduler:
+  type: "CosineAnnealingLR"          # CosineAnnealingLR | StepLR | MultiStepLR | OneCycleLR
+  step_size: 30                      # StepLR 用
+  milestones: [150, 225, 275]        # MultiStepLR 用
+  gamma: 0.1                         # StepLR / MultiStepLR 衰减倍率
+
+# ---- Mixed precision -----------------------------------------
+amp: true                            # Automatic Mixed Precision (FP16)
+
+# ---- Gradient ------------------------------------------------
+grad_clip_max_norm: 10.0
+
+# ---- EMA (Exponential Moving Average) ------------------------
+ema:
+  enabled: true
+  decay: 0.9999
+
+# ---- Validation ----------------------------------------------
+val_interval: 1                      # 每 N 个 epoch 验证一次
+val_ratio: 0.2                       # 无独立 val 时，从 train 切分的验证集比例
+
+# ---- 多模态 (Infrared 单模态) ---------------------------------
+use_simotm: "Infrared"               # Infrared = 红外图复制为 3ch; 默认 SimOTMBBS 为 3ch
+pairs_rgb_ir: ["visible", "infrared"] # visible 主输入 -> infrared 第二模态（路径替换读取红外图）
+
+# ---- Evaluation metrics --------------------------------------
+evaluation_metric:
+  - "mAP_0.5"                        # mAP @ IoU=0.5
+  - "mAP_0.5:0.95"                   # mAP @ IoU=0.5:0.05:0.95 (COCO 主指标)
+
+# ---- Checkpoint ----------------------------------------------
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10                  # 每 N 个 epoch 保存一次
+  save_best: true                    # 保存最佳模型
+  best_metric: "mAP_0.5:0.95"        # 最佳模型评判指标
+  save_last: true                    # 保存最新 checkpoint (断点续训)
+  max_keep: 5                        # 最多保留 checkpoint 数量
+  resume: false                      # 从 checkpoint 恢复训练
+  resume_path: ""                    # 留空则自动查找 save_dir/last.pth
+
+# ---- Logging -------------------------------------------------
+log_dir: "runs/${experiment_name}/logs"
+log_interval: 50                     # 每 N 个 iteration 打印终端日志
+tensorboard:
+  enabled: true
+  log_dir: "runs/${experiment_name}/tensorboard"

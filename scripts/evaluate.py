@@ -52,11 +52,13 @@ from scripts.train import (  # noqa: E402
     _resolve_template,
     _split_train_val,
     _split_train_val_rgbt,
+    _split_train_val_rgbid,
     _val_has_labels,
 )
 
 SPLIT_YAML = "data/processed/visible_split/dataset.yaml"
 SPLIT_YAML_RGBT = "data/processed/rgbt_split/dataset.yaml"
+SPLIT_YAML_RGBID = "data/processed/rgbid_split/dataset.yaml"
 
 
 # ============================================================
@@ -87,7 +89,12 @@ def _resolve_val_data(dataset_cfg_path: str, dataset_cfg: dict,
     RGBT 实验（use_simotm=RGBT）复用 rgbt_split，否则复用 visible_split，
     保证验证数据与训练期完全一致、无数据泄漏。
     """
-    split_yaml = SPLIT_YAML_RGBT if use_simotm == "RGBT" else SPLIT_YAML
+    if use_simotm == "RGBID":
+        split_yaml = SPLIT_YAML_RGBID
+    elif use_simotm == "RGBT":
+        split_yaml = SPLIT_YAML_RGBT
+    else:
+        split_yaml = SPLIT_YAML
 
     # 1) 训练期已生成的切分直接复用（保证与训练验证集一致）
     if Path(split_yaml).exists():
@@ -103,6 +110,9 @@ def _resolve_val_data(dataset_cfg_path: str, dataset_cfg: dict,
         # 无标注 val 且不切分 → 直接评估原 val（会恒得 mAP=0）
         print("[warn] val 无标注且 val_ratio<=0，将直接评估 dataset.yaml 的 val。")
         return dataset_cfg_path
+    if use_simotm == "RGBID":
+        return str(_split_train_val_rgbid(dataset_cfg, val_ratio,
+                                          int(train_cfg.get("seed", 42))))
     if use_simotm == "RGBT":
         return str(_split_train_val_rgbt(dataset_cfg, val_ratio,
                                          int(train_cfg.get("seed", 42))))
@@ -195,6 +205,8 @@ def _parse_args():
                         help="多模态模式；默认取 train_config 的 use_simotm（SimOTMBBS/RGBT）")
     parser.add_argument("--pairs_rgb_ir", type=str, default=None,
                         help="第二模态映射 'a,b'；默认取 train_config 的 pairs_rgb_ir")
+    parser.add_argument("--pairs_rgb_depth", type=str, default=None,
+                        help="深度第三模态映射 'a,b'（RGBID 用）；默认取 train_config 的 pairs_rgb_depth")
     return parser.parse_args()
 
 
@@ -232,13 +244,21 @@ def main():
         pairs_rgb_ir = [x.strip() for x in args.pairs_rgb_ir.split(",")]
     else:
         pairs_rgb_ir = list(train_cfg.get("pairs_rgb_ir", ["visible", "infrared"]))
+    if args.pairs_rgb_depth:
+        pairs_rgb_depth = [x.strip() for x in args.pairs_rgb_depth.split(",")]
+    else:
+        pairs_rgb_depth = list(train_cfg.get("pairs_rgb_depth", ["visible", "depth"]))
+    # 输入通道数：5ch(RGBID)/4ch(RGBT) 等模型必须匹配，否则 val 的 warmup 占位张量
+    # 按默认 3ch 构造，导致第一个卷积输入通道错位报错。
+    channels = int(train_cfg.get("channels", 3))
 
     # ---- 验证数据 ----
     data_path = _resolve_val_data(dataset_cfg_path, dataset_cfg, train_cfg, use_simotm)
 
     print(f"[evaluate] weights={weights_path}")
     print(f"[evaluate] data={data_path}")
-    print(f"[evaluate] use_simotm={use_simotm} pairs_rgb_ir={pairs_rgb_ir}")
+    print(f"[evaluate] use_simotm={use_simotm} pairs_rgb_ir={pairs_rgb_ir} "
+          f"pairs_rgb_depth={pairs_rgb_depth} channels={channels}")
     print(f"[evaluate] device={device} imgsz={imgsz} batch={batch}")
 
     # ---- 加载 best.pt 并验证 ----
@@ -253,6 +273,8 @@ def main():
         "verbose": True,
         "use_simotm": use_simotm,
         "pairs_rgb_ir": pairs_rgb_ir,
+        "pairs_rgb_depth": pairs_rgb_depth,
+        "channels": channels,
     }
     if args.conf is not None:
         val_kwargs["conf"] = args.conf

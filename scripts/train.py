@@ -103,13 +103,24 @@ def _link_or_copy(src: Path, dst: Path) -> None:
         shutil.copy2(src, dst)
 
 
+def _resolve_raw_root(dataset_cfg) -> Path:
+    """返回可移植的原始数据根目录（data/raw）。
+
+    dataset.yaml 的 path 字段可能是平台相关的绝对路径（如 Windows 下的
+    d:/gyt/.../data/raw），在 Linux 上不存在。这里优先使用配置的 path；若该目录
+    不存在则回退到项目根目录下的 data/raw，避免硬编码平台相关路径。
+    """
+    cfg_root = Path(dataset_cfg.get("path", ""))
+    return cfg_root if cfg_root.is_dir() else PROJECT_ROOT / "data" / "raw"
+
+
 def _split_train_val(dataset_cfg, val_ratio: float, seed: int) -> Path:
     """从 train 切分出带标注的 val 集，返回生成的 dataset yaml 路径。
 
     采用 ultralytics 约定布局: <root>/images/{train,val} + <root>/labels/{train,val}。
     已切分过则复用（幂等）。
     """
-    src_dir = Path(dataset_cfg["path"]) / str(dataset_cfg["train"])
+    src_dir = _resolve_raw_root(dataset_cfg) / str(dataset_cfg["train"])
     # 标注目录：本项目标签位于 <train父目录>/labels（如 train/labels），
     # 而非与图像同目录；若不存在则回退到图像同目录（labels 紧邻图像）。
     labels_src = src_dir.parent / "labels"
@@ -163,7 +174,7 @@ def _split_train_val_rgbt(dataset_cfg, val_ratio: float, seed: int) -> Path:
     与 visible_split 使用相同 seed + val_ratio，保证 RGBT 与 RGB baseline 的
     train/val 划分完全一致、无数据泄漏。已切分过则复用（幂等）。
     """
-    src_dir = Path(dataset_cfg["path"]) / str(dataset_cfg["train"])  # train/visible
+    src_dir = _resolve_raw_root(dataset_cfg) / str(dataset_cfg["train"])  # train/visible
     infrared_src = src_dir.parent / "infrared"                        # train/infrared
     labels_src = src_dir.parent / "labels"                            # train/labels
     if not labels_src.is_dir():
@@ -204,6 +215,119 @@ def _split_train_val_rgbt(dataset_cfg, val_ratio: float, seed: int) -> Path:
         allow_unicode=True,
     )
     print(f"[data] 已从 train 切分 RGBT val（val_ratio={val_ratio}）→ {out_yaml}")
+    return out_yaml
+
+
+def _split_train_val_depth(dataset_cfg, val_ratio: float, seed: int) -> Path:
+    """为 Depth 单模态切分独立数据，返回 data/processed/depth_split/dataset.yaml。
+
+    布局（与 RGBT split 相同约定，第二模态换成 depth）:
+      depth_split/
+        images/{train,val}/visible/     # 可见光主输入（含 'visible'）
+        images/{train,val}/depth/       # 深度第二模态（与 visible 同名）
+        labels/{train,val}/visible/     # 标注（与 visible 同名，.txt）
+    Depth 分支用 file_path.replace('visible','depth') 得到深度图 → 需
+    images/{split}/depth/ 与 images/{split}/visible/ 同名。
+    使用相同 seed + val_ratio，保证与 RGB baseline 划分一致、无数据泄漏。
+    """
+    src_dir = _resolve_raw_root(dataset_cfg) / str(dataset_cfg["train"])  # train/visible
+    depth_src = src_dir.parent / "depth"                             # train/depth
+    labels_src = src_dir.parent / "labels"                           # train/labels
+    if not labels_src.is_dir():
+        labels_src = src_dir
+    if not depth_src.is_dir():
+        raise FileNotFoundError(f"深度目录不存在，无法生成 Depth split: {depth_src}")
+
+    root = PROJECT_ROOT / "data" / "processed" / "depth_split"
+    out_yaml = root / "dataset.yaml"
+    if out_yaml.exists():
+        return out_yaml
+
+    images = sorted(p for p in src_dir.iterdir() if p.suffix.lower() in IMG_EXTS)
+    rng = random.Random(seed)
+    rng.shuffle(images)
+    n_val = max(1, int(round(len(images) * val_ratio)))
+    val_set = set(images[:n_val])
+
+    for p in images:
+        split = "val" if p in val_set else "train"
+        # visible 主输入
+        _link_or_copy(p, root / "images" / split / "visible" / p.name)
+        # depth 第二模态（同名）
+        _link_or_copy(depth_src / p.name, root / "images" / split / "depth" / p.name)
+        # 标注（images→labels 替换约定 → labels/{split}/visible/*.txt）
+        _link_or_copy(labels_src / p.with_suffix(".txt").name,
+                      root / "labels" / split / "visible" / p.with_suffix(".txt").name)
+
+    yaml.safe_dump(
+        {
+            "path": str(root),
+            "train": "images/train/visible",
+            "val": "images/val/visible",
+            "nc": dataset_cfg.get("nc", 12),
+            "names": dataset_cfg.get("names"),
+        },
+        open(out_yaml, "w", encoding="utf-8"),
+        allow_unicode=True,
+    )
+    print(f"[data] 已从 train 切分 Depth val（val_ratio={val_ratio}）→ {out_yaml}")
+    return out_yaml
+
+
+def _split_train_val_rgbid(dataset_cfg, val_ratio: float, seed: int) -> Path:
+    """为 RGBID 三模态（RGB+IR+Depth）切分独立数据，返回 data/processed/rgbid_split/dataset.yaml。
+
+    布局（RGBID 5ch 融合用；第二/第三模态分别靠 'visible'→'infrared' / 'visible'→'depth'
+    路径替换读取，因此三目录必须同名）:
+      rgbid_split/
+        images/{train,val}/visible/     # 可见光主输入（含 'visible'）
+        images/{train,val}/infrared/    # 红外第二模态（与 visible 同名）
+        images/{train,val}/depth/       # 深度第三模态（与 visible 同名）
+        labels/{train,val}/visible/     # 标注（与 visible 同名，.txt）
+    使用相同 seed + val_ratio，保证与 RGB baseline 划分一致、无数据泄漏。幂等。
+    """
+    src_dir = _resolve_raw_root(dataset_cfg) / str(dataset_cfg["train"])  # train/visible
+    infrared_src = src_dir.parent / "infrared"                        # train/infrared
+    depth_src = src_dir.parent / "depth"                             # train/depth
+    labels_src = src_dir.parent / "labels"                           # train/labels
+    if not labels_src.is_dir():
+        labels_src = src_dir
+    if not infrared_src.is_dir():
+        raise FileNotFoundError(f"红外目录不存在，无法生成 RGBID split: {infrared_src}")
+    if not depth_src.is_dir():
+        raise FileNotFoundError(f"深度目录不存在，无法生成 RGBID split: {depth_src}")
+
+    root = PROJECT_ROOT / "data" / "processed" / "rgbid_split"
+    out_yaml = root / "dataset.yaml"
+    if out_yaml.exists():
+        return out_yaml
+
+    images = sorted(p for p in src_dir.iterdir() if p.suffix.lower() in IMG_EXTS)
+    rng = random.Random(seed)
+    rng.shuffle(images)
+    n_val = max(1, int(round(len(images) * val_ratio)))
+    val_set = set(images[:n_val])
+
+    for p in images:
+        split = "val" if p in val_set else "train"
+        _link_or_copy(p, root / "images" / split / "visible" / p.name)
+        _link_or_copy(infrared_src / p.name, root / "images" / split / "infrared" / p.name)
+        _link_or_copy(depth_src / p.name, root / "images" / split / "depth" / p.name)
+        _link_or_copy(labels_src / p.with_suffix(".txt").name,
+                      root / "labels" / split / "visible" / p.with_suffix(".txt").name)
+
+    yaml.safe_dump(
+        {
+            "path": str(root),
+            "train": "images/train/visible",
+            "val": "images/val/visible",
+            "nc": dataset_cfg.get("nc", 12),
+            "names": dataset_cfg.get("names"),
+        },
+        open(out_yaml, "w", encoding="utf-8"),
+        allow_unicode=True,
+    )
+    print(f"[data] 已从 train 切分 RGBID val（val_ratio={val_ratio}）→ {out_yaml}")
     return out_yaml
 
 
@@ -258,6 +382,28 @@ def _build_train_kwargs(train_cfg, data_path):
     # 显式覆盖为 RGBT，否则训练/验证会回落到默认 3ch 加载，导致 4ch 模型输入错位。
     kwargs["use_simotm"] = str(train_cfg.get("use_simotm", "SimOTMBBS"))
     kwargs["pairs_rgb_ir"] = list(train_cfg.get("pairs_rgb_ir", ["visible", "infrared"]))
+    # RGBID 三模态：额外传递深度映射与输入通道数（channels 门控 5ch 增强分支）
+    kwargs["pairs_rgb_depth"] = list(train_cfg.get("pairs_rgb_depth", ["visible", "depth"]))
+    kwargs["channels"] = int(train_cfg.get("channels", 3))
+
+    # 数据增强超参（可选，由 train.yaml 的 aug 段控制；未配置则用 ultralytics 默认）。
+    # 红外等非 RGB 模态需关闭 hsv_h/hsv_s、降低 mosaic/mixup 等，见 train_infrared.yaml。
+    aug = train_cfg.get("aug", {})
+    for key in ("hsv_h", "hsv_s", "hsv_v", "degrees", "translate", "scale", "shear",
+                "perspective", "flipud", "fliplr", "bgr", "mosaic", "mixup",
+                "copy_paste", "copy_paste_mode", "erasing", "crop_fraction", "close_mosaic"):
+        if key in aug:
+            kwargs[key] = aug[key]
+
+    # 预训练权重开关（False = 从头训练）；仅当 train.yaml 显式配置时覆盖默认(True)
+    if "pretrained" in train_cfg:
+        kwargs["pretrained"] = bool(train_cfg["pretrained"])
+
+    # warmup 细节（可选）
+    if "warmup_bias_lr" in train_cfg:
+        kwargs["warmup_bias_lr"] = float(train_cfg["warmup_bias_lr"])
+    if "warmup_momentum" in train_cfg:
+        kwargs["warmup_momentum"] = float(train_cfg["warmup_momentum"])
 
     return kwargs
 
@@ -291,9 +437,18 @@ def main():
     val_ratio = float(train_cfg.get("val_ratio", 0.0))
     use_simotm = str(train_cfg.get("use_simotm", "SimOTMBBS"))
     if val_ratio > 0 and not _val_has_labels(dataset_cfg):
-        if use_simotm == "RGBT":
-            # RGBT: 独立切分，生成 visible+infrared 配对的 rgbt_split（不碰 visible_split）
+        if use_simotm in ("RGBT", "Infrared"):
+            # RGBT(4ch 融合) 与 Infrared(单模态) 都靠 visible->infrared 路径替换，
+            # 复用 visible+infrared 配对的 rgbt_split（不碰 visible_split）。
             data_path = str(_split_train_val_rgbt(
+                dataset_cfg, val_ratio, int(train_cfg.get("seed", 42))))
+        elif use_simotm == "Depth":
+            # Depth: 独立切分，生成 visible+depth 配对的 depth_split（不碰 visible_split）
+            data_path = str(_split_train_val_depth(
+                dataset_cfg, val_ratio, int(train_cfg.get("seed", 42))))
+        elif use_simotm == "RGBID":
+            # RGBID: 独立切分，生成 visible+infrared+depth 配对的 rgbid_split
+            data_path = str(_split_train_val_rgbid(
                 dataset_cfg, val_ratio, int(train_cfg.get("seed", 42))))
         else:
             data_path = str(_split_train_val(
