@@ -1,0 +1,100 @@
+# ============================================================
+# Urban Multi-Modal Object Detection — Depth 单模态训练配置
+# ============================================================
+# Experiment D：Depth 深度图单模态（复制为 3 通道输入）。
+# 基于 configs/train.yaml，仅改动实验名与多模态字段：
+#   experiment_name -> urban_multimodal_det_yolo11_depth
+#   use_simotm      -> Depth
+#   pairs_rgb_ir    -> [visible, depth]
+# 其余超参数与 RGB baseline 完全一致（epochs/patience/batch/lr/optimizer/scheduler/seed）。
+# 由 scripts/train.py 读取，配合 dataset.yaml / yolo11_visible.yaml（ch=3）使用。
+#
+# Depth 加载规则（ultralytics/data/{base,dataset,loaders}.py 的 use_simotm=='Depth' 分支）:
+#   - 读取深度图（IMREAD_UNCHANGED），16-bit 单通道 PNG（单位毫米，[0,19999]）
+#   - 无效深度 (<300mm) 置 0；有效值 /19999.0 归一化到 [0,1]
+#   - 单通道复制为 3 通道后输入标准 3ch 模型
+#   - 少数 8-bit 3 通道 .jpg 深度图按 /255.0 归一化（详见代码注释）
+# ============================================================
+
+# ---- Experiment ----------------------------------------------
+experiment_name: "urban_multimodal_det_yolo11_depth"
+seed: 42
+
+# ---- Device --------------------------------------------------
+device: "cuda"                       # cuda | cpu
+gpu_ids: [0]                         # 单卡: [0]; 多卡: [0,1,2,3]
+
+# ---- Training hyperparameters --------------------------------
+epochs: 200                           # 与 RGB baseline 一致
+patience: 30                          # 早停: 连续 30 epoch 无提升则停止
+batch_size: 16
+image_size: [640, 640]               # [height, width]
+num_workers: 4
+
+# ---- Learning rate -------------------------------------------
+learning_rate: 1.0e-2                 # 基础学习率
+warmup_epochs: 3
+warmup_start_lr: 1.0e-6
+min_lr_ratio: 0.01                    # 最终 lr = base_lr × min_lr_ratio
+
+# ---- Optimizer -----------------------------------------------
+optimizer:
+  type: "SGD"                         # SGD | Adam | AdamW
+  momentum: 0.937
+  weight_decay: 5.0e-4
+  nesterov: true
+  # ---- 参数分组学习率缩放 -----------------------------------
+  param_lr_scales:
+    backbone: 0.1                     # backbone lr = base_lr × 0.1
+    neck: 1.0
+    head: 1.0
+    fusion: 1.0                       # 融合模块 (仅 fusion 模型)
+
+# ---- Scheduler -----------------------------------------------
+scheduler:
+  type: "CosineAnnealingLR"           # CosineAnnealingLR | StepLR | MultiStepLR | OneCycleLR
+  step_size: 30                       # StepLR 用
+  milestones: [150, 225, 275]         # MultiStepLR 用
+  gamma: 0.1                          # StepLR / MultiStepLR 衰减倍率
+
+# ---- Mixed precision -----------------------------------------
+amp: true                             # Automatic Mixed Precision (FP16)
+
+# ---- Gradient ------------------------------------------------
+grad_clip_max_norm: 10.0
+
+# ---- EMA (Exponential Moving Average) ------------------------
+ema:
+  enabled: true
+  decay: 0.9999
+
+# ---- Validation ----------------------------------------------
+val_interval: 1                       # 每 N 个 epoch 验证一次
+val_ratio: 0.2                        # 无独立 val 时，从 train 切分的验证集比例
+
+# ---- 多模态 (Depth 单模态) ------------------------------------
+use_simotm: "Depth"                   # Depth = 深度图复制为 3ch; 默认 SimOTMBBS 为 3ch
+pairs_rgb_ir: ["visible", "depth"]    # visible 主输入 -> depth 第二模态（路径替换读取深度图）
+
+# ---- Evaluation metrics --------------------------------------
+evaluation_metric:
+  - "mAP_0.5"                         # mAP @ IoU=0.5
+  - "mAP_0.5:0.95"                    # mAP @ IoU=0.5:0.05:0.95 (COCO 主指标)
+
+# ---- Checkpoint ----------------------------------------------
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10                   # 每 N 个 epoch 保存一次
+  save_best: true                     # 保存最佳模型
+  best_metric: "mAP_0.5:0.95"        # 最佳模型评判指标
+  save_last: true                     # 保存最新 checkpoint (断点续训)
+  max_keep: 5                         # 最多保留 checkpoint 数量
+  resume: false                       # 从 checkpoint 恢复训练
+  resume_path: ""                     # 留空则自动查找 save_dir/last.pth
+
+# ---- Logging -------------------------------------------------
+log_dir: "runs/${experiment_name}/logs"
+log_interval: 50                      # 每 N 个 iteration 打印终端日志
+tensorboard:
+  enabled: true
+  log_dir: "runs/${experiment_name}/tensorboard"

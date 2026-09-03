@@ -1,0 +1,109 @@
+# ============================================================
+# Urban Multi-Modal Object Detection — RGB+IR+Depth 三模态融合训练配置
+# ============================================================
+# 配合 configs/yolo11_{earlyfusion,midfusion,latefusion}.yaml 使用。
+# 由 scripts/train.py 读取（--train_config），模型 yaml 由 --model_config 指定。
+#
+# 数据加载（use_simotm=='RGBID'，见 ultralytics/data/{base,dataset,loaders}.py）:
+#   - 读取 visible(BGR 3ch) + infrared(灰度 1ch) + depth(灰度 1ch)
+#   - 统一到 uint8 [0,255]，红外做 1%/99% 对比度拉伸，深度 16-bit 映射到 [0,255]
+#   - 合并为 5 通道 [B,G,R,IR,D]（Format 后为 [R,G,B,IR,D]）
+#   - channels=5 门控增强分支：关闭 albumentations(>4ch 不支持)、RandomHSV 自动跳过
+# ============================================================
+
+# ---- Experiment ----------------------------------------------
+experiment_name: "urban_multimodal_det_yolo11_multimodal"
+seed: 42
+
+# ---- Pretrain -------------------------------------------------
+pretrained: true                     # true=ImageNet 预训练（visible 分支迁移；IR/depth 分支随机初始化）
+
+# ---- Device --------------------------------------------------
+device: "cuda"                       # cuda | cpu
+gpu_ids: [0]                         # 单卡: [0]; 多卡: [0,1,2,3]
+
+# ---- Training hyperparameters --------------------------------
+epochs: 200
+patience: 30                         # 早停: 连续 30 epoch 无提升则停止
+batch_size: 16                       # 5ch 显存约为 RGB 的 1.67x，T4 若 OOM 降到 8
+image_size: [640, 640]               # [height, width]
+num_workers: 4
+
+# ---- Learning rate -------------------------------------------
+learning_rate: 5.0e-3                # 与 RGB 单模态一致，更强 lr 激活新增 IR/Depth 通道
+warmup_epochs: 10                    # 更长 warmup，给新增 IR/Depth 通道更长适应期
+warmup_start_lr: 1.0e-6
+min_lr_ratio: 0.01                   # 最终 lr = base_lr × min_lr_ratio
+
+# ---- Data augmentation (5ch；灰度模态关闭 Hue/Saturation) -------
+aug:
+  hsv_h: 0.0                         # IR/depth 灰度，Hue 无意义
+  hsv_s: 0.0                         # 同上
+  hsv_v: 0.0                         # 关闭 HSV：IR/Depth 为灰度/深度，颜色抖动无意义
+  degrees: 0.0
+  translate: 0.1
+  scale: 0.5
+  shear: 0.0
+  perspective: 0.0
+  flipud: 0.0
+  fliplr: 0.5                        # 左右翻转，检测关键增强
+  mosaic: 0.5                        # 降低 mosaic（灰度模态对强 mosaic 敏感）
+  mixup: 0.0                         # 关闭（灰度 IR/depth 是噪声）
+  copy_paste: 0.0
+  erasing: 0.4
+  close_mosaic: 10                   # 最后 10 epoch 关闭 mosaic
+
+# ---- Optimizer -----------------------------------------------
+optimizer:
+  type: "SGD"                        # SGD | Adam | AdamW
+  momentum: 0.937
+  weight_decay: 1.0e-4                # 降低正则化强度，让模型更自由拟合
+  nesterov: true
+
+# ---- Scheduler -----------------------------------------------
+scheduler:
+  type: "CosineAnnealingLR"          # CosineAnnealingLR | StepLR | MultiStepLR | OneCycleLR
+
+# ---- Mixed precision -----------------------------------------
+amp: true                            # Automatic Mixed Precision (FP16)
+
+# ---- Gradient ------------------------------------------------
+grad_clip_max_norm: 10.0
+
+# ---- EMA (Exponential Moving Average) ------------------------
+ema:
+  enabled: true
+  decay: 0.9999
+
+# ---- Validation ----------------------------------------------
+val_interval: 1                      # 每 N 个 epoch 验证一次
+val_ratio: 0.2                       # 无独立 val 时，从 train 切分的验证集比例
+
+# ---- 多模态 (RGB + IR + Depth 三模态) --------------------------
+use_simotm: "RGBID"                  # RGBID = visible+infrared+depth 合并为 5ch
+pairs_rgb_ir: ["visible", "infrared"]  # visible 主输入 -> infrared 第二模态
+pairs_rgb_depth: ["visible", "depth"]   # visible 主输入 -> depth 第三模态
+channels: 5                          # 输入通道数（门控 5ch 增强分支）
+
+# ---- Evaluation metrics --------------------------------------
+evaluation_metric:
+  - "mAP_0.5"
+  - "mAP_0.5:0.95"
+
+# ---- Checkpoint ----------------------------------------------
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  best_metric: "mAP_0.5:0.95"
+  save_last: true
+  max_keep: 5
+  resume: false
+  resume_path: ""
+
+# ---- Logging -------------------------------------------------
+log_dir: "runs/${experiment_name}/logs"
+log_interval: 50
+tensorboard:
+  enabled: true
+  log_dir: "runs/${experiment_name}/tensorboard"
