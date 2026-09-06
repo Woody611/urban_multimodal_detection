@@ -53,12 +53,14 @@ from scripts.train import (  # noqa: E402
     _split_train_val,
     _split_train_val_rgbt,
     _split_train_val_rgbid,
+    _split_train_val_depth,
     _val_has_labels,
 )
 
 SPLIT_YAML = "data/processed/visible_split/dataset.yaml"
 SPLIT_YAML_RGBT = "data/processed/rgbt_split/dataset.yaml"
 SPLIT_YAML_RGBID = "data/processed/rgbid_split/dataset.yaml"
+SPLIT_YAML_DEPTH = "data/processed/depth_split/dataset.yaml"
 
 
 # ============================================================
@@ -91,6 +93,8 @@ def _resolve_val_data(dataset_cfg_path: str, dataset_cfg: dict,
     """
     if use_simotm == "RGBID":
         split_yaml = SPLIT_YAML_RGBID
+    elif use_simotm in ("Depth", "RGBD"):
+        split_yaml = SPLIT_YAML_DEPTH
     elif use_simotm == "RGBT":
         split_yaml = SPLIT_YAML_RGBT
     else:
@@ -112,6 +116,9 @@ def _resolve_val_data(dataset_cfg_path: str, dataset_cfg: dict,
         return dataset_cfg_path
     if use_simotm == "RGBID":
         return str(_split_train_val_rgbid(dataset_cfg, val_ratio,
+                                          int(train_cfg.get("seed", 42))))
+    if use_simotm in ("Depth", "RGBD"):
+        return str(_split_train_val_depth(dataset_cfg, val_ratio,
                                           int(train_cfg.get("seed", 42))))
     if use_simotm == "RGBT":
         return str(_split_train_val_rgbt(dataset_cfg, val_ratio,

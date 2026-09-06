@@ -1,0 +1,88 @@
+# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+
+# ============================================================
+# Urban MultiModal — YOLOv11 中期融合（RGB+Depth，6 通道输入 + ADD 等权融合）
+# ============================================================
+# 修复「depth 分支 1ch 随机初始化」的根因：把深度三倍复制成 3ch，
+# 让 depth 分支的第一个 Conv 变成 3→64，从而复用 ImageNet 预训练 stem。
+# （depth-only 之所以最强，就是因为它把深度 np.stack 三倍复制成 3ch 走了预训练卷积。）
+#
+# 相对 yolo11_midfusion_rgbd_add_dw.yaml（ch:4, ADD[1.0]）仅两处改动：
+#   1. ch: 4 -> 6（输入变为 [R,G,B,D,D,D]）
+#   2. depth 分支 SilenceChannel [3,4] -> [3,6]（深度从 1ch 变成 3ch）
+#   ADD 融合权重保持 1.0（RGB×1.0 + Depth×1.0 等权）。
+#
+# 输入: 6 通道 [R,G,B,D,D,D]，由 ultralytics/data/{base,dataset,loaders}.py
+#   RGBD 分支三倍复制 depth 得到（本方案的核心代码改动）。
+#
+# 用法:
+#   python scripts/train.py --model_config configs/yolo11_midfusion_rgbd_add6ch.yaml \
+#       --train_config configs/train_multimodal_rgbd6.yaml
+# ============================================================
+
+ch: 6
+# Parameters
+nc: 12 # number of classes
+scales: # model compound scaling constants
+  # [depth, width, max_channels]
+  n: [0.50, 0.25, 1024]
+  s: [0.50, 0.50, 1024]
+  m: [0.50, 1.00, 512]
+  l: [1.00, 1.00, 512]
+  x: [1.00, 1.50, 512]
+
+backbone:
+  # [from, repeats, module, args]
+  - [-1, 1, Silence, []]                          # 0
+  # ---- visible 分支 (3ch) ----
+  - [0, 1, SilenceChannel, [0, 3]]                # 1
+  - [-1, 1, Conv, [64, 3, 2]]                     # 2
+  - [-1, 1, Conv, [128, 3, 2]]                    # 3
+  - [-1, 2, C3k2, [256, False, 0.25]]             # 4
+  - [-1, 1, Conv, [256, 3, 2]]                    # 5
+  - [-1, 2, C3k2, [512, False, 0.25]]             # 6  (vis P3)
+  # ---- depth 分支 (3ch，三倍复制→复用 ImageNet 预训练 stem) ----
+  - [0, 1, SilenceChannel, [3, 6]]                # 7
+  - [-1, 1, Conv, [64, 3, 2]]                     # 8  (3→64，预训练)
+  - [-1, 1, Conv, [128, 3, 2]]                    # 9
+  - [-1, 2, C3k2, [256, False, 0.25]]             # 10
+  - [-1, 1, Conv, [256, 3, 2]]                    # 11
+  - [-1, 2, C3k2, [512, False, 0.25]]             # 12 (depth P3)
+  # ---- ADD 等权融合 P3 ----
+  - [[6, 12], 1, ADD, [1.0]]                      # 13 (fused P3)
+  # ---- P4 各分支继续 ----
+  - [6, 1, Conv, [512, 3, 2]]                     # 14
+  - [-1, 2, C3k2, [512, True]]                    # 15 (vis P4)
+  - [12, 1, Conv, [512, 3, 2]]                    # 16
+  - [-1, 2, C3k2, [512, True]]                    # 17 (depth P4)
+  # ---- ADD 等权融合 P4 ----
+  - [[15, 17], 1, ADD, [1.0]]                     # 18 (fused P4)
+  # ---- P5 各分支继续 ----
+  - [15, 1, Conv, [1024, 3, 2]]                   # 19
+  - [-1, 2, C3k2, [1024, True]]                   # 20 (vis P5)
+  - [17, 1, Conv, [1024, 3, 2]]                   # 21
+  - [-1, 2, C3k2, [1024, True]]                   # 22 (depth P5)
+  # ---- ADD 等权融合 P5 ----
+  - [[20, 22], 1, ADD, [1.0]]                     # 23 (fused P5)
+  - [-1, 1, SPPF, [1024, 5]]                      # 24
+  - [-1, 2, C2PSA, [1024]]                        # 25
+
+# YOLO11n head（共享 PAN-FPN，输入为融合后的 P3/P4/P5）
+head:
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]    # 26
+  - [[-1, 18], 1, Concat, [1]]                    # 27 cat fused P4
+  - [-1, 2, C3k2, [512, False]]                   # 28
+
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]    # 29
+  - [[-1, 13], 1, Concat, [1]]                    # 30 cat fused P3
+  - [-1, 2, C3k2, [256, False]]                   # 31 (P3/8-small)
+
+  - [-1, 1, Conv, [256, 3, 2]]                    # 32
+  - [[-1, 28], 1, Concat, [1]]                    # 33 cat head P4
+  - [-1, 2, C3k2, [512, False]]                   # 34 (P4/16-medium)
+
+  - [-1, 1, Conv, [512, 3, 2]]                    # 35
+  - [[-1, 25], 1, Concat, [1]]                    # 36 cat head P5
+  - [-1, 2, C3k2, [1024, True]]                   # 37 (P5/32-large)
+
+  - [[31, 34, 37], 1, Detect, [nc]]               # 38 Detect(P3, P4, P5)

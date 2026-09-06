@@ -1,0 +1,93 @@
+# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+
+# ============================================================
+# Urban MultiModal — YOLOv11 中期融合（RGB+Depth，Concat + 1×1 Conv 融合）
+# ============================================================
+# 相对 yolo11_midfusion_rgbd_add.yaml（ADD[0.5]）仅改融合算子：
+#   ADD 逐元素求和 -> 通道拼接(Concat) + 1×1 Conv 可学习通道加权。
+#
+# 动机：已证 ADD/SE/标量可学习/三倍复制 6 种融合都 < depth-only(0.312)。
+#   ADD = x_rgb + alpha*x_depth 是「逐元素求和」，要求两个分支的特征在
+#   每个空间位置、每个通道都对齐相加；RGB 与 depth 是异质模态，特征分布
+#   不兼容，求和互相污染。Concat 保留两个分支的完整信息，再让 1×1 Conv
+#   学通道级加权（哪个通道该取 RGB、哪个该取 depth、该给多大权重），
+#   表达力远强于标量加权，是中期融合里最标准的做法。
+#
+# 输入: 4 通道 [R,G,B,D]（沿用 rgbd2 的 4ch 加载，不三倍复制）。
+# 融合点: P3(1024→512) / P4(1024→512) / P5(2048→1024) 各一次 Concat+Conv。
+# 参数量: 约 6.6M（新增 3 个 1×1 Conv，共 ~3.1M）。
+#
+# 用法:
+#   python scripts/train.py --model_config configs/yolo11_midfusion_rgbd_concat.yaml \
+#       --train_config configs/train_multimodal_rgbd.yaml
+# ============================================================
+
+ch: 4
+# Parameters
+nc: 12 # number of classes
+scales: # model compound scaling constants
+  # [depth, width, max_channels]
+  n: [0.50, 0.25, 1024]
+  s: [0.50, 0.50, 1024]
+  m: [0.50, 1.00, 512]
+  l: [1.00, 1.00, 512]
+  x: [1.00, 1.50, 512]
+
+backbone:
+  # [from, repeats, module, args]
+  - [-1, 1, Silence, []]                          # 0
+  # ---- visible 分支 (3ch) ----
+  - [0, 1, SilenceChannel, [0, 3]]                # 1
+  - [-1, 1, Conv, [64, 3, 2]]                     # 2
+  - [-1, 1, Conv, [128, 3, 2]]                    # 3
+  - [-1, 2, C3k2, [256, False, 0.25]]             # 4
+  - [-1, 1, Conv, [256, 3, 2]]                    # 5
+  - [-1, 2, C3k2, [512, False, 0.25]]             # 6  (vis P3)
+  # ---- depth 分支 (1ch) ----
+  - [0, 1, SilenceChannel, [3, 4]]                # 7
+  - [-1, 1, Conv, [64, 3, 2]]                     # 8
+  - [-1, 1, Conv, [128, 3, 2]]                    # 9
+  - [-1, 2, C3k2, [256, False, 0.25]]             # 10
+  - [-1, 1, Conv, [256, 3, 2]]                    # 11
+  - [-1, 2, C3k2, [512, False, 0.25]]             # 12 (depth P3)
+  # ---- Concat + 1×1 Conv 融合 P3 ----
+  - [[6, 12], 1, Concat, [1]]                     # 13  (1024ch)
+  - [-1, 1, Conv, [512, 1, 1]]                    # 14 (fused P3, 512ch)
+  # ---- P4 各分支继续 ----
+  - [6, 1, Conv, [512, 3, 2]]                     # 15
+  - [-1, 2, C3k2, [512, True]]                    # 16 (vis P4)
+  - [12, 1, Conv, [512, 3, 2]]                    # 17
+  - [-1, 2, C3k2, [512, True]]                    # 18 (depth P4)
+  # ---- Concat + 1×1 Conv 融合 P4 ----
+  - [[16, 18], 1, Concat, [1]]                    # 19  (1024ch)
+  - [-1, 1, Conv, [512, 1, 1]]                    # 20 (fused P4, 512ch)
+  # ---- P5 各分支继续 ----
+  - [16, 1, Conv, [1024, 3, 2]]                   # 21
+  - [-1, 2, C3k2, [1024, True]]                   # 22 (vis P5)
+  - [18, 1, Conv, [1024, 3, 2]]                   # 23
+  - [-1, 2, C3k2, [1024, True]]                   # 24 (depth P5)
+  # ---- Concat + 1×1 Conv 融合 P5 ----
+  - [[22, 24], 1, Concat, [1]]                    # 25  (2048ch)
+  - [-1, 1, Conv, [1024, 1, 1]]                   # 26 (fused P5, 1024ch)
+  - [-1, 1, SPPF, [1024, 5]]                      # 27
+  - [-1, 2, C2PSA, [1024]]                        # 28
+
+# YOLO11n head（共享 PAN-FPN，输入为融合后的 P3/P4/P5）
+head:
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]    # 29
+  - [[-1, 20], 1, Concat, [1]]                    # 30 cat fused P4
+  - [-1, 2, C3k2, [512, False]]                   # 31
+
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]    # 32
+  - [[-1, 14], 1, Concat, [1]]                    # 33 cat fused P3
+  - [-1, 2, C3k2, [256, False]]                   # 34 (P3/8-small)
+
+  - [-1, 1, Conv, [256, 3, 2]]                    # 35
+  - [[-1, 31], 1, Concat, [1]]                    # 36 cat head P4
+  - [-1, 2, C3k2, [512, False]]                   # 37 (P4/16-medium)
+
+  - [-1, 1, Conv, [512, 3, 2]]                    # 38
+  - [[-1, 28], 1, Concat, [1]]                    # 39 cat head P5
+  - [-1, 2, C3k2, [1024, True]]                   # 40 (P5/32-large)
+
+  - [[34, 37, 40], 1, Detect, [nc]]               # 41 Detect(P3, P4, P5)

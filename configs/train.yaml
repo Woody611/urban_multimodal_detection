@@ -5,8 +5,11 @@
 # ============================================================
 
 # ---- Experiment ----------------------------------------------
-experiment_name: "urban_multimodal_det_yolo11_rgb_baseline"
+experiment_name: "urban_multimodal_det_yolo11_rgb_coco"
 seed: 42
+
+# ---- Pretrain -------------------------------------------------
+pretrained: "yolo11n.pt"              # COCO 预训练权重（自动下载）；false=从头训练
 
 # ---- Device --------------------------------------------------
 device: "cuda"                       # cuda | cpu
