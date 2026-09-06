@@ -395,9 +395,11 @@ def _build_train_kwargs(train_cfg, data_path):
         if key in aug:
             kwargs[key] = aug[key]
 
-    # 预训练权重开关（False = 从头训练）；仅当 train.yaml 显式配置时覆盖默认(True)
+    # 预训练权重：False=从头训练；True=默认；字符串=指定权重文件（如 "yolo11n.pt"）。
+    # 注意：ultralytics setup_model 只认 str/Path 才真正加载权重，bool True 是死配置（不加载任何权重）。
     if "pretrained" in train_cfg:
-        kwargs["pretrained"] = bool(train_cfg["pretrained"])
+        p = train_cfg["pretrained"]
+        kwargs["pretrained"] = p if isinstance(p, str) else bool(p)
 
     # warmup 细节（可选）
     if "warmup_bias_lr" in train_cfg:
@@ -442,8 +444,9 @@ def main():
             # 复用 visible+infrared 配对的 rgbt_split（不碰 visible_split）。
             data_path = str(_split_train_val_rgbt(
                 dataset_cfg, val_ratio, int(train_cfg.get("seed", 42))))
-        elif use_simotm == "Depth":
-            # Depth: 独立切分，生成 visible+depth 配对的 depth_split（不碰 visible_split）
+        elif use_simotm in ("Depth", "RGBD"):
+            # Depth(单模态) 与 RGBD(RGB+Depth 双模态融合) 都靠 visible->depth 路径替换，
+            # 复用 visible+depth 配对的 depth_split（不碰 visible_split）。
             data_path = str(_split_train_val_depth(
                 dataset_cfg, val_ratio, int(train_cfg.get("seed", 42))))
         elif use_simotm == "RGBID":

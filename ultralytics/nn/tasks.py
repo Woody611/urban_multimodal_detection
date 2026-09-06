@@ -34,7 +34,7 @@ from ultralytics.nn.modules import (
     ADown,
     Bottleneck,
     BottleneckCSP, YOLOv4_BottleneckCSP, YOLOv4_Bottleneck,
-    CBH, ES_Bottleneck, DWConvblock, ADD,
+    CBH, ES_Bottleneck, DWConvblock, ADD, WeightedFusion, GatedFusion,
     C2f,
     C2fAttn,
     C2fCIB,
@@ -1107,6 +1107,12 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
             c2 = sum(ch[x] for x in f)
         elif m is ADD:
             c2 = max(ch[x] for x in f)
+        elif m is WeightedFusion:
+            c2 = max(ch[x] for x in f)
+        elif m is GatedFusion:
+            c1 = sum(ch[x] for x in f)  # concat 通道数（rgb+depth）
+            c2 = max(ch[x] for x in f)  # 输出通道数（=depth 通道数，残差要求相等）
+            args = [c1, c2]
         elif m is CrossAttentionShared:
             c2 =  args[0]
             if c2 != nc:  # if c2 not equal to number of classes (i.e. for Classify() output)

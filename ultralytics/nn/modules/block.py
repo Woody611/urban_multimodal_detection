@@ -2440,6 +2440,44 @@ class ADD(nn.Module):
         x1, x2 = x[0], x[1]
         return torch.add(x1, x2, alpha=self.a)
 
+
+class WeightedFusion(nn.Module):
+    # Learnable scalar-weighted two-branch fusion: out = w_a * x1 + w_b * x2.
+    # 每个融合节点（P3/P4/P5）各自实例化一对可学习标量权重，让模型按尺度自适应
+    # RGB:depth 配比（修正 ADD 固定 0.5 权重把强模态深度压低的缺陷）。
+    # 初始化等权 (1,1)，训练起点中性，由优化器决定该信哪个模态。
+    def __init__(self, alpha=1.0, beta=1.0):
+        super(WeightedFusion, self).__init__()
+        self.w_a = nn.Parameter(torch.tensor(float(alpha)))
+        self.w_b = nn.Parameter(torch.tensor(float(beta)))
+
+    def forward(self, x):
+        x1, x2 = x[0], x[1]
+        return self.w_a * x1 + self.w_b * x2
+
+
+class GatedFusion(nn.Module):
+    # Gated residual two-branch fusion: fused = x_depth + sigmoid(gate) * delta.
+    #   delta = conv_delta(concat(x_rgb, x_depth))   -> RGB 带来的「修正量」候选
+    #   gate  = sigmoid(conv_gate(concat(x_rgb, x_depth))) -> 逐空间位置的 0~1 门控
+    # 门控让网络只在 RGB 确实有帮助的位置放开修正量（保住 recall），其余位置保留
+    # depth 的干净特征（保住 precision）。x = [x_rgb, x_depth]，各 [B,C,H,W]。
+    # 输入通道 c1 = concat 通道数(sum)，输出 c2 = depth 通道数(max)。
+    def __init__(self, c1, c2):
+        super(GatedFusion, self).__init__()
+        self.conv_delta = nn.Conv2d(c1, c2, 1)
+        self.conv_gate = nn.Conv2d(c1, c2, 1)
+        # 门控偏置初始化为负值，使 sigmoid(gate)≈0.12，训练起点 fused≈depth（保底 depth-only），
+        # 让网络在训练中逐步「打开」RGB 有用的区域。
+        nn.init.constant_(self.conv_gate.bias, -2.0)
+
+    def forward(self, x):
+        rgb, depth = x[0], x[1]
+        cat = torch.cat([rgb, depth], dim=1)
+        delta = self.conv_delta(cat)
+        gate = torch.sigmoid(self.conv_gate(cat))
+        return depth + gate * delta
+
 # DWConvblock end
 # -------------------------------------------------------------------------
 

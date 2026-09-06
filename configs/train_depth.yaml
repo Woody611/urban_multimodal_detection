@@ -17,8 +17,11 @@
 # ============================================================
 
 # ---- Experiment ----------------------------------------------
-experiment_name: "urban_multimodal_det_yolo11_depth"
+experiment_name: "urban_multimodal_det_yolo11_depth_coco"
 seed: 42
+
+# ---- Pretrain -------------------------------------------------
+pretrained: "yolo11n.pt"              # COCO 预训练权重（自动下载）；false=从头训练
 
 # ---- Device --------------------------------------------------
 device: "cuda"                       # cuda | cpu
@@ -36,6 +39,11 @@ learning_rate: 1.0e-2                 # 基础学习率
 warmup_epochs: 3
 warmup_start_lr: 1.0e-6
 min_lr_ratio: 0.01                    # 最终 lr = base_lr × min_lr_ratio
+
+# ---- Data augmentation -------------------------------------------------
+# 注意：不要为 depth 关闭 HSV / 降低 mosaic。2026-09 消融证明 depth-only 依赖
+# 默认增强（hsv_v=0.4 + mosaic=1.0）：关闭后 mAP50-95 从 0.312 崩到 0.145。
+# 因此这里保持 ultralytics 默认，不写 aug 段（与 RGB baseline 一致）。
 
 # ---- Optimizer -----------------------------------------------
 optimizer:

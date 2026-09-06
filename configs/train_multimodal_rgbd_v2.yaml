@@ -1,0 +1,110 @@
+# ============================================================
+# Urban Multi-Modal — RGB+Depth 中期融合 · 第二轮调优配置（P1 纯 yaml）
+# ============================================================
+# 相对 v1（rgbd2/rgbd3 所用配置）的关键改动：
+#   - copy_paste: 0.15 -> 0.0   （疑似拖累 mAP50，见消融分析；先关闭做对照）
+#   - learning_rate: 5e-3 -> 2.5e-3 （recall 偏低、SE 版 precision 偏高，lr 略降更稳）
+#   - epochs: 200 -> 300        （余弦退火尾部更充分，配合 patience=80）
+#   - close_mosaic: 10 -> 15    （后期更多真实尺度，利于小目标定位收尾）
+#   - scale: 0.5 -> 0.6         （更大多尺度抖动，覆盖小目标）
+#   - translate: 0.1 -> 0.15    （位置抖动，增强定位鲁棒）
+# 不变：imgsz=640 / seed=42 / val_ratio=0.2 / patience=80 / 融合 P3P4P5。
+# 配合 configs/yolo11_midfusion_rgbd_add.yaml（ADD 基线）或 *_cbam.yaml 使用。
+# ============================================================
+
+# ---- Experiment ----------------------------------------------
+experiment_name: "urban_multimodal_det_yolo11_rgbd_v2"
+seed: 42
+
+# ---- Pretrain -------------------------------------------------
+pretrained: true
+
+# ---- Device --------------------------------------------------
+device: "cuda"
+gpu_ids: [0]
+
+# ---- Training hyperparameters --------------------------------
+epochs: 300
+patience: 80
+batch_size: 16
+image_size: [640, 640]
+num_workers: 4
+
+# ---- Learning rate -------------------------------------------
+learning_rate: 2.5e-3
+warmup_epochs: 10
+warmup_start_lr: 1.0e-6
+min_lr_ratio: 0.01
+
+# ---- Data augmentation (4ch；关闭颜色抖动，几何增强向小目标倾斜) ----
+aug:
+  hsv_h: 0.0
+  hsv_s: 0.0
+  hsv_v: 0.0
+  degrees: 0.0
+  translate: 0.15
+  scale: 0.6
+  shear: 0.0
+  perspective: 0.0
+  flipud: 0.0
+  fliplr: 0.5
+  mosaic: 0.5
+  mixup: 0.0
+  copy_paste: 0.0                     # 关闭（v1 的 0.15 疑似拖累 mAP50，本轮对照验证）
+  erasing: 0.4
+  close_mosaic: 15                    # 最后 15 epoch 关闭 mosaic
+
+# ---- Optimizer -----------------------------------------------
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 1.0e-4
+  nesterov: true
+
+# ---- Scheduler -----------------------------------------------
+scheduler:
+  type: "CosineAnnealingLR"
+
+# ---- Mixed precision -----------------------------------------
+amp: true
+
+# ---- Gradient ------------------------------------------------
+grad_clip_max_norm: 10.0
+
+# ---- EMA -----------------------------------------------------
+ema:
+  enabled: true
+  decay: 0.9999
+
+# ---- Validation ----------------------------------------------
+val_interval: 1
+val_ratio: 0.2
+
+# ---- 多模态 (RGB + Depth 双模态) ------------------------------
+use_simotm: "RGBD"
+pairs_rgb_ir: ["visible", "depth"]
+pairs_rgb_depth: ["visible", "depth"]
+channels: 4
+
+# ---- Evaluation metrics --------------------------------------
+evaluation_metric:
+  - "mAP_0.5"
+  - "mAP_0.5:0.95"
+
+# ---- Checkpoint ----------------------------------------------
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  best_metric: "mAP_0.5:0.95"
+  save_last: true
+  max_keep: 5
+  resume: false
+  resume_path: ""
+
+# ---- Logging -------------------------------------------------
+log_dir: "runs/${experiment_name}/logs"
+log_interval: 50
+tensorboard:
+  enabled: true
+  log_dir: "runs/${experiment_name}/tensorboard"

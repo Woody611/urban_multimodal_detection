@@ -1,0 +1,86 @@
+# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+
+# ============================================================
+# Urban MultiModal Object Detection — YOLOv11 中期融合（RGB+Depth，固定 ADD 加权）
+# ============================================================
+# 方案2(双模态·ADD 基线): 在 RGB/Depth 两分支的 P3/P4/P5 三级做固定的加权相加融合
+#   ADD = torch.add(x1, x2, alpha) = x1 + alpha * x2（默认 alpha=0.5，即 RGB:depth = 1:0.5）。
+#   权重是固定标量、不可学习 —— 这是「SE 注意力加权融合」的消融对照基线（版本1）。
+#
+# 与 yolo11_midfusion_rgbd_se.yaml 结构完全一致，仅融合节点不同：
+#   ADD 版 : [[vis, depth], ADD, [0.5]]            (1 层)
+#   SE 版  : Concat + SEAttention + 1x1Conv       (3 层)
+# 两分支通道数相同(512/512/1024)，ADD 直接逐元素相加，无需通道对齐。
+#
+# 输入: 4 通道 [R,G,B,D]。
+# 用法:
+#   python scripts/train.py --model_config configs/yolo11_midfusion_rgbd_add.yaml \
+#       --train_config configs/train_multimodal_rgbd.yaml
+# ============================================================
+
+ch: 4
+# Parameters
+nc: 12 # number of classes
+scales: # model compound scaling constants
+  # [depth, width, max_channels]
+  n: [0.50, 0.25, 1024]
+  s: [0.50, 0.50, 1024]
+  m: [0.50, 1.00, 512]
+  l: [1.00, 1.00, 512]
+  x: [1.00, 1.50, 512]
+
+backbone:
+  # [from, repeats, module, args]
+  - [-1, 1, Silence, []]                          # 0
+  # ---- visible 分支 (3ch) ----
+  - [0, 1, SilenceChannel, [0, 3]]                # 1
+  - [-1, 1, Conv, [64, 3, 2]]                     # 2
+  - [-1, 1, Conv, [128, 3, 2]]                    # 3
+  - [-1, 2, C3k2, [256, False, 0.25]]             # 4
+  - [-1, 1, Conv, [256, 3, 2]]                    # 5
+  - [-1, 2, C3k2, [512, False, 0.25]]             # 6  (vis P3)
+  # ---- depth 分支 (1ch) ----
+  - [0, 1, SilenceChannel, [3, 4]]                # 7
+  - [-1, 1, Conv, [64, 3, 2]]                     # 8
+  - [-1, 1, Conv, [128, 3, 2]]                    # 9
+  - [-1, 2, C3k2, [256, False, 0.25]]             # 10
+  - [-1, 1, Conv, [256, 3, 2]]                    # 11
+  - [-1, 2, C3k2, [512, False, 0.25]]             # 12 (depth P3)
+  # ---- ADD 固定加权融合 P3 ----
+  - [[6, 12], 1, ADD, [0.5]]                      # 13 (fused P3, x_vis + 0.5*x_depth)
+  # ---- P4 各分支继续 ----
+  - [6, 1, Conv, [512, 3, 2]]                     # 14
+  - [-1, 2, C3k2, [512, True]]                    # 15 (vis P4)
+  - [12, 1, Conv, [512, 3, 2]]                    # 16
+  - [-1, 2, C3k2, [512, True]]                    # 17 (depth P4)
+  # ---- ADD 固定加权融合 P4 ----
+  - [[15, 17], 1, ADD, [0.5]]                     # 18 (fused P4)
+  # ---- P5 各分支继续 ----
+  - [15, 1, Conv, [1024, 3, 2]]                   # 19
+  - [-1, 2, C3k2, [1024, True]]                   # 20 (vis P5)
+  - [17, 1, Conv, [1024, 3, 2]]                   # 21
+  - [-1, 2, C3k2, [1024, True]]                   # 22 (depth P5)
+  # ---- ADD 固定加权融合 P5 ----
+  - [[20, 22], 1, ADD, [0.5]]                     # 23 (fused P5)
+  - [-1, 1, SPPF, [1024, 5]]                      # 24
+  - [-1, 2, C2PSA, [1024]]                        # 25
+
+# YOLO11n head（共享 PAN-FPN，输入为融合后的 P3/P4/P5）
+head:
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]    # 26
+  - [[-1, 18], 1, Concat, [1]]                    # 27 cat fused P4
+  - [-1, 2, C3k2, [512, False]]                   # 28
+
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]    # 29
+  - [[-1, 13], 1, Concat, [1]]                    # 30 cat fused P3
+  - [-1, 2, C3k2, [256, False]]                   # 31 (P3/8-small)
+
+  - [-1, 1, Conv, [256, 3, 2]]                    # 32
+  - [[-1, 28], 1, Concat, [1]]                    # 33 cat head P4
+  - [-1, 2, C3k2, [512, False]]                   # 34 (P4/16-medium)
+
+  - [-1, 1, Conv, [512, 3, 2]]                    # 35
+  - [[-1, 25], 1, Concat, [1]]                    # 36 cat head P5
+  - [-1, 2, C3k2, [1024, True]]                   # 37 (P5/32-large)
+
+  - [[31, 34, 37], 1, Detect, [nc]]               # 38 Detect(P3, P4, P5)
