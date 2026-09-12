@@ -425,6 +425,14 @@ class v8DetectionLoss:
         self.reg_max = m.reg_max
         self.device = device
 
+        # 类别加权（可选）：cls_pw 为每类正样本权重，解决类别不平衡（2026-09 方法2）。
+        # 仅作用于分类 loss（box/dfl 不受影响），权重来自 train.yaml 的 cls_pw。
+        pw = getattr(h, "cls_pw", None)
+        if pw is not None and len(pw) == self.nc:
+            self.cls_pw = torch.tensor(pw, device=device, dtype=torch.float32)
+        else:
+            self.cls_pw = None
+
         self.use_dfl = m.reg_max > 1
 
         self.assigner = TaskAlignedAssigner(topk=tal_topk, num_classes=self.nc, alpha=0.5, beta=6.0)
@@ -517,7 +525,12 @@ class v8DetectionLoss:
 
         # cls loss
         if isinstance(self.bce, (nn.BCEWithLogitsLoss, FocalLoss_YOLO)):
-            loss[1] = self.bce(pred_scores, target_scores.to(dtype)).sum() / target_scores_sum  # BCE
+            loss_cls = self.bce(pred_scores, target_scores.to(dtype))  # (b, h*w, nc)
+            if self.cls_pw is not None:
+                # 类别加权：正类按 cls_pw[c] 放大，负类/背景保持 1.0
+                cls_w = 1.0 + (self.cls_pw.view(1, 1, -1) - 1.0) * (target_scores > 0).float()
+                loss_cls = loss_cls * cls_w
+            loss[1] = loss_cls.sum() / target_scores_sum  # BCE
         elif isinstance(self.bce, VarifocalLoss_YOLO):
             if fg_mask.sum():
                 pos_ious = bbox_iou(pred_bboxes, target_bboxes / stride_tensor, xywh=False).clamp(min=1e-6).detach()

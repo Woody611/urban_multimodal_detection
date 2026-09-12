@@ -3,17 +3,91 @@
 import math
 import random
 from copy import copy
+from pathlib import Path
 
 import numpy as np
+import torch
 import torch.nn as nn
 
 from ultralytics.data import build_dataloader, build_yolo_dataset
 from ultralytics.engine.trainer import BaseTrainer
 from ultralytics.models import yolo
-from ultralytics.nn.tasks import DetectionModel
+from ultralytics.nn.tasks import DetectionModel, attempt_load_one_weight
 from ultralytics.utils import LOGGER, RANK
 from ultralytics.utils.plotting import plot_images, plot_labels, plot_results
 from ultralytics.utils.torch_utils import de_parallel, torch_distributed_zero_first
+
+
+def _transfer_rgb_pretrained(model, weights):
+    """Transfer single-branch COCO pretrained weights into an RGBD mid-fusion model.
+
+    The default ``model.load()`` matches weights by (key-name, shape) via
+    ``intersect_dicts``. RGBD fusion models prefix ``Silence``/``SilenceChannel``,
+    shifting the RGB-branch indices by +2 and interleaving the depth branch, so the
+    RGB branch matches ~0 keys. Here we remap module-by-module by structural
+    correspondence (RGB branch + shared SPPF/C2PSA/neck/Detect), leaving the depth
+    branch and 1x1 fusion convs random, then init the depth stem with
+    ``W_depth = mean(W_R, W_G, W_B)``.
+
+    Single-branch models (no 1-channel stem) are left untouched: standard
+    ``load()`` already handles them. Returns the number of tensors transferred.
+    """
+    from pathlib import Path
+
+    from ultralytics.nn.modules.conv import Conv
+    from ultralytics.nn.tasks import attempt_load_one_weight
+
+    stems = [m for m in model.model if isinstance(m, Conv)]
+    if not any(getattr(m.conv, "in_channels", None) == 1 for m in stems):
+        return 0  # not an RGBD fusion model -> nothing to remap
+
+    # source single-branch state_dict
+    if isinstance(weights, (str, Path)):
+        src_model, _ = attempt_load_one_weight(weights)
+        src = src_model.state_dict()
+    elif isinstance(weights, dict):
+        src = weights["model"] if "model" in weights else weights
+    else:
+        src = weights.state_dict()
+
+    # (fusion module idx -> single-branch yolo11 idx) for concat_res mid-fusion.
+    # The layout shifts between the 3-scale (Detect P3/P4/P5) and 4-scale (P2
+    # variant) architectures, so select by the number of detection heads.
+    nl = getattr(model.model[-1], "nl", 3)
+    if nl == 4:  # Detect(P2, P3, P4, P5)
+        pairs = {2: 0, 3: 1, 4: 2, 5: 3, 6: 4, 19: 5, 20: 6, 26: 7, 27: 8,
+                 33: 9, 34: 10, 37: 13, 40: 16, 44: 17, 46: 19, 47: 20,
+                 49: 22, 50: 23}
+    else:  # Detect(P3, P4, P5)
+        pairs = {2: 0, 3: 1, 4: 2, 5: 3, 6: 4, 16: 5, 17: 6, 23: 7, 24: 8,
+                 30: 9, 31: 10, 34: 13, 37: 16, 38: 17, 40: 19, 41: 20,
+                 43: 22, 44: 23}
+    n = 0
+    with torch.no_grad():
+        for fi, si in pairs.items():
+            prefix = f"model.{fi}."
+            for fname, fparam in model.state_dict().items():
+                if fname.startswith(prefix) and fparam.ndim > 0:
+                    sname = f"model.{si}." + fname[len(prefix):]
+                    sv = src.get(sname)
+                    if sv is not None and sv.shape == fparam.shape:
+                        fparam.copy_(sv)
+                        n += 1
+
+    # depth stem: W_depth = mean(W_R, W_G, W_B)
+    rgb = next((m for m in stems if m.conv.in_channels == 3), None)
+    depth = next((m for m in stems if m.conv.in_channels == 1), None)
+    if rgb is not None and depth is not None and rgb.conv.weight.shape[0] == depth.conv.weight.shape[0]:
+        with torch.no_grad():
+            depth.conv.weight.copy_(rgb.conv.weight.mean(dim=1, keepdim=True))
+            if depth.conv.bias is not None and rgb.conv.bias is not None:
+                depth.conv.bias.copy_(rgb.conv.bias)
+        LOGGER.info(
+            f"RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) "
+            f"(rgb in={rgb.conv.in_channels} -> depth in={depth.conv.in_channels})"
+        )
+    LOGGER.info(f"RGBD pretrained remap: transferred {n} tensors")
+    return n
 
 
 class DetectionTrainer(BaseTrainer):
@@ -86,8 +160,14 @@ class DetectionTrainer(BaseTrainer):
     def get_model(self, cfg=None, weights=None, verbose=True):
         """Return a YOLO detection model."""
         model = DetectionModel(cfg, nc=self.data["nc"], verbose=verbose and RANK == -1)
+        if weights is None and isinstance(self.args.pretrained, (str, Path)):
+            # `YOLO(yaml).train(pretrained=...)` reaches here with weights=None (self.ckpt
+            # is empty for yaml-built models), which silently skips weight loading and the
+            # RGBD remap below. Fall back to the trainer's `pretrained` arg so weights load.
+            weights, _ = attempt_load_one_weight(self.args.pretrained)
         if weights:
             model.load(weights)
+            _transfer_rgb_pretrained(model, weights)
         return model
 
     def get_validator(self):

@@ -103,6 +103,46 @@ def _link_or_copy(src: Path, dst: Path) -> None:
         shutil.copy2(src, dst)
 
 
+_AUG_SUFFIX_RE = re.compile(r"_(?:aug|bal)\d+$")
+
+
+def _base_stem(path: Path) -> str:
+    """返回原图 stem：去掉 `_augN` / `_balN` 后缀（若有）。
+
+    离线增强脚本把第 i 个变体命名为 `<stem>_aug<i>`，类别过采样脚本把第 i 个
+    副本命名为 `<stem>_bal<i>`。据此把同一原图的所有变体/副本归为一组，
+    避免随机 shuffle 把近重复样本切到 train/val 两侧造成泄漏。
+    """
+    return _AUG_SUFFIX_RE.sub("", path.stem)
+
+
+def _split_by_group(files, val_ratio, seed):
+    """按【原图 stem】分组切分，返回 (train_files, val_files)。
+
+    - 切分单位是原图 stem 数（train:val = 0.8:0.2），而非文件数。
+    - 同一原图 stem 的所有文件（原图 + _augN/_balN 副本）进同一侧，杜绝近重复泄漏。
+    - train 侧保留该 stem 的全部文件（原图 + 副本），供过采样/增强。
+    - val 侧只保留原图（不含 _balN/_augN 副本），保证验证集干净、与 baseline 同分布，
+      否则过采样副本会被计入 val 导致验证集膨胀、mAP 不可比（2026-09 depth2 已踩坑）。
+    - 兼容无 _aug*/_bal* 后缀的数据：每个 stem 只有一个文件，行为与旧版一致。
+    """
+    groups = {}
+    for f in files:
+        groups.setdefault(_base_stem(f), []).append(f)
+    stems = sorted(groups)
+    rng = random.Random(seed)
+    rng.shuffle(stems)
+    n_val = max(1, int(round(len(stems) * val_ratio)))
+    val_stems = set(stems[:n_val])
+    train_files, val_files = [], []
+    for s in stems:
+        if s in val_stems:
+            val_files.extend(f for f in groups[s] if f.stem == s)  # 仅原图，剔除 _balN/_augN
+        else:
+            train_files.extend(groups[s])  # 原图 + 全部副本
+    return train_files, val_files
+
+
 def _resolve_raw_root(dataset_cfg) -> Path:
     """返回可移植的原始数据根目录（data/raw）。
 
@@ -132,16 +172,16 @@ def _split_train_val(dataset_cfg, val_ratio: float, seed: int) -> Path:
         return out_yaml
 
     images = sorted(p for p in src_dir.iterdir() if p.suffix.lower() in IMG_EXTS)
-    rng = random.Random(seed)
-    rng.shuffle(images)
-    n_val = max(1, int(round(len(images) * val_ratio)))
-    val_set = set(images[:n_val])
+    train_files, val_files = _split_by_group(images, val_ratio, seed)
 
-    for p in images:
-        split = "val" if p in val_set else "train"
-        _link_or_copy(p, root / "images" / split / p.name)
+    for p in train_files:
+        _link_or_copy(p, root / "images" / "train" / p.name)
         _link_or_copy(labels_src / p.with_suffix(".txt").name,
-                      root / "labels" / split / p.with_suffix(".txt").name)
+                      root / "labels" / "train" / p.with_suffix(".txt").name)
+    for p in val_files:
+        _link_or_copy(p, root / "images" / "val" / p.name)
+        _link_or_copy(labels_src / p.with_suffix(".txt").name,
+                      root / "labels" / "val" / p.with_suffix(".txt").name)
 
     yaml.safe_dump(
         {
@@ -182,26 +222,29 @@ def _split_train_val_rgbt(dataset_cfg, val_ratio: float, seed: int) -> Path:
     if not infrared_src.is_dir():
         raise FileNotFoundError(f"红外目录不存在，无法生成 RGBT split: {infrared_src}")
 
-    root = PROJECT_ROOT / "data" / "processed" / "rgbt_split"
+    # 切分目录按来源子目录命名（train vs train_aug），避免切换 dataset 配置时复用旧缓存
+    src_key = Path(str(dataset_cfg["train"])).parent.name
+    root = PROJECT_ROOT / "data" / "processed" / f"rgbt_split_{src_key}"
     out_yaml = root / "dataset.yaml"
     if out_yaml.exists():
         return out_yaml
 
     images = sorted(p for p in src_dir.iterdir() if p.suffix.lower() in IMG_EXTS)
-    rng = random.Random(seed)
-    rng.shuffle(images)
-    n_val = max(1, int(round(len(images) * val_ratio)))
-    val_set = set(images[:n_val])
+    train_files, val_files = _split_by_group(images, val_ratio, seed)
 
-    for p in images:
-        split = "val" if p in val_set else "train"
+    for p in train_files:
         # visible 主输入
-        _link_or_copy(p, root / "images" / split / "visible" / p.name)
+        _link_or_copy(p, root / "images" / "train" / "visible" / p.name)
         # infrared 第二模态（同名）
-        _link_or_copy(infrared_src / p.name, root / "images" / split / "infrared" / p.name)
-        # 标注（images→labels 替换约定 → labels/{split}/visible/*.txt）
+        _link_or_copy(infrared_src / p.name, root / "images" / "train" / "infrared" / p.name)
+        # 标注（images→labels 替换约定 → labels/train/visible/*.txt）
         _link_or_copy(labels_src / p.with_suffix(".txt").name,
-                      root / "labels" / split / "visible" / p.with_suffix(".txt").name)
+                      root / "labels" / "train" / "visible" / p.with_suffix(".txt").name)
+    for p in val_files:
+        _link_or_copy(p, root / "images" / "val" / "visible" / p.name)
+        _link_or_copy(infrared_src / p.name, root / "images" / "val" / "infrared" / p.name)
+        _link_or_copy(labels_src / p.with_suffix(".txt").name,
+                      root / "labels" / "val" / "visible" / p.with_suffix(".txt").name)
 
     yaml.safe_dump(
         {
@@ -238,26 +281,29 @@ def _split_train_val_depth(dataset_cfg, val_ratio: float, seed: int) -> Path:
     if not depth_src.is_dir():
         raise FileNotFoundError(f"深度目录不存在，无法生成 Depth split: {depth_src}")
 
-    root = PROJECT_ROOT / "data" / "processed" / "depth_split"
+    # 切分目录按来源子目录命名（train vs train_aug），避免切换 dataset 配置时复用旧缓存
+    src_key = Path(str(dataset_cfg["train"])).parent.name
+    root = PROJECT_ROOT / "data" / "processed" / f"depth_split_{src_key}"
     out_yaml = root / "dataset.yaml"
     if out_yaml.exists():
         return out_yaml
 
     images = sorted(p for p in src_dir.iterdir() if p.suffix.lower() in IMG_EXTS)
-    rng = random.Random(seed)
-    rng.shuffle(images)
-    n_val = max(1, int(round(len(images) * val_ratio)))
-    val_set = set(images[:n_val])
+    train_files, val_files = _split_by_group(images, val_ratio, seed)
 
-    for p in images:
-        split = "val" if p in val_set else "train"
+    for p in train_files:
         # visible 主输入
-        _link_or_copy(p, root / "images" / split / "visible" / p.name)
+        _link_or_copy(p, root / "images" / "train" / "visible" / p.name)
         # depth 第二模态（同名）
-        _link_or_copy(depth_src / p.name, root / "images" / split / "depth" / p.name)
-        # 标注（images→labels 替换约定 → labels/{split}/visible/*.txt）
+        _link_or_copy(depth_src / p.name, root / "images" / "train" / "depth" / p.name)
+        # 标注（images→labels 替换约定 → labels/train/visible/*.txt）
         _link_or_copy(labels_src / p.with_suffix(".txt").name,
-                      root / "labels" / split / "visible" / p.with_suffix(".txt").name)
+                      root / "labels" / "train" / "visible" / p.with_suffix(".txt").name)
+    for p in val_files:
+        _link_or_copy(p, root / "images" / "val" / "visible" / p.name)
+        _link_or_copy(depth_src / p.name, root / "images" / "val" / "depth" / p.name)
+        _link_or_copy(labels_src / p.with_suffix(".txt").name,
+                      root / "labels" / "val" / "visible" / p.with_suffix(".txt").name)
 
     yaml.safe_dump(
         {
@@ -297,24 +343,28 @@ def _split_train_val_rgbid(dataset_cfg, val_ratio: float, seed: int) -> Path:
     if not depth_src.is_dir():
         raise FileNotFoundError(f"深度目录不存在，无法生成 RGBID split: {depth_src}")
 
-    root = PROJECT_ROOT / "data" / "processed" / "rgbid_split"
+    # 切分目录按来源子目录命名（train vs train_aug），避免切换 dataset 配置时复用旧缓存
+    src_key = Path(str(dataset_cfg["train"])).parent.name
+    root = PROJECT_ROOT / "data" / "processed" / f"rgbid_split_{src_key}"
     out_yaml = root / "dataset.yaml"
     if out_yaml.exists():
         return out_yaml
 
     images = sorted(p for p in src_dir.iterdir() if p.suffix.lower() in IMG_EXTS)
-    rng = random.Random(seed)
-    rng.shuffle(images)
-    n_val = max(1, int(round(len(images) * val_ratio)))
-    val_set = set(images[:n_val])
+    train_files, val_files = _split_by_group(images, val_ratio, seed)
 
-    for p in images:
-        split = "val" if p in val_set else "train"
-        _link_or_copy(p, root / "images" / split / "visible" / p.name)
-        _link_or_copy(infrared_src / p.name, root / "images" / split / "infrared" / p.name)
-        _link_or_copy(depth_src / p.name, root / "images" / split / "depth" / p.name)
+    for p in train_files:
+        _link_or_copy(p, root / "images" / "train" / "visible" / p.name)
+        _link_or_copy(infrared_src / p.name, root / "images" / "train" / "infrared" / p.name)
+        _link_or_copy(depth_src / p.name, root / "images" / "train" / "depth" / p.name)
         _link_or_copy(labels_src / p.with_suffix(".txt").name,
-                      root / "labels" / split / "visible" / p.with_suffix(".txt").name)
+                      root / "labels" / "train" / "visible" / p.with_suffix(".txt").name)
+    for p in val_files:
+        _link_or_copy(p, root / "images" / "val" / "visible" / p.name)
+        _link_or_copy(infrared_src / p.name, root / "images" / "val" / "infrared" / p.name)
+        _link_or_copy(depth_src / p.name, root / "images" / "val" / "depth" / p.name)
+        _link_or_copy(labels_src / p.with_suffix(".txt").name,
+                      root / "labels" / "val" / "visible" / p.with_suffix(".txt").name)
 
     yaml.safe_dump(
         {
@@ -385,6 +435,9 @@ def _build_train_kwargs(train_cfg, data_path):
     # RGBID 三模态：额外传递深度映射与输入通道数（channels 门控 5ch 增强分支）
     kwargs["pairs_rgb_depth"] = list(train_cfg.get("pairs_rgb_depth", ["visible", "depth"]))
     kwargs["channels"] = int(train_cfg.get("channels", 3))
+    # 类别加权（可选）：每类正样本权重，解决类别不平衡（2026-09 方法2，只作用于 cls loss）
+    if "cls_pw" in train_cfg:
+        kwargs["cls_pw"] = list(train_cfg["cls_pw"])
 
     # 数据增强超参（可选，由 train.yaml 的 aug 段控制；未配置则用 ultralytics 默认）。
     # 红外等非 RGB 模态需关闭 hsv_h/hsv_s、降低 mosaic/mixup 等，见 train_infrared.yaml。

@@ -1,0 +1,59 @@
+# ============================================================
+# E9 — YOLO11m + RGB+Depth 中期融合 + 1024（唯一变量: RGBD 数据增强/几何变换中
+#       Depth 的 padding value 114 -> 0，RGB padding 保持 114）
+# ============================================================
+# 在 E7（YOLO11m RGBD pretrained, mAP50-95=0.50878, 1024）基础上，仅修改 3 个
+# 数据增强/几何变换位置中 Depth 第 4 通道的 padding 值 114 -> 0：
+#   1. Mosaic._mosaic4：np.full 画布 RGB=114（gray_value），Depth 通道 img4[...,3]=0
+#   2. RandomPerspective.affine_transform：RGB borderValue=(114,114,114)，Depth borderValue=0
+#   3. LetterBox.__call__：RGB value=(114,114,114)，Depth value=0
+# 其余保持不变：RGB padding 仍为 114；模型/optimizer/lr/imgsz=1024/batch=8/
+# epochs=300/seed=42/P3P4P5/loss/其他aug/数据集切分 均与 E7 完全一致。
+# base.py 已回滚 E8-A（删除 _resize_rgbd，load_image 恢复 4ch 整体 INTER_LINEAR）。
+# model yaml 完全复用 E7 的 configs/yolo11m_midfusion_rgbd_concat_res.yaml（P3/P4/P5）。
+# RGB 分支真正加载 yolo11m.pt 预训练，depth stem 用 W_depth = mean(W_R,W_G,W_B) 初始化。
+# batch=8（E7 已证明 1024 + batch16 会 CUDA OOM）。
+# 命令:
+#   python scripts/train.py --model_config configs/yolo11m_midfusion_rgbd_concat_res.yaml \
+#       --train_config configs/train_e9.yaml
+# ============================================================
+
+experiment_name: "urban_multimodal_det_e9_yolo11m_rgbd_depthpad0"
+seed: 42
+pretrained: "yolo11m.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 300
+patience: 80
+batch_size: 8
+image_size: [1024, 1024]
+num_workers: 4
+
+learning_rate: 1.0e-2
+warmup_epochs: 3
+
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2
+
+use_simotm: "RGBD"
+pairs_rgb_ir: ["visible", "depth"]
+pairs_rgb_depth: ["visible", "depth"]
+channels: 4
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: false
+  resume_path: ""

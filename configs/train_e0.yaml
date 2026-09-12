@@ -1,0 +1,48 @@
+# ============================================================
+# E0 — YOLO11n + RGB + 640 + 干净数据集 + 默认增强 + 固定 seed + yolo11n.pt
+# ============================================================
+# 目标: 复现可信 RGB baseline（mAP50-95 ≈ 0.303），并确认日志出现
+#   "Transferred N/M items from pretrained weights"（证明预训练真正加载）。
+# 单一变量基准: 后续 E1(n→s) / E2(+depth) / E3(+P2) 都从这里逐级变化。
+# 命令:
+#   python scripts/train.py --model_config configs/yolo11_visible.yaml \
+#       --train_config configs/train_e0.yaml
+# ============================================================
+
+experiment_name: "urban_multimodal_det_e0_yolo11n_rgb"
+seed: 42
+pretrained: "yolo11n.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 300
+patience: 80
+batch_size: 16
+image_size: [640, 640]
+num_workers: 4
+
+learning_rate: 1.0e-2
+warmup_epochs: 3
+
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2
+
+use_simotm: "SimOTMBBS"
+pairs_rgb_ir: ["visible", "infrared"]
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: false
+  resume_path: ""

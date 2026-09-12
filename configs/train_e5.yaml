@@ -1,0 +1,52 @@
+# ============================================================
+# E5 — YOLO11m + RGB+Depth 中期融合 + P2(stride=4) 检测层 + 640
+# ============================================================
+# 唯一变量: 相对 E4（YOLO11m RGBD pretrained, mAP50-95=0.47783）增加 P2 检测层，
+# Detect 从 3 尺度(P3/P4/P5) → 4 尺度(P2/P3/P4/P5)。
+# RGB 分支真正加载 yolo11m.pt 预训练（detect/train.py 的 _transfer_rgb_pretrained 做
+# index 重映射，nl==4 路径），depth stem 用 W_depth = mean(W_R,W_G,W_B) 初始化。
+# 优化器/aug/seed/切分与 E4 完全一致（lr0=1e-2, warmup 3, wd 5e-4），保证唯一变量是 P2。
+# 命令:
+#   python scripts/train.py --model_config configs/yolo11m_midfusion_rgbd_concat_res_p2.yaml \
+#       --train_config configs/train_e5.yaml
+# ============================================================
+
+experiment_name: "urban_multimodal_det_e5_yolo11m_rgbd_p2"
+seed: 42
+pretrained: "yolo11m.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 300
+patience: 80
+batch_size: 16
+image_size: [640, 640]
+num_workers: 4
+
+learning_rate: 1.0e-2
+warmup_epochs: 3
+
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2
+
+use_simotm: "RGBD"
+pairs_rgb_ir: ["visible", "depth"]
+pairs_rgb_depth: ["visible", "depth"]
+channels: 4
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: false
+  resume_path: ""

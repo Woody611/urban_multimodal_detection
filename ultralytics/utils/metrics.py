@@ -1365,6 +1365,16 @@ class Metric(SimpleClass):
         return self.all_ap.mean(1) if len(self.all_ap) else []
 
     @property
+    def ap75(self):
+        """
+        Returns the Average Precision (AP) at an IoU threshold of 0.75 for all classes.
+
+        Returns:
+            (np.ndarray, list): Array of shape (nc,) with AP75 values per class, or an empty list if not available.
+        """
+        return self.all_ap[:, 5] if len(self.all_ap) else []
+
+    @property
     def mp(self):
         """
         Returns the Mean Precision of all classes.
@@ -1402,7 +1412,7 @@ class Metric(SimpleClass):
         Returns:
             (float): The mAP at an IoU threshold of 0.75.
         """
-        return self.all_ap[:, 5].mean() if len(self.all_ap) else 0.0
+        return self.ap75.mean() if len(self.all_ap) else 0.0
 
     @property
     def map(self):
@@ -1540,15 +1550,15 @@ class DetMetrics(SimpleClass):
     @property
     def keys(self):
         """Returns a list of keys for accessing specific metrics."""
-        return ["metrics/precision(B)", "metrics/recall(B)", "metrics/mAP50(B)", "metrics/mAP50-95(B)"]
+        return ["metrics/precision(B)", "metrics/recall(B)", "metrics/mAP50(B)", "metrics/mAP75(B)", "metrics/mAP50-95(B)"]
 
     def mean_results(self):
-        """Calculate mean of detected objects & return precision, recall, mAP50, and mAP50-95."""
-        return self.box.mean_results()
+        """Calculate mean of detected objects & return precision, recall, mAP50, mAP75, and mAP50-95."""
+        return [self.box.mp, self.box.mr, self.box.map50, self.box.map75, self.box.map]
 
     def class_result(self, i):
         """Return the result of evaluating the performance of an object detection model on a specific class."""
-        return self.box.class_result(i)
+        return self.box.p[i], self.box.r[i], self.box.ap50[i], self.box.ap75[i], self.box.ap[i]
 
     @property
     def maps(self):
