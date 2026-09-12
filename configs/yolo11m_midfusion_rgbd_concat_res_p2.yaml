@@ -1,0 +1,95 @@
+# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license
+
+# ============================================================
+# Urban MultiModal — YOLOv11m 中期融合 + P2 检测层（RGB+Depth，残差 Concat+1×1 Conv）
+# ============================================================
+# 在 yolo11m_midfusion_rgbd_concat_res.yaml（E4）基础上，仅新增 P2(stride=4) 检测层：
+#   - RGB/depth 各分支的 stride=4 特征（C3k2[256] 输出）额外做一次残差 Concat+1×1 Conv 融合
+#   - head 多一路从 P3 neck 上采样到 P2，Detect 变为 4 个尺度 (P2,P3,P4,P5)
+# 其余结构（P3/P4/P5 融合、neck、Detect 前三级）与 E4 完全一致，保证单一变量消融。
+# 输入: 4 通道 [R,G,B,D]。
+# 用法:
+#   python scripts/train.py --model_config configs/yolo11m_midfusion_rgbd_concat_res_p2.yaml \
+#       --train_config configs/train_e5.yaml
+# ============================================================
+
+ch: 4
+# Parameters
+nc: 12 # number of classes
+scales: # model compound scaling constants
+  # [depth, width, max_channels]
+  n: [0.50, 0.25, 1024]
+  s: [0.50, 0.50, 1024]
+  m: [0.50, 1.00, 512]
+  l: [1.00, 1.00, 512]
+  x: [1.00, 1.50, 512]
+
+backbone:
+  # [from, repeats, module, args]
+  - [-1, 1, Silence, []]                          # 0
+  # ---- visible 分支 (3ch) ----
+  - [0, 1, SilenceChannel, [0, 3]]                # 1
+  - [-1, 1, Conv, [64, 3, 2]]                     # 2
+  - [-1, 1, Conv, [128, 3, 2]]                    # 3
+  - [-1, 2, C3k2, [256, False, 0.25]]             # 4  (vis P2)
+  - [-1, 1, Conv, [256, 3, 2]]                    # 5
+  - [-1, 2, C3k2, [512, False, 0.25]]             # 6  (vis P3)
+  # ---- depth 分支 (1ch) ----
+  - [0, 1, SilenceChannel, [3, 4]]                # 7
+  - [-1, 1, Conv, [64, 3, 2]]                     # 8
+  - [-1, 1, Conv, [128, 3, 2]]                    # 9
+  - [-1, 2, C3k2, [256, False, 0.25]]             # 10 (depth P2)
+  - [-1, 1, Conv, [256, 3, 2]]                    # 11
+  - [-1, 2, C3k2, [512, False, 0.25]]             # 12 (depth P3)
+  # ---- 残差 Concat+Conv 融合 P2：fused = depth + delta ----
+  - [[4, 10], 1, Concat, [1]]                     # 13
+  - [-1, 1, Conv, [256, 1, 1]]                    # 14 (delta P2)
+  - [[14, 10], 1, ADD, [1.0]]                     # 15 (fused P2)
+  # ---- 残差 Concat+Conv 融合 P3 ----
+  - [[6, 12], 1, Concat, [1]]                     # 16
+  - [-1, 1, Conv, [512, 1, 1]]                    # 17 (delta P3)
+  - [[17, 12], 1, ADD, [1.0]]                     # 18 (fused P3)
+  # ---- P4 各分支继续 ----
+  - [6, 1, Conv, [512, 3, 2]]                     # 19
+  - [-1, 2, C3k2, [512, True]]                    # 20 (vis P4)
+  - [12, 1, Conv, [512, 3, 2]]                    # 21
+  - [-1, 2, C3k2, [512, True]]                    # 22 (depth P4)
+  # ---- 残差 Concat+Conv 融合 P4 ----
+  - [[20, 22], 1, Concat, [1]]                    # 23
+  - [-1, 1, Conv, [512, 1, 1]]                    # 24 (delta P4)
+  - [[24, 22], 1, ADD, [1.0]]                     # 25 (fused P4)
+  # ---- P5 各分支继续 ----
+  - [20, 1, Conv, [1024, 3, 2]]                   # 26
+  - [-1, 2, C3k2, [1024, True]]                   # 27 (vis P5)
+  - [22, 1, Conv, [1024, 3, 2]]                   # 28
+  - [-1, 2, C3k2, [1024, True]]                   # 29 (depth P5)
+  # ---- 残差 Concat+Conv 融合 P5 ----
+  - [[27, 29], 1, Concat, [1]]                    # 30
+  - [-1, 1, Conv, [1024, 1, 1]]                   # 31 (delta P5)
+  - [[31, 29], 1, ADD, [1.0]]                     # 32 (fused P5)
+  - [-1, 1, SPPF, [1024, 5]]                      # 33
+  - [-1, 2, C2PSA, [1024]]                        # 34
+
+# YOLO11m head（共享 PAN-FPN；在 P3 neck 后多一路 P2，Detect 4 尺度）
+head:
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]    # 35
+  - [[-1, 25], 1, Concat, [1]]                    # 36 cat fused P4
+  - [-1, 2, C3k2, [512, False]]                   # 37 (P4 neck)
+
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]    # 38
+  - [[-1, 18], 1, Concat, [1]]                    # 39 cat fused P3
+  - [-1, 2, C3k2, [256, False]]                   # 40 (P3 neck)
+
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]    # 41 up to P2
+  - [[-1, 15], 1, Concat, [1]]                    # 42 cat fused P2
+  - [-1, 2, C3k2, [128, False]]                   # 43 (P2 neck)
+
+  - [40, 1, Conv, [256, 3, 2]]                    # 44 down P3 neck
+  - [[-1, 37], 1, Concat, [1]]                    # 45 cat head P4
+  - [-1, 2, C3k2, [512, False]]                   # 46 (P4 merge)
+
+  - [-1, 1, Conv, [512, 3, 2]]                    # 47 down P4 merge
+  - [[-1, 34], 1, Concat, [1]]                    # 48 cat head P5
+  - [-1, 2, C3k2, [1024, True]]                   # 49 (P5 merge)
+
+  - [[43, 40, 46, 49], 1, Detect, [nc]]           # 50 Detect(P2, P3, P4, P5)

@@ -11,17 +11,19 @@
 #
 # Depth 加载规则（ultralytics/data/{base,dataset,loaders}.py 的 use_simotm=='Depth' 分支）:
 #   - 读取深度图（IMREAD_UNCHANGED），16-bit 单通道 PNG（单位毫米，[0,19999]）
-#   - 无效深度 (<300mm) 置 0；有效值 /19999.0 归一化到 [0,1]
+#   - 无效深度 (<300mm) 置 0；有效值 /19999.0 线性归一化到 [0,255]
 #   - 单通道复制为 3 通道后输入标准 3ch 模型
 #   - 少数 8-bit 3 通道 .jpg 深度图按 /255.0 归一化（详见代码注释）
+#   - 已证伪：log1p 归一化(2026-09) 使 mAP50-95 从 0.312 崩到 0.112——log 把近处抬到 147~206，
+#     被 hsv_v 增亮(×1.4) 裁到 255 毁掉深度信号，且压缩前后景对比度。保持线性。
 # ============================================================
 
 # ---- Experiment ----------------------------------------------
-experiment_name: "urban_multimodal_det_yolo11_depth_coco"
+experiment_name: "urban_multimodal_det_yolo11_depth"
 seed: 42
 
 # ---- Pretrain -------------------------------------------------
-pretrained: "yolo11n.pt"              # COCO 预训练权重（自动下载）；false=从头训练
+pretrained: false                   # 从头训练（与 0.312 基线一致，做 1280 干净对照；COCO 预训练已证伪）
 
 # ---- Device --------------------------------------------------
 device: "cuda"                       # cuda | cpu
@@ -31,7 +33,7 @@ gpu_ids: [0]                         # 单卡: [0]; 多卡: [0,1,2,3]
 epochs: 200                           # 与 RGB baseline 一致
 patience: 30                          # 早停: 连续 30 epoch 无提升则停止
 batch_size: 16
-image_size: [640, 640]               # [height, width]
+image_size: [640, 640]                # [height, width] 回到 640 做干净 scale 对照（nano 上 1280 反降，先验证 scale）
 num_workers: 4
 
 # ---- Learning rate -------------------------------------------
@@ -83,6 +85,13 @@ val_ratio: 0.2                        # 无独立 val 时，从 train 切分的�
 # ---- 多模态 (Depth 单模态) ------------------------------------
 use_simotm: "Depth"                   # Depth = 深度图复制为 3ch; 默认 SimOTMBBS 为 3ch
 pairs_rgb_ir: ["visible", "depth"]    # visible 主输入 -> depth 第二模态（路径替换读取深度图）
+
+# ---- 类别加权 (解决类别不平衡, 2026-09 方法2) -------------------
+# cls_pw: 每类正样本权重，只作用于分类 loss（box/dfl 不受影响）。
+# 公式 w_c = min(20, sqrt(N_person / N_c))，N 为训练集实例数（train ≈ val×4）。
+# 类序: person/boat/animal/seat/sign/bicycle/car/ball/light/garbage_can/uav/tricycle
+# 实例: 4180/112/2924/428/600/424/1152/76/976/228/120/8
+cls_pw: [1.0, 6.11, 1.2, 3.13, 2.64, 3.14, 1.9, 7.42, 2.07, 4.28, 5.9, 20.0]
 
 # ---- Evaluation metrics --------------------------------------
 evaluation_metric:

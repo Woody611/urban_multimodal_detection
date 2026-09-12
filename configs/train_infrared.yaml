@@ -15,7 +15,7 @@
 # ============================================================
 
 # ---- Experiment ----------------------------------------------
-experiment_name: "urban_multimodal_det_yolo11_infrared"
+experiment_name: "urban_multimodal_det_yolo11_infrared_v2"
 seed: 42
 
 # ---- Pretrain -------------------------------------------------
@@ -33,7 +33,7 @@ image_size: [640, 640]               # [height, width]
 num_workers: 4
 
 # ---- Learning rate -------------------------------------------
-learning_rate: 5.0e-3                # 红外域偏移大，用 RGB 的一半，保护预训练 backbone
+learning_rate: 1.0e-2                # 与 depth-only 一致（从头训练，无需压低 lr；原 5e-3 是错的）
 warmup_epochs: 5                     # 更长的 warmup，平稳起步
 warmup_start_lr: 1.0e-6
 min_lr_ratio: 0.01                   # 最终 lr = base_lr × min_lr_ratio
@@ -43,7 +43,7 @@ min_lr_ratio: 0.01                   # 最终 lr = base_lr × min_lr_ratio
 aug:
   hsv_h: 0.0                         # 灰度图无 Hue，关闭
   hsv_s: 0.0                         # 灰度图无 Saturation，关闭
-  hsv_v: 0.3                         # 亮度增强（红外增益漂移），略低于 RGB 默认 0.4
+  hsv_v: 0.4                         # 亮度增强，对齐 depth-only（灰度单模态依赖强亮度抖动）
   degrees: 0.0                       # 旋转（沿用 RGB 默认）
   translate: 0.1                     # 平移
   scale: 0.5                         # 缩放
@@ -51,7 +51,7 @@ aug:
   perspective: 0.0                   # 透视
   flipud: 0.0                        # 上下翻转
   fliplr: 0.5                        # 左右翻转（目标检测关键增强，保留）
-  mosaic: 0.5                        # 降低 mosaic（低纹理红外对强 mosaic 敏感，1.0 -> 0.5）
+  mosaic: 1.0                        # 对齐 depth-only：灰度单模态依赖强 mosaic 提供多样性
   mixup: 0.0                         # mixup 对灰度红外是噪声，保持关闭
   copy_paste: 0.0                    # 复制粘贴增强关闭
   erasing: 0.4                       # 随机擦除（沿用默认）

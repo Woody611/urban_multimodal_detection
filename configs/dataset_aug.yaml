@@ -1,0 +1,35 @@
+# ============================================================
+# Urban Multi-Modal Object Detection — 增强数据集配置（4× 离线几何增强）
+# ============================================================
+# 与 configs/dataset.yaml 完全一致，仅把 train 指向离线增强目录 train_aug/visible。
+# train_aug 由 scripts/augment_offline.py 生成：每张原图 + 3 个几何增强变体 = 4 倍。
+# 训练时 train.py 的 _split_train_val_depth 会从 train_aug/ 读取，并按【原图 stem】
+# 分组切分（原图 + _augN 变体同侧），杜绝近重复样本泄漏到 val。
+#
+# path 字段与 dataset.yaml 相同（d:/gyt/...）。在 Linux/AutoDL 上该 Windows 路径
+# 不存在，_resolve_raw_root 会回退到项目根下的 data/raw，行为与原配置一致。
+# ============================================================
+
+# ---- 数据集根目录 -------------------------------------------
+path: "d:/gyt/AIC/urban_multimodal_detection/data/raw"
+
+# ---- 划分路径 (relative to `path`, 均指向 visible 主输入) ------
+train: train_aug/visible       # 增强训练集（4× 几何增强，主输入 visible）
+val:   test/visible            # 验证集（占位; test 无标注，训练时按 val_ratio 从 train_aug 重切）
+test:  test/visible            # 测试集
+
+# ---- 类别 (12 类, 顺序即 class id) ---------------------------
+nc: 12
+names:
+  0: person
+  1: boat
+  2: animal
+  3: seat
+  4: sign
+  5: bicycle
+  6: car
+  7: ball
+  8: light
+  9: garbage_can
+  10: uav
+  11: tricycle

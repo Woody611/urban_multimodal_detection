@@ -1,0 +1,47 @@
+# ============================================================
+# E1 — YOLO11s + RGB + 640（唯一变量: n → s）
+# ============================================================
+# 与 E0 完全一致，仅把模型 scale 从 n 换成 s（yolo11s_visible.yaml 文件名带 's'
+# 触发 scale='s'），预训练权重换成 yolo11s.pt。其余（aug/优化器/seed/切分）不变。
+# 命令:
+#   python scripts/train.py --model_config configs/yolo11s_visible.yaml \
+#       --train_config configs/train_e1.yaml
+# ============================================================
+
+experiment_name: "urban_multimodal_det_e1_yolo11s_rgb"
+seed: 42
+pretrained: "yolo11s.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 300
+patience: 80
+batch_size: 16
+image_size: [640, 640]
+num_workers: 4
+
+learning_rate: 1.0e-2
+warmup_epochs: 3
+
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2
+
+use_simotm: "SimOTMBBS"
+pairs_rgb_ir: ["visible", "infrared"]
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: false
+  resume_path: ""
