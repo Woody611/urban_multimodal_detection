@@ -375,8 +375,6 @@ def main():
 
     # ---- 推理主循环 ----
     processed = 0
-    n_truncated = 0  # NMS 后单图框数超过 max_boxes 的图片数（用于判断 100 框截断是否影响验证）
-    max_seen = 0     # 所有图片中单图最大框数
     limit = 10 if args.debug else float("inf")
     try:
         from tqdm import tqdm
@@ -393,7 +391,7 @@ def main():
         # 原图推理 + NMS
         with torch.no_grad():
             preds = nn_model(x)
-        out = non_max_suppression(preds, args.conf, args.iou, nc=nc, max_det=args.max_det, multi_label=True)
+        out = non_max_suppression(preds, args.conf, args.iou, nc=nc, max_det=args.max_det)
         for i in range(len(out)):
             if out[i] is not None and len(out[i]):
                 out[i][:, :4] = scale_boxes(x.shape[2:], out[i][:, :4], orig_shapes[i])
@@ -403,7 +401,7 @@ def main():
             xf = torch.flip(x, dims=[3])  # 宽度维水平翻转
             with torch.no_grad():
                 preds_f = nn_model(xf)
-            out_f = non_max_suppression(preds_f, args.conf, args.iou, nc=nc, max_det=args.max_det, multi_label=True)
+            out_f = non_max_suppression(preds_f, args.conf, args.iou, nc=nc, max_det=args.max_det)
             W_lb = x.shape[3]
             for i in range(len(out)):
                 df = out_f[i]
@@ -421,10 +419,6 @@ def main():
             if processed >= limit:
                 break
             orig_h, orig_w = orig_shapes[i]
-            n_dets = 0 if out[i] is None else len(out[i])
-            max_seen = max(max_seen, n_dets)
-            if n_dets > args.max_boxes:
-                n_truncated += 1
             lines = _format_lines(out[i], orig_h, orig_w, args.max_boxes)
             out_txt = results_dir / (Path(p).stem + ".txt")
             with open(out_txt, "w", encoding="utf-8") as f:
@@ -447,8 +441,6 @@ def main():
             zf.write(txt, arcname=f"results/{txt.name}")
 
     print(f"[predict] 完成：{processed} 张图 → {results_dir}")
-    print(f"[predict] 框数统计: 单图最大框数={max_seen}, "
-          f"超过 max_boxes({args.max_boxes}) 被截断的图片数={n_truncated}")
     print(f"[predict] 打包   → {zip_path}")
 
     # ---- 校验 ----

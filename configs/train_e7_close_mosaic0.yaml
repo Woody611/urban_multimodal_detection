@@ -1,0 +1,72 @@
+# ============================================================
+# Phase 6-A — E7 单变量实验: close_mosaic 10 -> 0
+# ============================================================
+# 目的: 验证 E7 训练末期(ep291 起) mAP50-95 的陡降台阶是否由 close_mosaic=10 引起。
+#
+# 唯一变量: close_mosaic 10 -> 0（整个训练过程都不关闭 Mosaic）。
+# 其余全部与 E7 保持一致。本文件是 configs/train_e7.yaml 的逐行副本，仅三处不同:
+#   1. experiment_name: 改为 ..._close_mosaic0（新目录，绝不覆盖 E7 原目录）
+#   2. batch_size: 16 -> 8
+#      ⚠️ 对齐 E7 的**实际** batch。train_e7.yaml 写的是 16，但 E7 实际 args.yaml 是
+#      batch: 8（imgsz=1024 显存不足降配，见 train_e7.yaml 注释预告）。若此处仍写 16，
+#      会引入 batch 这第二个变量，A/B 失效。
+#   3. aug 段: 新增且**只含** close_mosaic: 0
+#      ⚠️ scripts/train.py:444-449 的转发循环是 `if key in aug`，只写这一个键就**只**覆盖
+#      close_mosaic，其余增强参数继续走 ultralytics 默认值 —— 与 E7 完全一致
+#      （train_e7.yaml 本身没有 aug 段，E7 的全部增强参数都来自 default.yaml 默认）。
+#
+# close_mosaic=0 的生效语义（已核对 fork 源码）:
+#   ultralytics/engine/trainer.py:338  `if self.args.close_mosaic:` -> 0 为假，跳过关闭逻辑
+#   ultralytics/engine/trainer.py:749  `start_epoch > (epochs - close_mosaic)` -> 300-0=300，永不成立
+#   => mosaic 全程开启，符合实验定义。
+#
+# 命令:
+#   python scripts/train.py --model_config configs/yolo11m_midfusion_rgbd_concat_res.yaml \
+#       --train_config configs/train_e7_close_mosaic0.yaml
+# ============================================================
+
+experiment_name: "urban_multimodal_det_e7_close_mosaic0"
+seed: 42
+pretrained: "yolo11m.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 300
+patience: 80
+batch_size: 8
+image_size: [1024, 1024]
+num_workers: 4
+
+learning_rate: 1.0e-2
+warmup_epochs: 3
+
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2
+
+use_simotm: "RGBD"
+pairs_rgb_ir: ["visible", "depth"]
+pairs_rgb_depth: ["visible", "depth"]
+channels: 4
+
+# ---- 本次唯一变量 ----
+# E7 无 aug 段 => 全部增强取 ultralytics 默认（含 close_mosaic=10）。
+# 这里只覆盖 close_mosaic，其余默认值保持不变。
+aug:
+  close_mosaic: 0
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: false
+  resume_path: ""
