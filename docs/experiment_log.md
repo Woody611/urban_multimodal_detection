@@ -225,6 +225,37 @@ python scripts/train.py \
 
 ---
 
+## Phase 6-B：lr0 / optimizer 单变量 A/B（F 系列）
+
+### F1：lr0 减半（2026-09-14，**正向，确立新主线**）
+
+| 项 | 值 |
+| :--- | :--- |
+| 配置 | `configs/train_e7_lr0half.yaml`（唯一变量 `learning_rate: 0.01 → 0.005`） |
+| 输出目录 | `runs/urban_multimodal_det_e7_lr0half/`（`resume: false`，独立不覆盖） |
+| **best mAP@0.5:0.95** | **0.51955 @ ep287**（E7 = 0.50878 @ ep257，**+0.01077**） |
+| best mAP@0.5 | 0.76883（E7 = 0.75573，+0.01310） |
+
+| 区间 | E7（lr0=0.01） | F1（lr0=0.005） | Δ |
+| :--- | :---: | :---: | :---: |
+| 平台 ep250–290 均值 | 0.50493 | 0.51647 | +0.01154 |
+| 末 10 轮 ep291–300 均值 | 0.49303 | 0.51322 | +0.02019 |
+| 末窗口 box gap（train/val 分叉） | 0.8453 | 0.8288 | −0.0165 |
+
+**判定**：假设成立。E7 的 `lr0=0.01` 偏高，是 ep257 后 train/val 分叉 + 平台期压顶的一个原因。减半到 0.005 后：每个 25 轮窗口都高于 E7（+0.009~+0.054）、best 落在 ep270–290 稳平台（非尖峰）、box gap 收窄、close_mosaic 末 10 轮台阶从 −0.012 缩到 −0.003。**新主线基线 = 0.51955。**
+
+### F2：optimizer SGD → AdamW（待跑）
+
+| 项 | 值 |
+| :--- | :--- |
+| 配置 | `configs/train_e7_adamw.yaml`（SGD→AdamW，`lr0=1e-3`、`momentum=0.9` 作 beta1） |
+| 输出目录 | `runs/urban_multimodal_det_e7_adamw/` |
+| 状态 | **尚未训练** |
+
+> 后续候选方向：F1b = lr0 再减半（0.005→0.0025）；但需等 F2 出结果后统一判读，避免一次开太多实验。
+
+---
+
 ## 实验逻辑链（当前阶段）
 
 ```
@@ -243,6 +274,10 @@ TTA 未证明有稳定 mAP@0.5:0.95 增益（实测 −0.01174）
 转向 training-side optimization
         ↓
 Phase 6-A：close_mosaic = 0 单变量 A/B 实验（证伪，best 0.50878 不变）
+        ↓
+Phase 6-B-F1：lr0 减半（0.01→0.005）→ **正向 +0.01077，新基线 0.51955**
+        ↓
+Phase 6-B-F2：optimizer SGD→AdamW（待跑）
 ```
 
 ---

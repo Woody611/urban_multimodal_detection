@@ -1,0 +1,63 @@
+# ============================================================
+# F1 — E7 单变量实验: lr0 减半 (learning_rate 0.01 -> 0.005)
+# ============================================================
+# 唯一变量: learning_rate（train.py 映射到 ultralytics lr0） 1.0e-2 -> 5.0e-3。
+# 目的: 验证 E7 在 ep257 后的 train/val 分叉是否由 lr0 偏高（过冲）引起。
+#
+# 本文件是 configs/train_e7.yaml 的逐行副本，仅两处不同:
+#   1. experiment_name: 改为 ..._e7_lr0half（新目录，绝不覆盖 E7）
+#   2. learning_rate: 1.0e-2 -> 5.0e-3（唯一变量）
+#   3. batch_size: 16 -> 8
+#      ⚠️ 对齐 E7 的**实际** batch。train_e7.yaml 写的是 16，但 E7 实际 args.yaml 是
+#      batch: 8（imgsz=1024 显存不足降配）。若此处仍写 16，会引入 batch 这第二变量，A/B 失效。
+#
+# 其余全部继承 E7 实际生效配置（见 E7 配置审计）:
+#   SGD(momentum=0.937, wd=5e-4, nesterov=True 源码硬编码), lrf=0.01, cos_lr=True,
+#   warmup 3/0.8/0.1, batch=8, epochs=300, patience=80, imgsz=1024, seed=42,
+#   模型结构 / 数据集切分 / RGBD 4ch 管线 / Depth 预处理 / 增强 全部不变, close_mosaic=10(默认)。
+# 不修改任何模型代码。
+#
+# 命令:
+#   python scripts/train.py --model_config configs/yolo11m_midfusion_rgbd_concat_res.yaml \
+#       --train_config configs/train_e7_lr0half.yaml
+# ============================================================
+
+experiment_name: "urban_multimodal_det_e7_lr0half"
+seed: 42
+pretrained: "yolo11m.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 300
+patience: 80
+batch_size: 8
+image_size: [1024, 1024]
+num_workers: 4
+
+learning_rate: 5.0e-3
+warmup_epochs: 3
+
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2
+
+use_simotm: "RGBD"
+pairs_rgb_ir: ["visible", "depth"]
+pairs_rgb_depth: ["visible", "depth"]
+channels: 4
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: false
+  resume_path: ""
