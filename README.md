@@ -1,6 +1,6 @@
 # 面向城市场景的视觉多模态目标检测
 
-> **当前状态（2026-09-13）**：主线基线为 **E7**（YOLO11m + RGB+Depth 中期融合，`imgsz=1024`），训练内置 `model.val()` 的 `best mAP@0.5:0.95 = 0.50878`（epoch 257）。
+> **当前状态（2026-09-14）**：主线基线为 **F1**（YOLO11m + RGB+Depth 中期融合，`imgsz=1024`，`lr0=0.005`），训练内置 `model.val()` 的 `best mAP@0.5:0.95 = 0.51955`（epoch 287）；上一版 E7（`lr0=0.01`）= 0.50878，F1 相对 E7 **+0.01077**。
 > **正式实验指标统一以 `model.val()` 为准**，`scripts/predict.py` 仅作推理/结果检查工具。推理侧优化（TTA / conf / NMS IoU）已探索完毕，当前优化重点为**训练阶段**。
 > 完整实验记录与结论见 [`docs/experiment_log.md`](docs/experiment_log.md)。
 
@@ -146,18 +146,24 @@ Urban-Multimodal-Detection
 
 > 本章为实验结论摘要。完整配置、逐项结果与分析见 [`docs/experiment_log.md`](docs/experiment_log.md)。
 
-## 7.1 当前主线基线：E7
+## 7.1 当前主线基线：F1（E7 + lr0 减半）
 
 | 项目 | 值 |
 | :--- | :--- |
-| 实验 | E7 |
+| 实验 | **F1**（上一版 E7，见下方对照） |
 | 模型 | YOLO11m + RGB + Depth 中期融合（`configs/yolo11m_midfusion_rgbd_concat_res.yaml`，`ch=4`、P3/P4/P5、约 30.3M 参数） |
 | 输入 | 4 通道 `[R,G,B,D]`，`imgsz=1024` |
 | 数据 | 从 `train` 按 `val_ratio=0.2` + `seed=42` 在 stem 级别切分 → 1600 训练 / 400 验证 |
-| 训练 | SGD，`lr0=1e-2`（CosineAnnealingLR），`batch=8`，`epochs=300`，`patience=80`，AMP |
-| **best mAP@0.5:0.95** | **0.50878**（epoch 257） |
-| best mAP@0.5 | 0.75573 |
-| 权重 | `runs/urban_multimodal_det_e7_yolo11m_rgbd_1024/weights/best.pt` |
+| 训练 | SGD，`lr0=5e-3`（唯一变量：E7 的 `lr0=1e-2` 减半），`batch=8`，`epochs=300`，`patience=80`，AMP |
+| **best mAP@0.5:0.95** | **0.51955**（epoch 287） |
+| best mAP@0.5 | 0.76883 |
+| 权重 | `runs/urban_multimodal_det_e7_lr0half/weights/best.pt` |
+
+| 对照 | E7（lr0=0.01） | F1（lr0=0.005） | Δ |
+| :--- | :---: | :---: | :---: |
+| best mAP@0.5:0.95 | 0.50878 @ ep257 | 0.51955 @ ep287 | **+0.01077** |
+| best mAP@0.5 | 0.75573 | 0.76883 | +0.01310 |
+| 末窗口 box gap（分叉） | 0.8453 | 0.8288 | −0.0165 |
 
 关键配置结论：**depth 通道 resize 保持 `INTER_LINEAR`、padding 保持 114**。depth 中的 0 本身带有「无深度信号」语义（JPG 中约 73%、PNG 中约 5.78% 的像素为 0），padding=0 会让模型在图像边缘学到虚假的 depth 梯度；114 是 depth 的离群值，天然充当「忽略此 padding」的哨兵。相关变体（`INTER_NEAREST`、padding=0）均已实验证伪。
 
@@ -218,7 +224,7 @@ imgsz / seed / 数据集与切分 / RGB-Depth 预处理 / 其它数据增强）�
 ## 7.5 实验逻辑链
 
 ```
-E7 baseline
+E7 baseline（mAP@0.5:0.95 = 0.50878）
         ↓
 predict.py / model.val() 一致性验证（差值 +0.00111）
         ↓
@@ -231,4 +237,8 @@ TTA 未证明有稳定 mAP@0.5:0.95 增益（实测 −0.01174）
 转向 training-side optimization
         ↓
 Phase 6-A：close_mosaic = 0 单变量 A/B 实验（证伪，best 0.50878 不变）
+        ↓
+Phase 6-B-F1：lr0 减半（0.01 → 0.005）→ 正向 +0.01077，新基线 0.51955
+        ↓
+Phase 6-B-F2：optimizer SGD → AdamW（待跑）
 ```

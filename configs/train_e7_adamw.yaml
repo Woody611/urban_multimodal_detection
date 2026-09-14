@@ -1,0 +1,65 @@
+# ============================================================
+# F2 — E7 单变量实验: optimizer SGD -> AdamW
+# ============================================================
+# 唯一变量（语义）: 优化器族 SGD -> AdamW。
+#   固有子变量（换优化器必然连带，非独立变量）:
+#     - learning_rate: 1.0e-2 -> 1.0e-3  (Adam 需比 SGD 低 ~10x；default.yaml 注释: SGD=1E-2, Adam=1E-3)
+#     - momentum: 0.937 -> 0.9            (fork 将 momentum 作 AdamW beta1: trainer.py:804 betas=(momentum,0.999))
+#     - nesterov: SGD 专属，AdamW 下自动失效（源码仅 SGD 分支使用）
+#
+# 本文件是 configs/train_e7.yaml 的逐行副本，不同处:
+#   1. experiment_name: ..._e7_adamw（新目录，绝不覆盖 E7）
+#   2. learning_rate: 1.0e-2 -> 1.0e-3
+#   3. optimizer.type: SGD -> AdamW ; optimizer.momentum: 0.937 -> 0.9
+#   4. batch_size: 16 -> 8（对齐 E7 实际 batch，见 train_e7_lr0half.yaml 注释）
+#
+# 继承 E7: weight_decay=5e-4(经 add_param_group 仍作用于卷积权重, AdamW 解耦衰减),
+#   lrf=0.01, cos_lr=True, warmup 3/0.8/0.1, batch=8, epochs=300, patience=80,
+#   imgsz=1024, seed=42, 模型结构 / 数据集切分 / RGBD 4ch 管线 / Depth 预处理 / 增强不变,
+#   close_mosaic=10(默认)。
+# 不修改任何模型代码。
+#
+# 命令:
+#   python scripts/train.py --model_config configs/yolo11m_midfusion_rgbd_concat_res.yaml \
+#       --train_config configs/train_e7_adamw.yaml
+# ============================================================
+
+experiment_name: "urban_multimodal_det_e7_adamw"
+seed: 42
+pretrained: "yolo11m.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 300
+patience: 80
+batch_size: 8
+image_size: [1024, 1024]
+num_workers: 4
+
+learning_rate: 1.0e-3
+warmup_epochs: 3
+
+optimizer:
+  type: "AdamW"
+  momentum: 0.9
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2
+
+use_simotm: "RGBD"
+pairs_rgb_ir: ["visible", "depth"]
+pairs_rgb_depth: ["visible", "depth"]
+channels: 4
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: false
+  resume_path: ""
