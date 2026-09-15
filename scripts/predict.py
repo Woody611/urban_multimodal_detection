@@ -1,6 +1,6 @@
 """scripts/predict.py — 比赛最终提交预测文件生成（推理）。
 
-职责：加载训练好的 best.pt（默认 F1 YOLO11m RGBD 中期融合模型，lr0=0.005，imgsz=1024）→ 在 test 集上推理
+职责：加载训练好的 best.pt（默认 F4 YOLO11m RGBD 中期融合模型，lr0=0.005，imgsz=1280）→ 在 test 集上推理
 → 每张图生成同名 TXT（YOLO 归一化格式，含置信度）→ 打包成 submission.zip。
 
 设计要点（对应需求逐条落实）:
@@ -21,7 +21,7 @@
   - --debug: 只处理前 10 张图并打印详细信息。
 
 用法:
-  python scripts/predict.py                                    # 默认 F1 best.pt
+  python scripts/predict.py                                    # 默认 F4 best.pt
   python scripts/predict.py --weights runs/.../best.pt --tta
   python scripts/predict.py --conf 0.001 --iou 0.7 --batch 16
   python scripts/predict.py --use_simotm RGBD --pairs_rgb_ir visible,depth \
@@ -63,9 +63,9 @@ try:
 except Exception:  # pragma: no cover - 极老 torchvision 兜底
     torch_nms = None
 
-# F1 默认权重 / 训练配置 / 测试输入（YOLO11m RGBD，imgsz=1024，lr0=0.005，best mAP50-95=0.51955）
-DEFAULT_WEIGHTS = "runs/urban_multimodal_det_e7_lr0half/weights/best.pt"
-DEFAULT_TRAIN_CONFIG = "configs/train_e7_lr0half.yaml"
+# F4 默认权重 / 训练配置 / 测试输入（YOLO11m RGBD，imgsz=1280，lr0=0.005，best mAP50-95=0.53273）
+DEFAULT_WEIGHTS = "runs/urban_multimodal_det_yolo11_rgbd_f4_1280/weights/best.pt"
+DEFAULT_TRAIN_CONFIG = "configs/train_f4_1280.yaml"
 DEFAULT_SOURCE = "data/raw/test/visible"
 
 CLASS_ID_MIN, CLASS_ID_MAX = 0, 11  # class_id ∈ [0, 11]
@@ -290,7 +290,7 @@ def _parse_args():
                         help="置信度阈值（NMS 前过滤），默认 0.001")
     parser.add_argument("--iou", type=float, default=0.7,
                         help="NMS IoU 阈值，默认 0.7（与训练 val 一致）")
-    parser.add_argument("--imgsz", type=int, default=1024, help="推理输入尺寸，默认 1024（与训练一致）")
+    parser.add_argument("--imgsz", type=int, default=1280, help="推理输入尺寸，默认 1280（与训练一致）")
     parser.add_argument("--batch", type=int, default=16, help="推理批大小，默认 16")
     parser.add_argument("--max_det", type=int, default=300,
                         help="NMS 每图最大检测数，默认 300")
