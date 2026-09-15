@@ -1,0 +1,13 @@
+class_id,class,images,instances_eval,precision,recall,AP50,AP75,AP50-95,gt_instances,mean_area_px,median_area_px,small_ratio,det_rate,miss_to,fp_from,cross_cls
+0,person,219,1045,0.858,0.646,0.769,0.465,0.464,1073,17116.2,2357.5,0.324,0.741,background(272);animal(3);boat(1),background(218);seat(2);bicycle(1),10
+1,boat,14,28,0.799,0.567,0.724,0.51,0.5,28,23044.5,3731.7,0.143,0.750,background(7),background(6);seat(2);person(1),3
+2,animal,184,731,0.906,0.702,0.834,0.567,0.548,733,11452.0,3454.8,0.186,0.759,background(177),background(71);person(3);sign(2),5
+3,seat,51,107,0.878,0.738,0.829,0.773,0.694,107,38344.4,22246.3,0.084,0.757,background(21);person(2);boat(2),background(17);bicycle(1),6
+4,sign,83,150,0.818,0.547,0.641,0.404,0.4,150,10105.6,1363.3,0.373,0.600,background(54);light(4);animal(2),background(26),6
+5,bicycle,43,106,0.831,0.491,0.627,0.419,0.399,116,15818.0,1944.1,0.302,0.560,background(49);person(1);seat(1),background(24);person(1),3
+6,car,69,288,0.823,0.76,0.802,0.581,0.538,288,13631.8,3116.2,0.069,0.806,background(55);person(1),background(64);seat(1),2
+7,ball,17,19,0.975,0.526,0.652,0.315,0.369,19,1414.9,898.1,0.579,0.526,background(9),-,0
+8,light,85,244,0.785,0.693,0.711,0.562,0.509,244,10719.9,5292.7,0.098,0.725,background(67),background(56);sign(4),4
+9,garbage_can,46,57,0.945,0.608,0.76,0.54,0.523,57,8131.7,3932.2,0.193,0.649,background(20),background(5),0
+10,uav,23,30,0.884,0.867,0.887,0.598,0.53,30,5929.3,2965.0,0.1,0.900,background(3),background(3);person(1),1
+11,tricycle,1,2,0.908,1.0,0.995,0.995,0.754,2,36440.0,36440.0,0.0,1.000,-,-,0

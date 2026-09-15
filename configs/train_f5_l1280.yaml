@@ -1,0 +1,72 @@
+# ============================================================
+# F5 — 单变量实验: 模型规模 YOLO11m -> YOLO11l（保持 imgsz=1280）
+# ============================================================
+# 唯一变量: model_config 由 yolo11m_midfusion_rgbd_concat_res.yaml 换成
+#           yolo11l_midfusion_rgbd_concat_res.yaml（scale m -> l，depth 0.50 -> 1.00，
+#           width 1.00 不变；顶层模块序号 0..44 与 m 完全一致）。
+# 目的: 验证「容量」杠杆。F4(1280) 后 recall 上升但 precision 下降（bicycle -0.078 /
+#       ball -0.060），m 量级已逼近判别能力上限，l 有望保住 recall、补回 precision。
+#
+# 本文件是 configs/train_f4_1280.yaml（= F4 实际训练配置）的逐行副本，仅三处不同:
+#   1. experiment_name: ..._f4_1280 -> ..._f5_l1280（独立目录，绝不覆盖 F4）
+#   2. pretrained:      yolo11m.pt -> yolo11l.pt（RGB 分支预训练，detect/train.py 的
+#                       _transfer_rgb_pretrained 做 index 重映射；顶层序号不变 → 对 l 仍有效）
+#   3. batch_size:      8 -> 4（l@1280 显存约为 m@1280 的 1.3~1.6×，V100 32GB 保守起见取 4；
+#                       梯度累积 nbs=64 → accumulate=16，有效 batch 恒为 64，lr0 保持 0.005 不变）
+#
+# 其余全部与 F4 逐字一致（对照 F4 落盘 args.yaml 核验）:
+#   SGD(momentum=0.937, wd=5e-4, nesterov=True 源码硬编码), lr0=0.005, lrf=0.01, cos_lr=True,
+#   warmup_epochs=3 / warmup_momentum=0.8 / warmup_bias_lr=0.1, epochs=300, patience=80,
+#   image_size=[1280,1280], seed=42, deterministic=true, amp=true, val=true,
+#   无 aug 段 → 增强全部取 ultralytics 默认（mosaic=1.0, mixup=0.0, copy_paste=0.0,
+#   degrees=0.0, translate=0.1, scale=0.5, shear=0.0, perspective=0.0, flipud=0.0, fliplr=0.5,
+#   hsv_h=0.015, hsv_s=0.7, hsv_v=0.4, erasing=0.4, close_mosaic=10）。
+#   模型结构 / 数据集切分（val_ratio=0.2, seed=42 → depth_split_train）/ RGBD 4ch 管线 /
+#   Depth 预处理 / conf=0.001 / iou=0.7 / max_det=300 / loss gain(box=7.5,cls=0.5,dfl=1.5) 全部不变。
+#
+# 不修改任何模型代码，不 resume F4（从零训练）。
+#
+# 命令:
+#   python scripts/train.py --model_config configs/yolo11l_midfusion_rgbd_concat_res.yaml \
+#       --train_config configs/train_f5_l1280.yaml
+# ============================================================
+
+experiment_name: "urban_multimodal_det_yolo11_rgbd_f5_l1280"
+seed: 42
+pretrained: "yolo11l.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 300
+patience: 80
+batch_size: 4
+image_size: [1280, 1280]
+num_workers: 4
+
+learning_rate: 5.0e-3
+warmup_epochs: 3
+
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2
+
+use_simotm: "RGBD"
+pairs_rgb_ir: ["visible", "depth"]
+pairs_rgb_depth: ["visible", "depth"]
+channels: 4
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: false
+  resume_path: ""
