@@ -1,0 +1,28 @@
+=== rect letterbox round-trip 回归测试 ===
+
+[1] 矩形画布尺寸（set_rectangle 公式复刻）
+  大图 1080x1920 (ar=0.5625): got=(736, 1312) expect=(736, 1312) stride32=OK PASS
+  小图 360x640 (ar=0.5625): got=(736, 1312) expect=(736, 1312) stride32=OK PASS
+  纵向 1920x1080 (ar=1.7778): got=(1312, 736) expect=(1312, 736) stride32=OK PASS
+  宽图 1000x2000 (ar=0.5): got=(672, 1312) expect=(672, 1312) stride32=OK PASS
+  方图 1280x1280 (ar=1.0): got=(1312, 1312) expect=(1312, 1312) stride32=OK PASS
+  [所有常见 ar 均 stride-32 对齐]
+
+[2] 坐标 round-trip（原图框 → letterbox 画布框 → scale_boxes 反变换回原图）
+  大图 1080x1920 中心框: canvas=(736x1312) r=0.6667 pad=(16,8) maxerr=0.000px PASS
+  大图 1080x1920 左上+右下角框: canvas=(736x1312) r=0.6667 pad=(16,8) maxerr=0.000px PASS
+  小图 360x640（放大 2x）中心框: canvas=(736x1312) r=2.0000 pad=(16,8) maxerr=0.000px PASS
+  纵向 1920x1080 中心框: canvas=(1312x736) r=0.6667 pad=(8,16) maxerr=0.000px PASS
+  宽图 1000x2000 (ar=0.5) 中心框: canvas=(672x1312) r=0.6400 pad=(16,16) maxerr=0.000px PASS
+
+[3] RGB/Depth 同步（4ch 合并 → 同一 ratio/pad）
+  ratio_pad=((2.0,2.0),(16,8)) 单一值 → RGB/Depth 共享 ✓ PASS
+
+[4] square letterbox scaleup 语义（复刻 predict.py 对照组）
+  scaleup=True : gain=2.000 pad=(0,280)  → 小图放大 2x（正确）
+  scaleup=False: gain=2.000 pad=(0,280)  → 重算 gain=2.0/pad=(0,280)
+    注意：scaleup=False 下 scale_boxes 重算的 gain/pad 与真实 letterbox(gain=1.0,pad=(320,460)) 不符，
+    这正是 predict.py:399 未传 ratio_pad 的 latent bug 铁证；rect 路径已显式传 ratio_pad 规避。
+
+=== 结果 ===
+ALL REGRESSION TESTS PASSED

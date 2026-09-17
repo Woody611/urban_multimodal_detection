@@ -1,0 +1,128 @@
+[
+ [
+  "RGBID 正式 best.pt",
+  "runs/urban_multimodal_det_yolo11_rgbird_ir_quicktest/weights/best.pt",
+  40635237,
+  "2026-09-17 06:01:16",
+  "f9dddbfaca4cb08bde31d082eb0a54d499b8441eb1f97c6134a028caa6d83e55"
+ ],
+ [
+  "RGBID last.pt(参考)",
+  "runs/urban_multimodal_det_yolo11_rgbird_ir_quicktest/weights/last.pt",
+  40635237,
+  "2026-09-17 06:01:25",
+  "cfa00836314e5e5eb87b35ff7dd6fc42d2e0291f81c5ffc7384957b51e88004f"
+ ],
+ [
+  "RGBID args.yaml",
+  "runs/urban_multimodal_det_yolo11_rgbird_ir_quicktest/args.yaml",
+  1837,
+  "2026-09-17 06:00:55",
+  "d074a44cb374f06ab3abd41e8455cd72d14ac7bcf31efcffa2419e94fc1291b2"
+ ],
+ [
+  "RGBID results.csv",
+  "runs/urban_multimodal_det_yolo11_rgbird_ir_quicktest/results.csv",
+  39742,
+  "2026-09-17 06:00:58",
+  "29125f32715688f94d20960767518d3c1a2b93485041858edf9705e90ba18361"
+ ],
+ [
+  "F4 备用 best.pt",
+  "runs/urban_multimodal_det_yolo11_rgbd_f4_1280/weights/best.pt",
+  61331325,
+  "2026-09-15 07:25:22",
+  "989c449ad7a2298a64fd7d43ef2763b0ce777b948dcb754486081b3c93fccfac"
+ ],
+ [
+  "F4 args.yaml",
+  "runs/urban_multimodal_det_yolo11_rgbd_f4_1280/args.yaml",
+  1833,
+  "2026-09-15 07:24:42",
+  "732d5e96ad9eb295db61c79712b869865a5fbefd40731a253a6aea5fca60ddec"
+ ],
+ [
+  "正式 RGBID submission.zip",
+  "submissions/rgbird_ir_quicktest/submission.zip",
+  289016,
+  "2026-09-17 06:37:58",
+  "0c550773c86561089a9fe70ac020ecb67e12febe70093bbb7686aa97d1f756ce"
+ ],
+ [
+  "Ensemble 3:1 候选 zip",
+  "submissions/rgbid_f4_ensemble_3to1_candidate/submission.zip",
+  340634,
+  "2026-09-17 13:23:26",
+  "cee8e90205abeefc2b8593c5ff30dbf49634a4bcfa212b599978274d0ac75d97"
+ ],
+ [
+  "冻结 predict_rect.py",
+  "scripts/predict_rect.py",
+  11286,
+  "2026-09-15 22:34:28",
+  "656aa58789a467e003517a3f6ca1f05ab25dc065cf5861a8df66468f90528be8"
+ ],
+ [
+  "预测/提交工具 predict.py",
+  "scripts/predict.py",
+  20269,
+  "2026-09-15 12:54:23",
+  "ffc1edd08aa0d22b2e007ef76a83b7358ddb12e623aeafd1788a7d11236e1f13"
+ ],
+ [
+  "类别配置 configs/dataset.yaml",
+  "configs/dataset.yaml",
+  3338,
+  "2026-08-25 19:37:05",
+  "fd326f30f53a0e7abcb974e44c48891e9eef041d38967477cb01a32b99466599"
+ ],
+ [
+  "RGBID 切分 dataset.yaml",
+  "data/processed/rgbid_split/dataset.yaml",
+  293,
+  "2026-09-02 20:37:33",
+  "b30032e74fd95b9301c56a8a290927883a8efbd3c510814eb41bc4f89879cecf"
+ ],
+ [
+  "RGBID 训练配置",
+  "configs/train_rgbird_ir_quicktest.yaml",
+  2583,
+  "2026-09-16 17:38:37",
+  "0fb7b43c5702cc833ec13ff0b1c5c0d7a1cab44fa687101065d5a92450430db1"
+ ],
+ [
+  "RGBID 模型配置",
+  "configs/yolo11m_earlyfusion.yaml",
+  2685,
+  "2026-09-16 17:37:42",
+  "edc95f4665ead847e759b5dc7c871ddc4090f20186b9718bb3cfd8a0b76d9399"
+ ],
+ [
+  "README.md",
+  "README.md",
+  12974,
+  "2026-09-14 07:33:53",
+  "7d0f3b80d872913ae04e9dcf57727592267a57f1a0b0cee6d092f8bd01d1a906"
+ ],
+ [
+  "docs/experiment_log.md",
+  "docs/experiment_log.md",
+  32098,
+  "2026-09-14 07:32:14",
+  "36ef3171207c8669a9b54fceb4287be7ebc30e9344f0ca2d2a470325833e3b81"
+ ],
+ [
+  "docs/model_design.md",
+  "docs/model_design.md",
+  11584,
+  "2026-09-13 11:14:30",
+  "62908153d383c1e1b03854cb756d6f97ef4db7de2ea12654b5f63d7957ed0f4d"
+ ],
+ [
+  "experiments/README.md",
+  "experiments/README.md",
+  1502,
+  "2026-08-25 09:27:50",
+  "d97a6b029131cc5aac0eed3baefa9b7bcef4dc3992fcd63080d89c7f45d2e8f0"
+ ]
+]

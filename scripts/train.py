@@ -460,6 +460,12 @@ def _build_train_kwargs(train_cfg, data_path):
     if "warmup_momentum" in train_cfg:
         kwargs["warmup_momentum"] = float(train_cfg["warmup_momentum"])
 
+    # loss 权重（box/cls/dfl）：可选覆盖
+    # 未配置时保持 Ultralytics 默认值，不改变现有实验行为
+    for key in ("box", "cls", "dfl"):
+        if key in train_cfg:
+            kwargs[key] = float(train_cfg[key])
+
     return kwargs
 
 

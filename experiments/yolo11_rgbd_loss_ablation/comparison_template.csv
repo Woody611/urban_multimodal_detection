@@ -1,0 +1,4 @@
+experiment,box,cls,dfl,mAP50,mAP50-95,precision,recall,notes
+l0_baseline,7.5,0.5,1.5,,,,F4 复现基线（应≈0.53273，验证 L0 与 F4 一致）
+l1_box10,10.0,0.5,1.5,,,,唯一变量 box 7.5->10.0
+l2_dfl2,7.5,0.5,2.0,,,,唯一变量 dfl 1.5->2.0

@@ -1,0 +1,33 @@
+===== F4 baseline =====
+[predict_rect] mode=rect scaleup=True weights=best.pt
+[predict_rect] source=D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\images\val\visible n=400 conf=0.001 iou=0.7 imgsz=1280 max_det=300 max_boxes=300
+[predict_rect] 完成 400 张图 → D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_inference_gain\F4_baseline\results（400 个 TXT）
+===== RGBID hflip TTA =====
+[audit] task=hflip ratio=1:1 device=cpu
+[audit] model A: runs\urban_multimodal_det_yolo11_rgbird_ir_quicktest\weights\best.pt nc=12 stride=32 use_simotm=RGBID channels=5
+[audit] 完成 400/400 张图 -> D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_inference_gain\RGBID_tta_hflip\results（400 个 TXT）
+[audit] 总耗时 554.5s，平均 1.386s/图
+===== RGBID multiscale TTA =====
+[audit] task=multiscale ratio=1:1 device=cpu
+[audit] model A: runs\urban_multimodal_det_yolo11_rgbird_ir_quicktest\weights\best.pt nc=12 stride=32 use_simotm=RGBID channels=5
+[audit] 完成 400/400 张图 -> D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_inference_gain\RGBID_tta_multiscale\results（400 个 TXT）
+[audit] 总耗时 788.7s，平均 1.972s/图
+===== ensemble 1:1 =====
+[audit] task=ensemble ratio=1:1 device=cpu
+[audit] model A: runs\urban_multimodal_det_yolo11_rgbird_ir_quicktest\weights\best.pt nc=12 stride=32 use_simotm=RGBID channels=5
+[audit] model B: runs\urban_multimodal_det_yolo11_rgbd_f4_1280\weights\best.pt nc=12 stride=32 use_simotm=RGBD channels=4
+[audit] 完成 400/400 张图 -> D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_inference_gain\RGBID_f4_ens_1to1\results（400 个 TXT）
+[audit] 总耗时 692.6s，平均 1.731s/图
+===== ensemble 2:1 =====
+[audit] task=ensemble ratio=2:1 device=cpu
+[audit] model A: runs\urban_multimodal_det_yolo11_rgbird_ir_quicktest\weights\best.pt nc=12 stride=32 use_simotm=RGBID channels=5
+[audit] model B: runs\urban_multimodal_det_yolo11_rgbd_f4_1280\weights\best.pt nc=12 stride=32 use_simotm=RGBD channels=4
+[audit] 完成 400/400 张图 -> D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_inference_gain\RGBID_f4_ens_2to1\results（400 个 TXT）
+[audit] 总耗时 700.5s，平均 1.751s/图
+===== ensemble 3:1 =====
+[audit] task=ensemble ratio=3:1 device=cpu
+[audit] model A: runs\urban_multimodal_det_yolo11_rgbird_ir_quicktest\weights\best.pt nc=12 stride=32 use_simotm=RGBID channels=5
+[audit] model B: runs\urban_multimodal_det_yolo11_rgbd_f4_1280\weights\best.pt nc=12 stride=32 use_simotm=RGBD channels=4
+[audit] 完成 400/400 张图 -> D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_inference_gain\RGBID_f4_ens_3to1\results（400 个 TXT）
+[audit] 总耗时 729.8s，平均 1.825s/图
+===== ALL DONE =====

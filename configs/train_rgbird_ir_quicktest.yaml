@@ -1,0 +1,68 @@
+# ============================================================
+# IR 快速可行性实验（最终冲刺 · 第二任务）— RGB+IR+Depth 早期融合
+# ============================================================
+# 唯一变量: 模态 4ch RGBD -> 5ch RGBID（visible+infrared+depth 早期融合）
+# 目的: 只回答一个问题 —— 在完全复制 F4 训练条件的情况下，加入 Infrared 后，
+#       RGBD -> RGB+IR+Depth 能否提升验证集 mAP50-95？
+#
+# 本文件是 configs/train_f4_1280.yaml（= F4 实际训练配置）的逐行副本，仅四处不同:
+#   1. experiment_name: urban_multimodal_det_yolo11_rgbd_f4_1280
+#        -> urban_multimodal_det_yolo11_rgbird_ir_quicktest（独立目录，绝不覆盖 F4）
+#   2. use_simotm: RGBD -> RGBID
+#   3. pairs_rgb_ir: [visible, depth] -> [visible, infrared]（真实红外，非深度）
+#   4. channels: 4 -> 5（门控 5ch 增强分支）
+#
+# 其余全部与 F4 逐字一致（已对照 F4 落盘 args.yaml 核验）:
+#   epochs=300, patience=80, batch=8, image_size=[1280,1280], seed=42, deterministic=true,
+#   SGD(momentum=0.937, wd=5e-4, nesterov=True), lr0=0.005, lrf=0.01(默认), cos_lr=true,
+#   warmup_epochs=3, amp=true, val=true, val_ratio=0.2, pretrained=yolo11m.pt,
+#   无 aug 段 → 增强全部取 ultralytics 默认（mosaic=1.0, mixup=0.0, copy_paste=0.0,
+#   degrees=0.0, translate=0.1, scale=0.5, shear=0.0, perspective=0.0, flipud=0.0, fliplr=0.5,
+#   hsv_h=0.015, hsv_s=0.7, hsv_v=0.4, erasing=0.4, close_mosaic=10）,
+#   loss gain（box=7.5, cls=0.5, dfl=1.5）与 nbs=64 走默认，本文件不覆盖。
+#   数据集切分（val_ratio=0.2, seed=42 -> rgbid_split_train，val 与 F4 depth_split_train 完全一致）。
+#
+# 命令:
+#   python scripts/train.py --model_config configs/yolo11m_earlyfusion.yaml \
+#       --train_config configs/train_rgbird_ir_quicktest.yaml
+# ============================================================
+
+experiment_name: "urban_multimodal_det_yolo11_rgbird_ir_quicktest"
+seed: 42
+pretrained: "yolo11m.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 300
+patience: 80
+batch_size: 8
+image_size: [1280, 1280]
+num_workers: 4
+
+learning_rate: 5.0e-3
+warmup_epochs: 3
+
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2
+
+use_simotm: "RGBID"
+pairs_rgb_ir: ["visible", "infrared"]
+pairs_rgb_depth: ["visible", "depth"]
+channels: 5
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: false
+  resume_path: ""

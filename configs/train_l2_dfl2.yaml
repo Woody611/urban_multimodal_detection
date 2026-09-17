@@ -1,0 +1,67 @@
+# ============================================================
+# Loss 消融 · L2 DFL 增强（第一轮）
+# ============================================================
+# 唯一变量: dfl gain 1.5 -> 2.0（box=7.5, cls=0.5 保持不变）。
+# 目的: 放大 DFL(Distribution Focal Loss) 权重，观察边界框分布定位是否改善，
+#       对难定位的小目标（sign/bicycle/ball）是否有帮助。
+#
+# 本文件是 configs/train_f4_1280.yaml 的副本，相对 F4 共两处不同（其余逐字一致）:
+#   1. experiment_name: urban_multimodal_det_yolo11_rgbd_f4_1280
+#        -> yolo11_rgbd_loss_l2_dfl2（独立目录）
+#   2. 显式写出 loss 权重 box=7.5 / cls=0.5 / dfl=2.0（相对 L0 仅 dfl 变）
+#
+# 单变量核对: 与 train_l0_baseline.yaml 逐字段 diff，仅 dfl 1.5->2.0 一处差异；
+#   其余（含 batch=8）全部一致。
+#
+# 生效说明: scripts/train.py 的 _build_train_kwargs 已加最小补丁转发 box/cls/dfl，
+#   本文件的 dfl=2.0 会真正写入 trainer.args / loss.hyp。
+#
+# 命令（先不要执行）:
+#   python scripts/train.py --model_config configs/yolo11m_midfusion_rgbd_concat_res.yaml \
+#       --train_config configs/train_l2_dfl2.yaml
+# ============================================================
+
+experiment_name: "yolo11_rgbd_loss_l2_dfl2"
+seed: 42
+pretrained: "yolo11m.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 300
+patience: 80
+batch_size: 8
+image_size: [1280, 1280]
+num_workers: 4
+
+learning_rate: 5.0e-3
+warmup_epochs: 3
+
+# ---- loss 权重（唯一变量: dfl 1.5 -> 2.0）----
+box: 7.5
+cls: 0.5
+dfl: 2.0
+
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2
+
+use_simotm: "RGBD"
+pairs_rgb_ir: ["visible", "depth"]
+pairs_rgb_depth: ["visible", "depth"]
+channels: 4
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: false
+  resume_path: ""
