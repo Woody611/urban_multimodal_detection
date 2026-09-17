@@ -1,0 +1,27 @@
+# ============================================================
+# RGBID 方案 · 最终冻结校验清单（只读归档）
+# ============================================================
+# 生成时间 : 2026-09-17 13:55:44
+# 比赛截止 : 2026-09-20 20:00
+# 用途     : 日后校验冻结产物是否被意外修改。本文件不修改任何被记录的文件。
+# 校验方法 : python -c "import hashlib,sys;[print(hashlib.sha256(open(l.rsplit('  ',1)[1].strip(),'rb').read()).hexdigest(), l.rsplit('  ',1)[1].strip()) for l in open('reports/FREEZE_MANIFEST.sha256') if l.startswith(('MODEL','SUBMISSION','FROZEN_CODE','CONFIG','RUN_META','DOC'))]"
+#
+# 类型                    字节  SHA256                                                           路径
+#----------------------------------------------------------------------------------------------------------------------------------
+MODEL           40635237  f9dddbfaca4cb08bde31d082eb0a54d499b8441eb1f97c6134a028caa6d83e55  runs/urban_multimodal_det_yolo11_rgbird_ir_quicktest/weights/best.pt   # RGBID Early Fusion best.pt（正式提交候选，线上 0.53180）
+MODEL           61331325  989c449ad7a2298a64fd7d43ef2763b0ce777b948dcb754486081b3c93fccfac  runs/urban_multimodal_det_yolo11_rgbd_f4_1280/weights/best.pt   # F4 RGBD best.pt（备用，线上 0.51051）
+SUBMISSION        289016  0c550773c86561089a9fe70ac020ecb67e12febe70093bbb7686aa97d1f756ce  submissions/rgbird_ir_quicktest/submission.zip   # RGBID 正式 submission.zip（线上 0.53180 对应，正式提交候选）
+SUBMISSION        340634  cee8e90205abeefc2b8593c5ff30dbf49634a4bcfa212b599978274d0ac75d97  submissions/rgbid_f4_ensemble_3to1_candidate/submission.zip   # Ensemble 3:1 候选 zip（不提交，仅归档）
+FROZEN_CODE        11286  656aa58789a467e003517a3f6ca1f05ab25dc065cf5861a8df66468f90528be8  scripts/predict_rect.py   # 冻结推理脚本 predict_rect.py
+FROZEN_CODE        20269  ffc1edd08aa0d22b2e007ef76a83b7358ddb12e623aeafd1788a7d11236e1f13  scripts/predict.py   # 预测/提交工具 predict.py
+CONFIG              3338  fd326f30f53a0e7abcb974e44c48891e9eef041d38967477cb01a32b99466599  configs/dataset.yaml   # 类别配置 configs/dataset.yaml
+CONFIG               293  b30032e74fd95b9301c56a8a290927883a8efbd3c510814eb41bc4f89879cecf  data/processed/rgbid_split/dataset.yaml   # RGBID 切分 dataset.yaml
+CONFIG              2583  0fb7b43c5702cc833ec13ff0b1c5c0d7a1cab44fa687101065d5a92450430db1  configs/train_rgbird_ir_quicktest.yaml   # RGBID 训练配置
+CONFIG              2685  edc95f4665ead847e759b5dc7c871ddc4090f20186b9718bb3cfd8a0b76d9399  configs/yolo11m_earlyfusion.yaml   # RGBID 模型配置
+RUN_META            1837  d074a44cb374f06ab3abd41e8455cd72d14ac7bcf31efcffa2419e94fc1291b2  runs/urban_multimodal_det_yolo11_rgbird_ir_quicktest/args.yaml   # RGBID args.yaml
+RUN_META           39742  29125f32715688f94d20960767518d3c1a2b93485041858edf9705e90ba18361  runs/urban_multimodal_det_yolo11_rgbird_ir_quicktest/results.csv   # RGBID results.csv
+RUN_META            1833  732d5e96ad9eb295db61c79712b869865a5fbefd40731a253a6aea5fca60ddec  runs/urban_multimodal_det_yolo11_rgbd_f4_1280/args.yaml   # F4 args.yaml
+DOC                12974  7d0f3b80d872913ae04e9dcf57727592267a57f1a0b0cee6d092f8bd01d1a906  README.md   # README.md
+DOC                32098  36ef3171207c8669a9b54fceb4287be7ebc30e9344f0ca2d2a470325833e3b81  docs/experiment_log.md   # docs/experiment_log.md
+DOC                11584  62908153d383c1e1b03854cb756d6f97ef4db7de2ea12654b5f63d7957ed0f4d  docs/model_design.md   # docs/model_design.md
+DOC                 1502  d97a6b029131cc5aac0eed3baefa9b7bcef4dc3992fcd63080d89c7f45d2e8f0  experiments/README.md   # experiments/README.md

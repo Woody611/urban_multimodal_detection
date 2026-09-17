@@ -19,17 +19,22 @@ from ultralytics.utils.torch_utils import de_parallel, torch_distributed_zero_fi
 
 
 def _transfer_rgb_pretrained(model, weights):
-    """Transfer single-branch COCO pretrained weights into an RGBD mid-fusion model.
+    """Transfer single-branch COCO pretrained weights into fusion models.
 
     The default ``model.load()`` matches weights by (key-name, shape) via
-    ``intersect_dicts``. RGBD fusion models prefix ``Silence``/``SilenceChannel``,
-    shifting the RGB-branch indices by +2 and interleaving the depth branch, so the
-    RGB branch matches ~0 keys. Here we remap module-by-module by structural
-    correspondence (RGB branch + shared SPPF/C2PSA/neck/Detect), leaving the depth
-    branch and 1x1 fusion convs random, then init the depth stem with
-    ``W_depth = mean(W_R, W_G, W_B)``.
+    ``intersect_dicts``, so any stem whose input-channel count differs from the
+    pretrained 3ch is silently skipped. Two fusion families are handled here:
 
-    Single-branch models (no 1-channel stem) are left untouched: standard
+    - RGBD mid-fusion (separate 1ch depth stem): the RGB branch is prefixed by
+      ``Silence``/``SilenceChannel``, shifting its indices by +2, so ``load()``
+      matches ~0 RGB keys. Remap module-by-module by structural correspondence,
+      then init the depth stem with ``W_depth = mean(W_R, W_G, W_B)``.
+    - RGBID early fusion (single 5ch stem): every layer except the first Conv
+      matches ``load()`` exactly; only the first Conv weight (5ch vs 3ch) is
+      skipped. Copy the pretrained RGB weights into the first 3 channels and init
+      the IR/depth channels with ``mean(W_R, W_G, W_B)``.
+
+    Single-branch models (no 1ch or 5ch stem) are left untouched: standard
     ``load()`` already handles them. Returns the number of tensors transferred.
     """
     from pathlib import Path
@@ -38,8 +43,6 @@ def _transfer_rgb_pretrained(model, weights):
     from ultralytics.nn.tasks import attempt_load_one_weight
 
     stems = [m for m in model.model if isinstance(m, Conv)]
-    if not any(getattr(m.conv, "in_channels", None) == 1 for m in stems):
-        return 0  # not an RGBD fusion model -> nothing to remap
 
     # source single-branch state_dict
     if isinstance(weights, (str, Path)):
@@ -49,6 +52,29 @@ def _transfer_rgb_pretrained(model, weights):
         src = weights["model"] if "model" in weights else weights
     else:
         src = weights.state_dict()
+
+    # ---- RGBID early fusion: first Conv absorbs all 5 channels (no 1ch stem) ----
+    five_ch = next((m for m in stems if getattr(m.conv, "in_channels", None) == 5), None)
+    if five_ch is not None and not any(getattr(m.conv, "in_channels", None) == 1 for m in stems):
+        # Early fusion has no Silence -> first Conv is model.0. Standard load() already
+        # matched every key except the 5ch stem weight; fill it here (RGB=pretrained,
+        # IR/D=mean(R,G,B), mirroring the RGBD depth-stem init convention).
+        w = src.get("model.0.conv.weight")
+        if w is not None and w.shape[1] == 3 and w.shape[0] == five_ch.conv.weight.shape[0]:
+            n_aux = five_ch.conv.weight.shape[1] - 3
+            with torch.no_grad():
+                five_ch.conv.weight[:, :3].copy_(w)  # RGB 预训练
+                five_ch.conv.weight[:, 3:].copy_(
+                    w.mean(dim=1, keepdim=True).repeat(1, n_aux, 1, 1)
+                )  # IR/D = mean(R,G,B)
+            LOGGER.info(
+                f"RGBID early-fusion stem init: RGB=pretrained, IR/D=mean(R,G,B) "
+                f"(stem in={five_ch.conv.in_channels})"
+            )
+            return 5
+
+    if not any(getattr(m.conv, "in_channels", None) == 1 for m in stems):
+        return 0  # not an RGBD fusion model -> nothing to remap
 
     # (fusion module idx -> single-branch yolo11 idx) for concat_res mid-fusion.
     # The layout shifts between the 3-scale (Detect P3/P4/P5) and 4-scale (P2

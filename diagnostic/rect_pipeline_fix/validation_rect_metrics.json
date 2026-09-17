@@ -1,0 +1,29 @@
+{
+  "mode": "rect",
+  "description": "predict_rect.py --mode rect（复刻 model.val() 的 rect letterbox + 显式 ratio_pad）在 val 集上的 fork 指标",
+  "weights": "runs/urban_multimodal_det_yolo11_rgbd_f4_1280/weights/best.pt",
+  "results_dir": "diagnostic/rect_pipeline_fix/validation_rect_predictions/results",
+  "val_images": 400,
+  "skipped_corrupt": 2,
+  "valid_images": 398,
+  "no_detection_images": 4,
+  "gt_instances": 2807,
+  "pred_instances": 5152,
+  "metrics": {
+    "precision": 0.83948,
+    "recall": 0.72090,
+    "mAP50": 0.77863,
+    "mAP75": 0.58069,
+    "mAP50_95": 0.53264
+  },
+  "per_class_AP50_95": {
+    "0": 0.48951, "1": 0.43000, "2": 0.55119, "3": 0.68815,
+    "4": 0.42982, "5": 0.42393, "6": 0.53016, "7": 0.42683,
+    "8": 0.51012, "9": 0.55884, "10": 0.55491, "11": 0.79818
+  },
+  "compare_to_model_val": {
+    "model_val_mAP50_95": 0.53273,
+    "delta": 0.00009,
+    "verdict": "复现 model.val()（0.53273），误差 0.00009 为浮点/排序舍入"
+  }
+}

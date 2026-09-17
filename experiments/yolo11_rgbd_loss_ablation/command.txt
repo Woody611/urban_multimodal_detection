@@ -1,0 +1,3 @@
+python scripts/train.py \
+  --model_config configs/yolo11m_midfusion_rgbd_concat_res.yaml \
+  --train_config configs/train_l2_dfl2.yaml

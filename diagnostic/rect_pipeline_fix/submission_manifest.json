@@ -1,0 +1,55 @@
+{
+  "submission_id": "rect_pipeline_fix",
+  "date": "2026-09-15",
+  "status": "GENERATED_NOT_SUBMITTED",
+  "model": {
+    "name": "YOLO11m RGBD Mid-Fusion (F4)",
+    "weights": "runs/urban_multimodal_det_yolo11_rgbd_f4_1280/weights/best.pt",
+    "checkpoint_modified": false
+  },
+  "pipeline": {
+    "script": "scripts/predict_rect.py --source data/raw/test/visible --mode rect --max_boxes 100",
+    "letterbox": "rect 736x1312 (stride-32 aligned, set_rectangle formula)",
+    "ratio_pad": "explicit (load_image ratio + rect letterbox pad)",
+    "diff_from_original_predict_py": "rect letterbox + explicit ratio_pad vs square 1280x1280 + no ratio_pad"
+  },
+  "params": {
+    "imgsz": 1280,
+    "conf": 0.001,
+    "iou": 0.7,
+    "max_det": 300,
+    "max_boxes": 100,
+    "augment": false,
+    "half": false
+  },
+  "val_metrics_fork": {
+    "rect_mAP50_95": 0.53264,
+    "square_mAP50_95": 0.51835,
+    "delta": 0.01429,
+    "rect_reproduces_model_val": true,
+    "model_val_reference": 0.53273
+  },
+  "test_set": {
+    "source": "data/raw/test/visible",
+    "n_images": 1000,
+    "n_small_360x640": 155,
+    "n_large_1080x1920": 845,
+    "depth_paired": "data/raw/test/depth (via pairs_rgb_depth=['visible','depth'])"
+  },
+  "output": {
+    "results_dir": "diagnostic/rect_pipeline_fix/submission_rect_fixed/results",
+    "zip": "diagnostic/rect_pipeline_fix/submission_rect_fixed/submission.zip",
+    "n_txt": 1000,
+    "total_boxes": 7890,
+    "truncated_at_100": 0,
+    "bad_line": 0,
+    "bad_class_id": 0,
+    "bad_coord_conf": 0
+  },
+  "notes": [
+    "未提交线上（待用户确认）",
+    "所有产物在独立 diagnostic/rect_pipeline_fix/ 目录，未覆盖 scripts/predict.py 旧版本",
+    "未修改 F4 checkpoint / 训练配置 / 旧实验",
+    "线上预期（官方口径）≈ 0.502~0.516（审计三分解：指标口径 -0.0308 不可修 + rect 已修 + 测试分布 +0.0140）"
+  ]
+}

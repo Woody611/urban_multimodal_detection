@@ -1,0 +1,22 @@
+===== VAL: legal 3:1 fusion (max_boxes=300, 与 baseline 同口径) =====
+[final] source=D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\images\val\visible n=400
+[final] A: best.pt use_simotm=RGBID ch=5 | B: best.pt use_simotm=RGBD ch=4
+[final] 融合 RGBID:F4 = 3:1 (权重仅用于 NMS 胜者选择)
+[final] conf=0.001 iou=0.7 imgsz=1280 max_det=300 max_boxes=300
+[final] 完成 400/400 -> D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_inference_gain\RGBID_f4_ens_3to1_legal\results（400 个 TXT）
+[final] 总耗时 1007.0s，平均 2.518s/图
+===== EQUIVALENCE CHECK vs audited 3:1 =====
+[verify] 新=D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_inference_gain\RGBID_f4_ens_3to1_legal\results
+[verify] 参考=D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_inference_gain\RGBID_f4_ens_3to1\results
+[verify] 图片数=400
+[verify] 框集合完全一致的图片: 400/400  (不一致 0)
+[verify] conf>1 行数: 新版=0  审计版=2486
+[verify] ✅ 框集合逐图完全一致 → 权重改动只影响写出的 conf，不影响候选框
+===== TEST: legal 3:1 fusion (max_boxes=100, 冻结提交约定) =====
+[final] source=D:\gyt\AIC\urban_multimodal_detection\data\raw\test\visible n=1000
+[final] A: best.pt use_simotm=RGBID ch=5 | B: best.pt use_simotm=RGBD ch=4
+[final] 融合 RGBID:F4 = 3:1 (权重仅用于 NMS 胜者选择)
+[final] conf=0.001 iou=0.7 imgsz=1280 max_det=300 max_boxes=100
+[final] 完成 1000/1000 -> D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_inference_gain\TEST_ens_3to1\results（1000 个 TXT）
+[final] 总耗时 2830.9s，平均 2.831s/图
+===== ALL DONE =====

@@ -1,0 +1,70 @@
+# ============================================================
+# Loss 消融 · L0 基线（第一轮）
+# ============================================================
+# 唯一目的: 作为 L1/L2 的对照基线，复用 F4 的实际训练配置，
+#           使 loss gain 保持 ultralytics 默认（box=7.5, cls=0.5, dfl=1.5）。
+#
+# 本文件是 configs/train_f4_1280.yaml 的副本，相对 F4 共两处不同（其余逐字一致）:
+#   1. experiment_name: urban_multimodal_det_yolo11_rgbd_f4_1280
+#        -> yolo11_rgbd_loss_l0_baseline（独立目录，绝不覆盖 F4）
+#   2. 显式写出 loss 权重 box=7.5 / cls=0.5 / dfl=1.5（原 F4 走默认，
+#      此处显式化，便于与 L1/L2 逐字段审计单变量）
+#
+# 其余与 F4 一致（含 batch=8）: SGD(momentum=0.937, wd=5e-4), lr0=0.005, lrf=0.01(默认),
+#   cos_lr=True, warmup_epochs=3, epochs=300, patience=80, imgsz=1280,
+#   seed=42, deterministic=true(默认), amp=true, val=true, val_ratio=0.2,
+#   模型 configs/yolo11m_midfusion_rgbd_concat_res.yaml, RGBD 4ch 管线,
+#   Depth 预处理, conf=0.001 / iou=0.7 / max_det=300 全部不变。
+#
+# 生效说明: scripts/train.py 的 _build_train_kwargs 已加最小补丁转发 box/cls/dfl，
+#   本文件的 box/cls/dfl 会真正写入 trainer.args / loss.hyp。
+#
+# 命令（先不要执行）:
+#   python scripts/train.py --model_config configs/yolo11m_midfusion_rgbd_concat_res.yaml \
+#       --train_config configs/train_l0_baseline.yaml
+# ============================================================
+
+experiment_name: "yolo11_rgbd_loss_l0_baseline"
+seed: 42
+pretrained: "yolo11m.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 300
+patience: 80
+batch_size: 8
+image_size: [1280, 1280]
+num_workers: 4
+
+learning_rate: 5.0e-3
+warmup_epochs: 3
+
+# ---- loss 权重（本实验的唯一变量；L0 = ultralytics 默认值）----
+box: 7.5
+cls: 0.5
+dfl: 1.5
+
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2
+
+use_simotm: "RGBD"
+pairs_rgb_ir: ["visible", "depth"]
+pairs_rgb_depth: ["visible", "depth"]
+channels: 4
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: false
+  resume_path: ""
