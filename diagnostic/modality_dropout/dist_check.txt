@@ -1,0 +1,14 @@
+train: Scanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\labels\train\visible.cache... 1600 images, 0 backgrounds, 1 corrupt: 100%|██████████| 1600/1600 [00:00<?, ?it/s]train: Scanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\labels\train\visible.cache... 1600 images, 0 backgrounds, 1 corrupt: 100%|██████████| 1600/1600 [00:00<?, ?it/s]train: WARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\images\train\visible\000013_046_00000202.png: 1 duplicate labels removed
+train: WARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\images\train\visible\003107.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0065]
+train: WARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\images\train\visible\hehe_10_00000044.png: 1 duplicate labels removed
+TRAIN 分布 (n=500):
+  full          417   83.40%  期望 85.00%  偏差 -0.0160
+  ir_drop        42    8.40%  期望  7.50%  偏差 +0.0090
+  depth_drop     41    8.20%  期望  7.50%  偏差 +0.0070
+  both_drop       0    0.00%  期望  0.00%  偏差 +0.0000
+
+val: Scanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\labels\val\visible.cache... 400 images, 0 backgrounds, 2 corrupt: 100%|██████████| 400/400 [00:00<?, ?it/s]val: Scanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\labels\val\visible.cache... 400 images, 0 backgrounds, 2 corrupt: 100%|██████████| 400/400 [00:00<?, ?it/s]val: WARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\images\val\visible\000050.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0034       1.001]
+val: WARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\images\val\visible\003817.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0019]
+
+VAL 实测 (398 张): 疑似丢弃 0 张 -> PASS 零丢弃
+VAL 计数器: {'full': 417, 'ir_drop': 42, 'depth_drop': 41, 'both_drop': 0, 'skipped': 0}

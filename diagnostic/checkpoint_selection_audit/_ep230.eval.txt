@@ -1,0 +1,28 @@
+==========================================================================
+¹Ù·½¿Ú¾¶À©Õ¹ÆÀ²â   tag=epoch230
+results=D:\gyt\AIC\urban_multimodal_detection\diagnostic\checkpoint_selection_audit\ep230\results
+images=400  corruptÌÞ³ý=2  GT=2807  pred=4729
+==========================================================================
+  official mAP50      = 0.76938
+  official mAP75      = 0.55612
+  official mAP50-95   = 0.50369
+  micro P/R @IoU0.5   = 0.84170 / 0.70467   (F1=0.76711 @conf=0.4458)
+  n_gt  small/medium/large = 371 / 1320 / 1116
+  R@0.5      S/M/L    = 0.67385 / 0.81667 / 0.86111
+  R@0.5:0.95 S/M/L    = 0.38598 / 0.50894 / 0.64839
+--------------------------------------------------------------------------
+  id class              AP50    AP50-95
+  0  person          0.74017    0.43920
+  1  boat            0.75146    0.47389
+  2  animal          0.78740    0.49301
+  3  seat            0.74700    0.59646
+  4  sign            0.62305    0.37725
+  5  bicycle         0.61635    0.37990
+  6  car             0.81007    0.50606
+  7  ball            0.66832    0.42908
+  8  light           0.70129    0.48917
+  9  garbage_can     0.79980    0.52925
+  10 uav             0.98767    0.57953
+  11 tricycle        1.00000    0.75149
+==========================================================================
+[saved] D:\gyt\AIC\urban_multimodal_detection\diagnostic\checkpoint_selection_audit\eval_ep230.json

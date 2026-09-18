@@ -1,0 +1,12 @@
+ROOT=/d/gyt/AIC/urban_multimodal_detection
+[chain] 等待 New-Full 完成 ...
+[chain] New-Full 完成
+[chain] >>> RGBID_md_ir_dropped (drop=ir)
+[chain] <<< RGBID_md_ir_dropped exit=0 txt=400
+[chain] >>> RGBID_md_depth_dropped (drop=depth)
+[chain] <<< RGBID_md_depth_dropped exit=0 txt=400
+[chain] >>> RGBID_base_ir_dropped (drop=ir)
+[chain] <<< RGBID_base_ir_dropped exit=0 txt=400
+[chain] >>> RGBID_base_depth_dropped (drop=depth)
+[chain] <<< RGBID_base_depth_dropped exit=0 txt=400
+[chain] ALL DONE

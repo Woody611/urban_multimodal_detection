@@ -1,0 +1,66 @@
+============================================================================
+A. 配置实际被读取（值来自 configs/train_rgbid_modality_dropout.yaml）
+============================================================================
+    enabled              = True
+    ir_drop_prob         = 0.075
+    depth_drop_prob      = 0.075
+    ir_fill              = 125
+    depth_fill           = 0
+    mutually_exclusive   = True
+    apply_train_only     = True
+  [PASS] A1 enabled = True
+  [PASS] A2 ir_drop_prob = 0.075
+  [PASS] A3 depth_drop_prob = 0.075
+  [PASS] A4 ir_fill = 125
+  [PASS] A5 depth_fill = 0
+
+============================================================================
+B/C. 逐像素验证 dropout 的实际填充值（命中当次捕获）
+============================================================================
+train: Scanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\labels\train\visible.cache... 1600 images, 0 backgrounds, 1 corrupt: 100%|██████████| 1600/1600 [00:00<?, ?it/s]train: Scanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\labels\train\visible.cache... 1600 images, 0 backgrounds, 1 corrupt: 100%|██████████| 1600/1600 [00:00<?, ?it/s]train: WARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\images\train\visible\000013_046_00000202.png: 1 duplicate labels removed
+train: WARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\images\train\visible\003107.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0065]
+train: WARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\images\train\visible\hehe_10_00000044.png: 1 duplicate labels removed
+
+  扫描样本数: 71
+  命中 IR-drop    idx: [28, 46, 52, 61, 70]  (共 5)
+  命中 Depth-drop idx: [1, 2, 9, 10, 41, 68]  (共 6)
+  [PASS] B1 存在 IR dropout 样本
+  [PASS] C1 存在 Depth dropout 样本
+
+  【IR-drop】idx=28  shape=(360, 640, 5)  （命中当次捕获）
+      IR  通道唯一值      : [125]      <- 应恒为 [125]
+      Depth 通道唯一值个数: 211      <- 应 >1（未被改动）
+      RGB  通道唯一值个数 : 256      <- 应 >1（未被改动）
+  [PASS] B2 IR 通道被整体替换为 125   [125]
+  [PASS] B3 IR-drop 未误改 Depth
+  [PASS] B4 IR-drop 未误改 RGB
+
+  【Depth-drop】idx=1  shape=(360, 640, 5)  （命中当次捕获）
+      Depth 通道唯一值    : [0]      <- 应恒为 [0]
+      IR    通道唯一值个数: 177      <- 应 >1（未被改动）
+  [PASS] C2 Depth 通道被整体替换为 0   [0]
+  [PASS] C3 Depth-drop 未误改 IR
+
+============================================================================
+D. 输入 shape
+============================================================================
+  前 4 个 batch img shape: [(4, 5, 640, 640), (4, 5, 640, 640), (4, 5, 640, 640), (4, 5, 640, 640)]
+  [PASS] D1 所有 batch 均为 [B,5,H,W]
+  训练分布 (n=16): full=81.25%  ir_drop=0.00%  depth_drop=18.75%  both_drop=0.00%
+  [PASS] D2 both_drop == 0（互斥）
+
+============================================================================
+E. VAL：augment=False 完全不执行 dropout
+============================================================================
+val: Scanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\labels\val\visible.cache... 400 images, 0 backgrounds, 2 corrupt: 100%|██████████| 400/400 [00:00<?, ?it/s]val: Scanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\labels\val\visible.cache... 400 images, 0 backgrounds, 2 corrupt: 100%|██████████| 400/400 [00:00<?, ?it/s]val: WARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\images\val\visible\000050.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0034       1.001]
+val: WARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\images\val\visible\003817.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0019]
+
+  val 样本数: 398
+  整通道==125 的样本数: 0   整通道==0 的样本数: 1
+  val dropout 计数器  : {'full': 0, 'ir_drop': 0, 'depth_drop': 0, 'both_drop': 0, 'skipped': 0}
+  [PASS] E1 val 模式 dropout 计数器零增量（函数未执行）
+  [PASS] E2 val 的 augment 标志为 False
+
+============================================================================
+最终验证结果: 全部 PASS —— 可以启动训练
+============================================================================

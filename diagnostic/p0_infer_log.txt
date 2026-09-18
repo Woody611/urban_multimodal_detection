@@ -1,0 +1,9 @@
+===== 实验 A: imgsz 1536 (rect, conf=0.001, iou=0.7) =====
+[predict_rect] mode=rect scaleup=True weights=best.pt
+[predict_rect] source=D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\images\val\visible n=400 conf=0.001 iou=0.7 imgsz=1536 max_det=300 max_boxes=300
+[predict_rect] 完成 400 张图 → D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_1536_infer_val\results（400 个 TXT）
+===== 实验 B: conf=0.0001 (rect, imgsz=1280, iou=0.7) =====
+[predict_rect] mode=rect scaleup=True weights=best.pt
+[predict_rect] source=D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\images\val\visible n=400 conf=0.0001 iou=0.7 imgsz=1280 max_det=300 max_boxes=300
+[predict_rect] 完成 400 张图 → D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_val\results（400 个 TXT）
+===== BOTH DONE =====

@@ -1,0 +1,8 @@
+D:\gyt\AIC\urban_multimodal_detection\data\raw\test\visible\shuming_8_00000164.png
+D:\gyt\AIC\urban_multimodal_detection\data\raw\test\visible\shuming_930_00000331.png
+D:\gyt\AIC\urban_multimodal_detection\data\raw\test\visible\shuming_932_00000372.png
+D:\gyt\AIC\urban_multimodal_detection\data\raw\test\visible\shuming_934_00000250.png
+D:\gyt\AIC\urban_multimodal_detection\data\raw\test\visible\shuming_981_00000209.png
+D:\gyt\AIC\urban_multimodal_detection\data\raw\test\visible\shuming_997_00000360.png
+D:\gyt\AIC\urban_multimodal_detection\data\raw\test\visible\shuming_998_00000126.png
+D:\gyt\AIC\urban_multimodal_detection\data\raw\test\visible\shuming_999_00000084.png

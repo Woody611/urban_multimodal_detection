@@ -1,0 +1,112 @@
+--- a/ultralytics/cfg/default.yaml
++++ b/ultralytics/cfg/default.yaml
+@@ -133,4 +133,6 @@
+ brightness: 0.2 # (float) image brightness (probability)
+ pairs_rgb_ir: ['visible','infrared']
+ pairs_rgb_depth: ['visible','depth']
++# Modality Dropout（RGBID 5ch 专用；默认关闭 -> 对既有实验零影响）
++modality_dropout: {'enabled': False, 'ir_drop_prob': 0.0, 'depth_drop_prob': 0.0, 'ir_fill': 0, 'depth_fill': 0, 'mutually_exclusive': True, 'apply_train_only': True}
+ cls_pw: [] # (list) per-class positive weight for cls loss (class balancing), e.g. [1.0, 6.0, ...]
+\ No newline at end of file
+--- a/ultralytics/data/base.py
++++ b/ultralytics/data/base.py
+@@ -19,6 +19,64 @@
+ from ultralytics.utils.patches import imread
+ 
+ 
++# ============================================================
++# Modality Dropout (RGBID 5ch) — 仅训练阶段生效
++# ------------------------------------------------------------
++# 图像在 get_image_and_label() 中的通道序为 [B, G, R, IR, D]：
++#   索引 0,1,2 = RGB(BGR) ; 索引 3 = IR ; 索引 4 = Depth
++# （BGR->RGB 的翻转发生在后续 Format 变换里，通道索引位置不变）
++# 语义：以概率 p 把某模态通道整体替换为中性值(fill)，
++#       图像 shape 恒为 (H, W, 5)，不删通道、不改模型结构。
++# 互斥：IR 与 Depth 不同时丢弃。
++# 概率：P(full)=1-p_ir-p_dep ; P(IR)=p_ir ; P(D)=p_dep ; P(both)=0
++# ============================================================
++MODALITY_DROPOUT_STATS = {"full": 0, "ir_drop": 0, "depth_drop": 0, "both_drop": 0, "skipped": 0}
++
++
++def apply_modality_dropout(im, cfg, augment):
++    """按配置随机丢弃 IR 或 Depth（仅训练）。val/test 原样返回。
++
++    Args:
++        im (np.ndarray): (H, W, 5) uint8，通道序 [B, G, R, IR, D]。
++        cfg (dict | None): modality_dropout 配置。
++        augment (bool): 训练模式标志；False 时永不丢弃。
++
++    Returns:
++        np.ndarray: 同 shape 数组。
++    """
++    if not augment or not cfg or not cfg.get("enabled", False):
++        return im
++    if im.ndim != 3 or im.shape[2] != 5:
++        return im
++
++    import random as _random
++
++    p_ir = float(cfg.get("ir_drop_prob", 0.0))
++    p_dep = float(cfg.get("depth_drop_prob", 0.0))
++
++    if bool(cfg.get("mutually_exclusive", True)):
++        u = _random.random()
++        if u < p_ir:
++            state = "ir_drop"
++        elif u < p_ir + p_dep:
++            state = "depth_drop"
++        else:
++            state = "full"
++    else:
++        ir_r, dep_r = _random.random() < p_ir, _random.random() < p_dep
++        state = ("both_drop" if (ir_r and dep_r) else
++                 "ir_drop" if ir_r else "depth_drop" if dep_r else "full")
++
++    MODALITY_DROPOUT_STATS[state] += 1
++    if state != "full":
++        im = im.copy()
++        if state in ("ir_drop", "both_drop"):
++            im[:, :, 3] = int(cfg.get("ir_fill", 0))
++        if state in ("depth_drop", "both_drop"):
++            im[:, :, 4] = int(cfg.get("depth_fill", 0))
++    return im
++
++
+ class BaseDataset(Dataset):
+     """
+     Base dataset class for loading and processing image data.
+@@ -72,6 +130,7 @@
+         self.img_path = img_path
+         self.imgsz = imgsz
+         self.augment = augment
++        self.hyp = hyp  # Modality Dropout 需要读取 hyp.modality_dropout（其余代码不受影响）
+         self.single_cls = single_cls
+         self.prefix = prefix
+         self.fraction = fraction
+@@ -522,6 +581,12 @@
+         label = deepcopy(self.labels[index])  # requires deepcopy() https://github.com/ultralytics/ultralytics/pull/1948
+         label.pop("shape", None)  # shape is for rect, remove it
+         label["img"], label["ori_shape"], label["resized_shape"] = self.load_image(index)
++        # ---- Modality Dropout（仅训练；val/test 由 self.augment=False 强制跳过）----
++        label["img"] = apply_modality_dropout(
++            label["img"],
++            getattr(getattr(self, "hyp", None), "modality_dropout", None),
++            getattr(self, "augment", False),
++        )
+         label["ratio_pad"] = (
+             label["resized_shape"][0] / label["ori_shape"][0],
+             label["resized_shape"][1] / label["ori_shape"][1],
+--- a/scripts/train.py
++++ b/scripts/train.py
+@@ -466,6 +466,11 @@
+         if key in train_cfg:
+             kwargs[key] = float(train_cfg[key])
+ 
++    # Modality Dropout（RGBID 5ch 专用）：仅在配置中存在时转发，
++    # 未配置时保持 default.yaml 的 disabled 默认值 -> 既有实验行为不变
++    if "modality_dropout" in train_cfg:
++        kwargs["modality_dropout"] = dict(train_cfg["modality_dropout"])
++
+     return kwargs
+ 
+ 
