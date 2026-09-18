@@ -1,0 +1,32 @@
+[ckpt] 等待消融链结束 ...
+[ckpt] 消融链已结束，开始 baseline last.pt 推理 (Fri Sep 18 08:33:00     2026)
+[ckpt] last.pt 推理 exit=0 txt=400
+==========================================================================
+�ٷ��ھ���չ����   tag=Base-LAST-ep300
+results=D:\gyt\AIC\urban_multimodal_detection\diagnostic\modality_dropout\RGBID_base_last\results
+images=400  corrupt�޳�=2  GT=2807  pred=4822
+==========================================================================
+  official mAP50      = 0.76163
+  official mAP75      = 0.53053
+  official mAP50-95   = 0.50290
+  micro P/R @IoU0.5   = 0.83534 / 0.71571   (F1=0.77091 @conf=0.4206)
+  n_gt  small/medium/large = 371 / 1320 / 1116
+  R@0.5      S/M/L    = 0.66038 / 0.81288 / 0.85484
+  R@0.5:0.95 S/M/L    = 0.37951 / 0.50591 / 0.64704
+--------------------------------------------------------------------------
+  id class              AP50    AP50-95
+  0  person          0.74349    0.44272
+  1  boat            0.76521    0.48346
+  2  animal          0.78636    0.49007
+  3  seat            0.75332    0.61101
+  4  sign            0.61593    0.36172
+  5  bicycle         0.55488    0.35513
+  6  car             0.81369    0.50352
+  7  ball            0.70302    0.42162
+  8  light           0.69117    0.48582
+  9  garbage_can     0.78382    0.52332
+  10 uav             0.92868    0.55540
+  11 tricycle        1.00000    0.80099
+==========================================================================
+[saved] D:\gyt\AIC\urban_multimodal_detection\diagnostic\modality_dropout\eval_RGBID_base_last.json
+[ckpt] ALL DONE (Fri Sep 18 08:40:42     2026)

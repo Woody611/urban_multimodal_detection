@@ -1,0 +1,28 @@
+==========================================================================
+¹Ù·½¿Ú¾¶À©Õ¹ÆÀ²â   tag=epoch290
+results=D:\gyt\AIC\urban_multimodal_detection\diagnostic\checkpoint_selection_audit\ep290\results
+images=400  corruptÌÞ³ý=2  GT=2807  pred=4776
+==========================================================================
+  official mAP50      = 0.77480
+  official mAP75      = 0.54549
+  official mAP50-95   = 0.50742
+  micro P/R @IoU0.5   = 0.84259 / 0.71322   (F1=0.77253 @conf=0.4706)
+  n_gt  small/medium/large = 371 / 1320 / 1116
+  R@0.5      S/M/L    = 0.68194 / 0.81515 / 0.86201
+  R@0.5:0.95 S/M/L    = 0.38383 / 0.50909 / 0.65036
+--------------------------------------------------------------------------
+  id class              AP50    AP50-95
+  0  person          0.74825    0.44525
+  1  boat            0.77936    0.48186
+  2  animal          0.79481    0.49377
+  3  seat            0.76516    0.61902
+  4  sign            0.60158    0.35639
+  5  bicycle         0.57925    0.36363
+  6  car             0.81984    0.50775
+  7  ball            0.71831    0.45093
+  8  light           0.69680    0.48923
+  9  garbage_can     0.79654    0.52213
+  10 uav             0.99776    0.55805
+  11 tricycle        1.00000    0.80099
+==========================================================================
+[saved] D:\gyt\AIC\urban_multimodal_detection\diagnostic\checkpoint_selection_audit\eval_ep290.json

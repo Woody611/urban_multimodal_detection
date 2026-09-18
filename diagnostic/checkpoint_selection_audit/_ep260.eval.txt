@@ -1,0 +1,28 @@
+==========================================================================
+¹Ù·½¿Ú¾¶À©Õ¹ÆÀ²â   tag=epoch260
+results=D:\gyt\AIC\urban_multimodal_detection\diagnostic\checkpoint_selection_audit\ep260\results
+images=400  corruptÌÞ³ý=2  GT=2807  pred=4583
+==========================================================================
+  official mAP50      = 0.76973
+  official mAP75      = 0.55457
+  official mAP50-95   = 0.50146
+  micro P/R @IoU0.5   = 0.83230 / 0.71963   (F1=0.77188 @conf=0.3701)
+  n_gt  small/medium/large = 371 / 1320 / 1116
+  R@0.5      S/M/L    = 0.66846 / 0.81136 / 0.85663
+  R@0.5:0.95 S/M/L    = 0.38356 / 0.50561 / 0.64695
+--------------------------------------------------------------------------
+  id class              AP50    AP50-95
+  0  person          0.74172    0.44608
+  1  boat            0.75344    0.44558
+  2  animal          0.78614    0.48946
+  3  seat            0.75358    0.60545
+  4  sign            0.60556    0.35816
+  5  bicycle         0.58322    0.36539
+  6  car             0.81040    0.50034
+  7  ball            0.69890    0.44854
+  8  light           0.70460    0.48930
+  9  garbage_can     0.80144    0.53730
+  10 uav             0.99776    0.58039
+  11 tricycle        1.00000    0.75149
+==========================================================================
+[saved] D:\gyt\AIC\urban_multimodal_detection\diagnostic\checkpoint_selection_audit\eval_ep260.json

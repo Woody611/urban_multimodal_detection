@@ -1,0 +1,4 @@
+[modality_ablation] drop=ir weights=best.pt channels=5
+[modality_ablation] source=D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\images\val\visible n=400 conf=0.001 iou=0.7 imgsz=1280 max_det=300 max_boxes=300
+[modality_ablation] 通道 3 整体替换为 125
+[modality_ablation] 完成 400 张图 → D:\gyt\AIC\urban_multimodal_detection\diagnostic\modality_dropout\RGBID_base_ir_dropped\results（400 个 TXT）

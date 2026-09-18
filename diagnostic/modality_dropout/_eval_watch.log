@@ -1,0 +1,125 @@
+[watch] ç­‰å¾… RGBID_md_ir_dropped ...
+[watch] >>> è¯„æµ‹ RGBID_md_ir_dropped (Fri Sep 18 08:10:53     2026)
+==========================================================================
+¹Ù·½¿Ú¾¶À©Õ¹ÆÀ²â   tag=New-IR-dropped
+results=D:\gyt\AIC\urban_multimodal_detection\diagnostic\modality_dropout\RGBID_md_ir_dropped\results
+images=400  corruptÌÞ³ý=2  GT=2807  pred=4303
+==========================================================================
+  official mAP50      = 0.75282
+  official mAP75      = 0.47209
+  official mAP50-95   = 0.48839
+  micro P/R @IoU0.5   = 0.83012 / 0.72070   (F1=0.77155 @conf=0.2911)
+  n_gt  small/medium/large = 371 / 1320 / 1116
+  R@0.5      S/M/L    = 0.66038 / 0.81742 / 0.84677
+  R@0.5:0.95 S/M/L    = 0.37763 / 0.51598 / 0.64041
+--------------------------------------------------------------------------
+  id class              AP50    AP50-95
+  0  person          0.75210    0.45212
+  1  boat            0.77467    0.48590
+  2  animal          0.77016    0.48841
+  3  seat            0.75747    0.62270
+  4  sign            0.61462    0.36379
+  5  bicycle         0.61205    0.38991
+  6  car             0.80058    0.50555
+  7  ball            0.55915    0.35301
+  8  light           0.67419    0.48080
+  9  garbage_can     0.75047    0.49107
+  10 uav             0.96835    0.52545
+  11 tricycle        1.00000    0.70198
+==========================================================================
+[saved] D:\gyt\AIC\urban_multimodal_detection\diagnostic\modality_dropout\eval_RGBID_md_ir_dropped.json
+[watch] <<< RGBID_md_ir_dropped å®Œæˆ (Fri Sep 18 08:11:32     2026)
+[watch] ç­‰å¾… RGBID_md_depth_dropped ...
+[watch] >>> è¯„æµ‹ RGBID_md_depth_dropped (Fri Sep 18 08:21:00     2026)
+==========================================================================
+¹Ù·½¿Ú¾¶À©Õ¹ÆÀ²â   tag=New-Depth-dropped
+results=D:\gyt\AIC\urban_multimodal_detection\diagnostic\modality_dropout\RGBID_md_depth_dropped\results
+images=400  corruptÌÞ³ý=2  GT=2807  pred=4366
+==========================================================================
+  official mAP50      = 0.75575
+  official mAP75      = 0.47323
+  official mAP50-95   = 0.49039
+  micro P/R @IoU0.5   = 0.81815 / 0.72925   (F1=0.77114 @conf=0.2211)
+  n_gt  small/medium/large = 371 / 1320 / 1116
+  R@0.5      S/M/L    = 0.66846 / 0.81970 / 0.84229
+  R@0.5:0.95 S/M/L    = 0.38194 / 0.51659 / 0.64229
+--------------------------------------------------------------------------
+  id class              AP50    AP50-95
+  0  person          0.75639    0.45328
+  1  boat            0.77232    0.49391
+  2  animal          0.77347    0.48911
+  3  seat            0.75547    0.62155
+  4  sign            0.60664    0.37197
+  5  bicycle         0.61287    0.39088
+  6  car             0.80305    0.51063
+  7  ball            0.56106    0.35488
+  8  light           0.68044    0.48683
+  9  garbage_can     0.76128    0.48383
+  10 uav             0.98595    0.52580
+  11 tricycle        1.00000    0.70198
+==========================================================================
+[saved] D:\gyt\AIC\urban_multimodal_detection\diagnostic\modality_dropout\eval_RGBID_md_depth_dropped.json
+[watch] <<< RGBID_md_depth_dropped å®Œæˆ (Fri Sep 18 08:22:54     2026)
+[watch] ç­‰å¾… RGBID_base_ir_dropped ...
+[watch] >>> è¯„æµ‹ RGBID_base_ir_dropped (Fri Sep 18 08:28:04     2026)
+==========================================================================
+¹Ù·½¿Ú¾¶À©Õ¹ÆÀ²â   tag=Base-IR-dropped
+results=D:\gyt\AIC\urban_multimodal_detection\diagnostic\modality_dropout\RGBID_base_ir_dropped\results
+images=400  corruptÌÞ³ý=2  GT=2807  pred=4698
+==========================================================================
+  official mAP50      = 0.77385
+  official mAP75      = 0.55128
+  official mAP50-95   = 0.49990
+  micro P/R @IoU0.5   = 0.82941 / 0.71535   (F1=0.76817 @conf=0.3363)
+  n_gt  small/medium/large = 371 / 1320 / 1116
+  R@0.5      S/M/L    = 0.66307 / 0.81515 / 0.86290
+  R@0.5:0.95 S/M/L    = 0.37709 / 0.50705 / 0.64543
+--------------------------------------------------------------------------
+  id class              AP50    AP50-95
+  0  person          0.74001    0.43426
+  1  boat            0.79019    0.46881
+  2  animal          0.78451    0.48903
+  3  seat            0.76200    0.60678
+  4  sign            0.62703    0.37370
+  5  bicycle         0.62020    0.38656
+  6  car             0.81475    0.50438
+  7  ball            0.73267    0.40850
+  8  light           0.66935    0.46553
+  9  garbage_can     0.80964    0.53840
+  10 uav             0.93578    0.57138
+  11 tricycle        1.00000    0.75149
+==========================================================================
+[saved] D:\gyt\AIC\urban_multimodal_detection\diagnostic\modality_dropout\eval_RGBID_base_ir_dropped.json
+[watch] <<< RGBID_base_ir_dropped å®Œæˆ (Fri Sep 18 08:28:45     2026)
+[watch] ç­‰å¾… RGBID_base_depth_dropped ...
+[watch] >>> è¯„æµ‹ RGBID_base_depth_dropped (Fri Sep 18 08:32:54     2026)
+==========================================================================
+¹Ù·½¿Ú¾¶À©Õ¹ÆÀ²â   tag=Base-Depth-dropped
+results=D:\gyt\AIC\urban_multimodal_detection\diagnostic\modality_dropout\RGBID_base_depth_dropped\results
+images=400  corruptÌÞ³ý=2  GT=2807  pred=4809
+==========================================================================
+  official mAP50      = 0.77081
+  official mAP75      = 0.55179
+  official mAP50-95   = 0.49753
+  micro P/R @IoU0.5   = 0.82093 / 0.71535   (F1=0.76452 @conf=0.2559)
+  n_gt  small/medium/large = 371 / 1320 / 1116
+  R@0.5      S/M/L    = 0.67925 / 0.80606 / 0.85484
+  R@0.5:0.95 S/M/L    = 0.38410 / 0.50242 / 0.64158
+--------------------------------------------------------------------------
+  id class              AP50    AP50-95
+  0  person          0.73538    0.43339
+  1  boat            0.79440    0.48650
+  2  animal          0.77172    0.48555
+  3  seat            0.74403    0.60770
+  4  sign            0.63715    0.38264
+  5  bicycle         0.56115    0.35460
+  6  car             0.81794    0.50068
+  7  ball            0.72030    0.39674
+  8  light           0.69669    0.47968
+  9  garbage_can     0.77419    0.51638
+  10 uav             0.99681    0.57497
+  11 tricycle        1.00000    0.75149
+==========================================================================
+[saved] D:\gyt\AIC\urban_multimodal_detection\diagnostic\modality_dropout\eval_RGBID_base_depth_dropped.json
+[watch] <<< RGBID_base_depth_dropped å®Œæˆ (Fri Sep 18 08:33:51     2026)
+[watch] ALL EVALS DONE

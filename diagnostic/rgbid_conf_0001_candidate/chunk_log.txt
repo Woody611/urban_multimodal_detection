@@ -1,0 +1,33 @@
+[predict_rect] mode=rect scaleup=True weights=best.pt
+[predict_rect] source=D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\_todo.txt n=40 conf=0.0001 iou=0.7 imgsz=1280 max_det=300 max_boxes=100
+[predict_rect] 完成 40 张图 → D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\results（752 个 TXT）
+[predict_rect] mode=rect scaleup=True weights=best.pt
+[predict_rect] source=D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\_todo.txt n=40 conf=0.0001 iou=0.7 imgsz=1280 max_det=300 max_boxes=100
+[predict_rect] 完成 40 张图 → D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\results（792 个 TXT）
+[predict_rect] mode=rect scaleup=True weights=best.pt
+[predict_rect] source=D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\_todo.txt n=25 conf=0.0001 iou=0.7 imgsz=1280 max_det=300 max_boxes=100
+[predict_rect] 完成 25 张图 → D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\results（817 个 TXT）
+[predict_rect] mode=rect scaleup=True weights=best.pt
+[predict_rect] source=D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\_todo.txt n=25 conf=0.0001 iou=0.7 imgsz=1280 max_det=300 max_boxes=100
+[predict_rect] 完成 25 张图 → D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\results（842 个 TXT）
+[predict_rect] mode=rect scaleup=True weights=best.pt
+[predict_rect] source=D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\_todo.txt n=25 conf=0.0001 iou=0.7 imgsz=1280 max_det=300 max_boxes=100
+[predict_rect] 完成 25 张图 → D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\results（867 个 TXT）
+[predict_rect] mode=rect scaleup=True weights=best.pt
+[predict_rect] source=D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\_todo.txt n=25 conf=0.0001 iou=0.7 imgsz=1280 max_det=300 max_boxes=100
+[predict_rect] 完成 25 张图 → D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\results（892 个 TXT）
+[predict_rect] mode=rect scaleup=True weights=best.pt
+[predict_rect] source=D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\_todo.txt n=25 conf=0.0001 iou=0.7 imgsz=1280 max_det=300 max_boxes=100
+[predict_rect] 完成 25 张图 → D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\results（917 个 TXT）
+[predict_rect] mode=rect scaleup=True weights=best.pt
+[predict_rect] source=D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\_todo.txt n=25 conf=0.0001 iou=0.7 imgsz=1280 max_det=300 max_boxes=100
+[predict_rect] 完成 25 张图 → D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\results（942 个 TXT）
+[predict_rect] mode=rect scaleup=True weights=best.pt
+[predict_rect] source=D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\_todo.txt n=25 conf=0.0001 iou=0.7 imgsz=1280 max_det=300 max_boxes=100
+[predict_rect] 完成 25 张图 → D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\results（967 个 TXT）
+[predict_rect] mode=rect scaleup=True weights=best.pt
+[predict_rect] source=D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\_todo.txt n=25 conf=0.0001 iou=0.7 imgsz=1280 max_det=300 max_boxes=100
+[predict_rect] 完成 25 张图 → D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\results（992 个 TXT）
+[predict_rect] mode=rect scaleup=True weights=best.pt
+[predict_rect] source=D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\_todo.txt n=8 conf=0.0001 iou=0.7 imgsz=1280 max_det=300 max_boxes=100
+[predict_rect] 完成 8 张图 → D:\gyt\AIC\urban_multimodal_detection\diagnostic\rgbid_conf_0001_candidate\results（1000 个 TXT）
