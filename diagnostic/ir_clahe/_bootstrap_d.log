@@ -1,0 +1,39 @@
+[collect] Baseline  images=400 corrupt_dropped=2 gt=2807 pred=4824
+[collect] D_clahe   images=400 corrupt_dropped=2 gt=2807 pred=4341
+
+[verify] 全量（不重采样）与 official_map.evaluate 比对
+  Baseline  fast=0.509275 ref=0.509275 exact=True  | small=0.05625 medium=0.17984 large=0.61711
+  D_clahe   fast=0.510763 ref=0.510763 exact=True  | small=0.05473 medium=0.18737 large=0.62155
+
+[point estimate]
+  Baseline  mAP50-95=0.50928  small=0.05625 medium=0.17984  large=0.61711
+  D_clahe   mAP50-95=0.51076  small=0.05473 medium=0.18737  large=0.62155
+  ... 25/400
+  ... 50/400
+  ... 75/400
+  ... 100/400
+  ... 125/400
+  ... 150/400
+  ... 175/400
+  ... 200/400
+  ... 225/400
+  ... 250/400
+  ... 275/400
+  ... 300/400
+  ... 325/400
+  ... 350/400
+  ... 375/400
+  ... 400/400
+
+[paired image-level bootstrap, iters=400, seed=42]
+  metric       point Δ  boot mean      2.5%     97.5%   P(Δ<=0)        σ
+  mAP50-95    +0.00149   +0.00092  -0.00653  +0.00920     0.407  0.00417
+  small       -0.00152   -0.00045  -0.00621  +0.00635     0.598  0.00332
+  medium      +0.00753   +0.00407  -0.00616  +0.01469     0.215  0.00546
+  large       +0.00444   +0.00380  -0.00728  +0.01471     0.258  0.00590
+
+[single-model bootstrap σ (baseline only), scale reference]
+  mAP50-95   σ_metric=0.02461
+  small      σ_metric=0.00631
+  medium     σ_metric=0.01175
+  large      σ_metric=0.03721

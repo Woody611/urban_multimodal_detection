@@ -191,6 +191,7 @@ def main():
     print(f"[predict_rect] mode={args.mode} scaleup={scaleup} weights={weights.name}")
     print(f"[predict_rect] source={source_dir} n={n_test} conf={args.conf} iou={args.iou} "
           f"imgsz={args.imgsz} max_det={args.max_det} max_boxes={args.max_boxes}")
+    print(f"[predict_rect] use_simotm={use_simotm} channels={channels} ir_encoding={ir_encoding}")
 
     processed = 0
     for paths, imgs, _info in loader:
