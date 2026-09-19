@@ -1,0 +1,13 @@
+1536 feasibility — 云端实测（2026-09-18）
+GPU: NVIDIA A100-PCIE-40GB  总显存 = 42.3 GB   torch 2.1.2+cu121 / cuda 12.1
+模型: yolo11m_earlyfusion.yaml  ch=5 nc=12  参数=20,063,412
+起始权重: runs/urban_multimodal_det_yolo11_rgbird_ir_quicktest/weights/best.pt
+          Transferred 649/649 items from pretrained weights
+imgsz=1536  AMP=True  iters/batch=6
+ batch   结果  peak_alloc(GB)  peak_reserved(GB)   img/s
+     6     OK          17.05              21.48      26.4
+     5     OK          14.26              17.48      25.3
+     4     OK          11.45              13.95      24.8
+     3     OK           8.71              10.47      22.7
+     2     OK           5.93               7.18      20.6
+无 OOM，无 NaN/Inf。注意：本探测只测到 batch=6，未测 7/8。

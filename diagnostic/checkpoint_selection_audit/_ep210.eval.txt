@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "scripts/modality_dropout_official_eval.py", line 238, in <module>
-    main()
-  File "scripts/modality_dropout_official_eval.py", line 195, in main
-    raise FileNotFoundError(f"{nm} 目录不存在: {p}")
-FileNotFoundError: results 目录不存在: D:\gyt\AIC\urban_multimodal_detection\diagnostic\checkpoint_selection_audit\ep210\results

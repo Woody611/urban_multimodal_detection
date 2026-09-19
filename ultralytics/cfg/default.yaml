@@ -135,4 +135,8 @@ pairs_rgb_ir: ['visible','infrared']
 pairs_rgb_depth: ['visible','depth']
 # Modality Dropout（RGBID 5ch 专用；默认关闭 -> 对既有实验零影响）
 modality_dropout: {'enabled': False, 'ir_drop_prob': 0.0, 'depth_drop_prob': 0.0, 'ir_fill': 0, 'depth_fill': 0, 'mutually_exclusive': True, 'apply_train_only': True}
+# IR 对比度处理方式（RGBID 专用；默认 percentile = 既有行为 -> 对既有实验零影响）
+#   percentile: 1%/99% 分位数线性拉伸（原实现）
+#   clahe     : CLAHE(clipLimit=2.0, tileGridSize=(8,8))，与 percentile **互斥**（不是叠加）
+ir_encoding: percentile
 cls_pw: [] # (list) per-class positive weight for cls loss (class balancing), e.g. [1.0, 6.0, ...]
