@@ -1,0 +1,7 @@
+=== iou=0.5 max_det=300 ===
+  exit=0 txt=400
+=== iou=0.6 max_det=300 ===
+  exit=0 txt=400
+=== iou=0.8 max_det=300 ===
+  exit=0 txt=400
+=== NMS variants DONE ===

@@ -1,0 +1,3 @@
+[predict_rect] mode=rect scaleup=True weights=best.pt
+[predict_rect] source=D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\images\val\visible n=400 conf=0.001 iou=0.6 imgsz=1280 max_det=300 max_boxes=300
+[predict_rect] 完成 400 张图 → D:\gyt\AIC\urban_multimodal_detection\diagnostic\small_object_error_attribution\nms_iou0.6_md300\results（400 个 TXT）

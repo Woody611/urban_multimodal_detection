@@ -1,0 +1,2 @@
+[predict_rect] mode=rect scaleup=True weights=best.pt
+[predict_rect] source=D:\gyt\AIC\urban_multimodal_detection\data\raw\test\visible n=1000 conf=0.001 iou=0.7 imgsz=1280 max_det=300 max_boxes=100

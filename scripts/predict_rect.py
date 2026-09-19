@@ -165,6 +165,9 @@ def main():
     pairs_rgb_depth = (_parse_pairs(args.pairs_rgb_depth) if args.pairs_rgb_depth is not None
                        else list(train_cfg.get("pairs_rgb_depth", ["visible", "depth"])))
     channels = int(args.channels if args.channels is not None else train_cfg.get("channels", 4))
+    # IR 对比度处理（RGBID 专用）：与训练侧 base.py 同源。旧配置无此键 -> percentile =
+    # 既有行为，冻结提交链输出逐位不变；D(CLAHE) 由 configs/train_rgbid_ir_clahe.yaml 携带。
+    ir_encoding = str(train_cfg.get("ir_encoding", "percentile") or "percentile")
 
     device = torch.device("cuda" if (args.device != "cpu" and torch.cuda.is_available()) else "cpu")
 
@@ -180,6 +183,7 @@ def main():
     loader = LoadImagesAndVideos(
         str(source_dir), batch=args.batch, use_simotm=use_simotm,
         imgsz=args.imgsz, pairs_rgb_ir=pairs_rgb_ir, pairs_rgb_depth=pairs_rgb_depth,
+        ir_encoding=ir_encoding,
     )
     n_test = loader.ni
     scaleup = (args.scaleup == "true")

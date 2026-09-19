@@ -1,0 +1,10 @@
+=== infer best start 09:19:31 ===
+[predict_rect] mode=rect scaleup=True weights=best.pt
+[predict_rect] source=D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\images\val\visible n=400 conf=0.001 iou=0.7 imgsz=1280 max_det=300 max_boxes=300
+[predict_rect] 完成 400 张图 → D:\gyt\AIC\urban_multimodal_detection\diagnostic\p2_probe\p2_scratch_best\results（400 个 TXT）
+=== infer best end 09:41:23 ===
+=== infer last start 09:41:23 ===
+[predict_rect] mode=rect scaleup=True weights=last.pt
+[predict_rect] source=D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split\images\val\visible n=400 conf=0.001 iou=0.7 imgsz=1280 max_det=300 max_boxes=300
+[predict_rect] 完成 400 张图 → D:\gyt\AIC\urban_multimodal_detection\diagnostic\p2_probe\p2_scratch_last\results（400 个 TXT）
+=== infer last end 09:56:00 ===

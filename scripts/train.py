@@ -471,6 +471,17 @@ def _build_train_kwargs(train_cfg, data_path):
     if "modality_dropout" in train_cfg:
         kwargs["modality_dropout"] = dict(train_cfg["modality_dropout"])
 
+    # IR 对比度处理方式（可选）：仅在配置中存在时转发；未配置时走 default.yaml 的
+    # percentile 默认值 -> 既有实验行为不变。
+    if "ir_encoding" in train_cfg:
+        kwargs["ir_encoding"] = str(train_cfg["ir_encoding"])
+
+    # 冻结层（可选）：仅在配置中存在时转发。ultralytics 的 freeze 语义是
+    # "冻结名字含 model.<x>. 的参数"，x 可混用层序号(int)与子模块路径(str)，
+    # 因此可用混合列表精确表达"只训练某几个新增参数"。未配置时行为不变。
+    if "freeze" in train_cfg:
+        kwargs["freeze"] = train_cfg["freeze"]
+
     return kwargs
 
 

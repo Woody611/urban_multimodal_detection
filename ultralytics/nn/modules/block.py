@@ -734,15 +734,51 @@ class C3f(nn.Module):
         return self.cv3(torch.cat(y, 1))
 
 
+class P3IdentityAttn(nn.Module):
+    """P3 channel recalibration with an exact identity initialization.
+
+    ``out = x * (1 + tanh(fc(avgpool(x))))`` with ``fc`` zero-initialized gives ``out == x``
+    bit-exactly at t=0, while the gradient w.r.t. ``fc`` stays non-zero
+    (``d(out)/d(fc.weight) = x * avgpool(x) * (1 - tanh^2(0)) = x * avgpool(x)``).
+    This is deliberate: ``x * sigmoid(fc(...))`` zero-initialized starts at ``0.5x``
+    and would perturb the pretrained P3 feature before training even begins.
+    Complexity is O(HW); no ``HW x HW`` attention map.
+    """
+
+    def __init__(self, c):
+        """Initializes the module with a zero-initialized 1x1 conv gate on globally pooled features."""
+        super().__init__()
+        self.pool = nn.AdaptiveAvgPool2d(1)
+        self.fc = nn.Conv2d(c, c, 1, 1, 0, bias=True)
+        nn.init.zeros_(self.fc.weight)
+        nn.init.zeros_(self.fc.bias)
+
+    def forward(self, x):
+        """Applies the identity-initialized channel gate."""
+        return x * (1.0 + torch.tanh(self.fc(self.pool(x))))
+
+
 class C3k2(C2f):
     """Faster Implementation of CSP Bottleneck with 2 convolutions."""
 
-    def __init__(self, c1, c2, n=1, c3k=False, e=0.5, g=1, shortcut=True):
+    def __init__(self, c1, c2, n=1, c3k=False, e=0.5, g=1, shortcut=True, attn=False):
         """Initializes the C3k2 module, a faster CSP Bottleneck with 2 convolutions and optional C3k blocks."""
         super().__init__(c1, c2, n, shortcut, g, e)
         self.m = nn.ModuleList(
             C3k(self.c, self.c, 2, shortcut, g) if c3k else Bottleneck(self.c, self.c, shortcut, g) for _ in range(n)
         )
+        self.attn = P3IdentityAttn(c2) if attn else None  # optional P3 identity-init channel gate
+
+    def forward(self, x):
+        """Forward pass through C3k2, optionally applying the P3 identity-initialized attention.
+
+        ``getattr`` is required for backward compatibility: checkpoints pickled before
+        ``attn`` existed restore ``C3k2`` objects that have no ``attn`` attribute, so a
+        direct ``self.attn`` would raise AttributeError on every legacy checkpoint.
+        """
+        x = super().forward(x)
+        attn = getattr(self, "attn", None)
+        return attn(x) if attn is not None else x
 
 
 class C3k(C3):
