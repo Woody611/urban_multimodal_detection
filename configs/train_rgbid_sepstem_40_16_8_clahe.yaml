@@ -1,0 +1,69 @@
+# ============================================================
+# D'' = IR-CLAHE + Separate-Stem Fusion 40/16/8 —— 训练配置
+# ============================================================
+# 本文件是 configs/train_rgbid_sepstem_clahe.yaml（= D' 的训练配置）的副本，
+# **解析后的配置项与 D' 逐 key 相同，唯一改动**：
+#
+#   experiment_name: "urban_multimodal_det_yolo11_rgbid_sepstem_clahe"
+#                 -> "urban_multimodal_det_yolo11_rgbid_sepstem_40_16_8_clahe"   （独立目录，绝不覆盖 D/D'）
+#
+# 另一个变量（stem 宽度分配）不在本文件内，而由 CLI 的 --model_config 承载：
+#   D' : --model_config configs/yolo11m_sepstem.yaml           （3 stem 48 / 8 / 8 + Concat → 64）
+#   D'': --model_config configs/yolo11m_sepstem_40_16_8.yaml   （3 stem 40 / 16 / 8 + Concat → 64）
+#
+# 因此 D' vs D'' 的差异**恰好两项**：model_config（stem 宽度分配） + experiment_name。
+# 除此之外逐项相同（含 ir_encoding: clahe 与 patience: 0）。
+#
+# 命令:
+#   python scripts/train.py --model_config configs/yolo11m_sepstem_40_16_8.yaml \
+#       --train_config configs/train_rgbid_sepstem_40_16_8_clahe.yaml
+#
+# ⚠ 本文件由 train_rgbid_sepstem_clahe.yaml 复制而来，任何训练超参都**不得**在此改动 ——
+#   动任何一项都会导致 D' vs D'' 不再是单变量对照。
+# ============================================================
+
+experiment_name: "urban_multimodal_det_yolo11_rgbid_sepstem_40_16_8_clahe"
+seed: 42
+pretrained: "yolo11m.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 300
+patience: 0              # 禁用早停（torch_utils.py:762 `patience or inf`）—— 与 D 的完整 300 epoch 预算严格一致
+batch_size: 8
+image_size: [1280, 1280]
+num_workers: 4
+
+learning_rate: 5.0e-3
+warmup_epochs: 3
+
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2
+
+use_simotm: "RGBID"
+pairs_rgb_ir: ["visible", "infrared"]
+pairs_rgb_depth: ["visible", "depth"]
+channels: 5
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: false
+  resume_path: ""
+
+# ---- D 的唯一变量：IR 对比度处理 percentile -> CLAHE（D' 必须继承，不得改动）----
+# percentile(默认) = 1%/99% 分位数线性拉伸（baseline 既有行为）
+# clahe           = CLAHE(clipLimit=2.0, tileGridSize=(8,8))，与 percentile 互斥（非叠加）
+# 二者在 base.py 的 RGBID 分支中二选一；CLAHE 的 in/out dtype 与 range 均与 percentile 相同。
+ir_encoding: clahe

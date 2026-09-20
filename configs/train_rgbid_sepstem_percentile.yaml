@@ -1,0 +1,62 @@
+# ============================================================
+# Separate-Stem + **percentile** IR —— 训练配置（非 D'，请勿与 _clahe 混淆）
+# ============================================================
+# ⚠️ 命名警告：本文件与 configs/train_rgbid_sepstem_clahe.yaml 只差 IR 预处理。
+#    本文件 = percentile（1%/99% 分位拉伸）
+#    另一个 = clahe     （CLAHE clipLimit=2.0, tileGridSize=(8,8)）
+#    跑错一个 → fusion 与 IR 两个变量同时改变 → 单变量对照失效。
+#
+# 历史：本文件原名 configs/train_rgbid_sepstem.yaml。2026-09-20 因一次真实事故改名：
+#      D' 训练在云上用了「experiment_name 取自 _clahe 配置、但没有 ir_encoding 键」的组合，
+#      base.py:333 静默回落到 percentile，导致 "IR-CLAHE + Separate-Stem" 实际训成了
+#      "percentile + Separate-Stem"，D vs D' 差了两个变量。改名是为了消除这个歧义陷阱。
+#
+# 本配置的 ir_encoding **显式写为 percentile**（而非依赖默认值）—— 见文件末尾。
+#
+# 命令:
+#   python scripts/train.py --model_config configs/yolo11m_sepstem.yaml \
+#       --train_config configs/train_rgbid_sepstem_percentile.yaml
+# ============================================================
+
+experiment_name: "urban_multimodal_det_yolo11_rgbid_sepstem_percentile"
+seed: 42
+pretrained: "yolo11m.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 300
+patience: 80
+batch_size: 8
+image_size: [1280, 1280]
+num_workers: 4
+
+learning_rate: 5.0e-3
+warmup_epochs: 3
+
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2
+
+use_simotm: "RGBID"
+pairs_rgb_ir: ["visible", "infrared"]
+pairs_rgb_depth: ["visible", "depth"]
+channels: 5
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: false
+  resume_path: ""
+
+# ---- IR 对比度处理：**显式** percentile（不依赖默认值）----
+ir_encoding: percentile
