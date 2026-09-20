@@ -54,6 +54,20 @@ from ultralytics import YOLO  # noqa: E402
 MODEL_YAML = "configs/yolo11_visible.yaml"
 IMG_EXTS = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
 
+# 建于 ir_encoding 出现之前的 RGBID 配置：其 percentile 是**有意保留**的既有行为，予以豁免。
+# 尤其 train_rgbird_ir_quicktest.yaml 是已冻结的官方 baseline（FREEZE_MANIFEST 保护），不得修改。
+# 任何**不在**此名单的 RGBID 配置都必须显式声明 ir_encoding，否则 main() 会硬失败。
+_LEGACY_RGBID_PERCENTILE_CONFIGS = {
+    "train_rgbird_ir_quicktest.yaml",          # 官方 baseline（percentile，已冻结）
+    "train_multimodal.yaml",
+    "train_rgbid_g7_loss_localization.yaml",
+    "train_rgbid_modality_dropout.yaml",
+    "train_rgbid_p2_probe.yaml",
+    "train_rgbid_p3attn_probe.yaml",
+    "train_rgbird_1536_finetune.yaml",
+    "train_rgbird_1536_finetune_lr5e4.yaml",
+}
+
 
 # ============================================================
 # 基础工具
@@ -533,6 +547,32 @@ def main():
                 dataset_cfg, val_ratio, int(train_cfg.get("seed", 42))))
 
     kwargs = _build_train_kwargs(train_cfg, data_path)
+
+    # ============================================================
+    # 硬性防呆（2026-09-20 新增）—— RGBID 必须显式声明 ir_encoding
+    # ============================================================
+    # 事故背景：D' 实验在云上用了「experiment_name 取自 _clahe 配置、但配置里没有
+    # ir_encoding 键」的组合。ultralytics/data/base.py:333 的
+    #   getattr(getattr(self, "hyp", None), "ir_encoding", "percentile")
+    # 会**静默**回落到 percentile，于是 "IR-CLAHE + Separate-Stem" 实际训成了
+    # "percentile + Separate-Stem"，D vs D' 变成两个变量的差异，单变量对照失效。
+    # 这里把「静默回落」改成「硬失败」，让同类错误在开训的第一秒就暴露。
+    #
+    # 例外名单：建于 ir_encoding 出现之前的历史 RGBID 配置，其 percentile 是**有意保留**的
+    # 既有行为（尤其 train_rgbird_ir_quicktest.yaml 是已冻结的官方 baseline，不得修改）。
+    # 不在名单内的任何 RGBID 配置都必须显式写 ir_encoding。
+    if str(kwargs.get("use_simotm", "")) == "RGBID" and "ir_encoding" not in kwargs:
+        if Path(args.train_config).name not in _LEGACY_RGBID_PERCENTILE_CONFIGS:
+            raise SystemExit(
+                f"\n[train] FATAL: RGBID 训练配置 {args.train_config} 未显式声明 ir_encoding。\n"
+                f"        base.py 会静默回落到 percentile —— 这会让 IR 预处理成为\n"
+                f"        『你以为改了、其实没改』的隐藏变量，污染单变量对照。\n"
+                f"        请在 {args.train_config} 顶层显式加一行（二选一）：\n"
+                f"            ir_encoding: clahe        # CLAHE(clipLimit=2.0, tileGridSize=(8,8))\n"
+                f"            ir_encoding: percentile   # 1%/99% 分位线性拉伸\n"
+                f"        若这是既有历史配置的复跑，请把文件名加入 scripts/train.py 的\n"
+                f"        _LEGACY_RGBID_PERCENTILE_CONFIGS 白名单并说明理由。\n"
+            )
 
     # ---- model / resume ----
     ckpt = train_cfg.get("checkpoint", {})
