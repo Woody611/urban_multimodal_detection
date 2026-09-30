@@ -1,0 +1,40 @@
+D:\gyt\AIC\urban_multimodal_detection\scripts\official_eval.py:312: RuntimeWarning: Mean of empty slice
+  "per_class_ap50_95": np.nanmean(per_class_ap, 1).tolist(),
+======================================================================
+official_eval regression tests
+======================================================================
+
+[Test 1] 与参考实现一致性
+  [PASS] Test1 baseline 与参考一致
+  [PASS] Test1 Dprime 与参考一致
+
+[Test 2] 每图 100 框硬上限
+  [PASS] Test2 截断到 100
+  [PASS] Test2 保留 conf 最高者
+  [PASS] Test2 conf 单调不增
+  [PASS] Test2 常数 MAX_BOXES_PER_IMAGE == 100
+
+[Test 3] 非法行过滤
+  [PASS] Test3 总行数 6
+  [PASS] Test3 合法行 2
+  [PASS] Test3 非法行 4
+  [PASS] Test3 无 NaN/Inf 残留
+
+[Test 4] 匹配顺序 = confidence 降序
+  [PASS] Test4 高 conf 先匹配(GT 被高 conf 拿走, 后者成 FP)
+  [PASS] Test4 conf 决定顺序而非输入顺序
+
+[Test 5] 无 GT 类的 denominator
+  [PASS] Test5 A < B（class1 无 GT）
+  [PASS] Test5 B == 1.0（仅 class0，完全命中）
+  [PASS] Test5 A == 1/12（class0 满分, 其余 11 类记 0）
+
+[Test 6] 极端小目标与 IoU=0
+  [PASS] Test6 IoU=0 → 有限且为 0
+  [PASS] Test6 退化框 → 有限且为 0
+  [PASS] Test6 亚像素目标 IoU=1 → AP=1
+  [PASS] Test6 空预测 AP=0
+
+======================================================================
+RESULT: ALL PASS
+======================================================================

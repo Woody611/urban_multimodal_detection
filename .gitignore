@@ -1,7 +1,15 @@
 # =====================
 # Dataset
 # =====================
+# ⚠ 本规则**无锚定**，会同时命中仓库根的 data/ 与 ultralytics/data/（管线代码）。
+#   历史上的后果：ultralytics/data/ 整目录不进 git（见 reports/OASA_PHASE1_AUDIT.md §5 R2）。
+#   此处只做**最小范围 exception**：放行 OASA 实验需要修改的 augment.py。
+#   其余 ultralytics/data/*.py（base.py / loaders.py / dataset.py 等）仍处于未追踪状态——
+#   那是**独立的已知风险**，需要时可另行处理，不在本次改动范围。
 data/
+!ultralytics/data/
+ultralytics/data/*
+!ultralytics/data/augment.py
 
 # =====================
 # Model weights

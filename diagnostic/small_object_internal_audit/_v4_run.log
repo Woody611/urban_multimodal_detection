@@ -1,0 +1,14 @@
+==============================================================================
+SMALL_OBJECT_MODEL_INTERNAL_AUDIT_V1 —— D′ 内部机制审计（只读）
+==============================================================================
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 661/661 items from pretrained weights
+  nc=12 no=76 reg_max=16 topk=10
+  stride=[8.0, 16.0, 32.0]
+[34m[1mval: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\val\visible.cache... 400 images, 0 backgrounds, 2 corrupt: 100%|██████████| 400/400 [00:00<?, ?it/s][34m[1mval: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\val\visible.cache... 400 images, 0 backgrounds, 2 corrupt: 100%|██████████| 400/400 [00:00<?, ?it/s][34m[1mval: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\val\visible\000050.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0034       1.001]
+[34m[1mval: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\val\visible\003817.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0019]
+
+  val 数据集 n=398
+    ...360 GT 记录
+
+[saved] D:\gyt\AIC\urban_multimodal_detection\diagnostic\small_object_internal_audit\_v4_internal.json  (429 GT)

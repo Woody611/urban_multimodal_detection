@@ -1,0 +1,146 @@
+====================================================================================================
+F1 NATIVE-SMALL REPLAY —— PREFLIGHT (10 GATES) + SMOKE TEST
+====================================================================================================
+[provenance]
+  534ae8c4500b33dd  D:\gyt\AIC\urban_multimodal_detection\configs\train_rgbid_sepstem_clahe_f1.yaml
+  a4e329cfc3d22020  D:\gyt\AIC\urban_multimodal_detection\configs\train_rgbid_sepstem_clahe.yaml
+  9b14f29460733384  D:\gyt\AIC\urban_multimodal_detection\configs\yolo11m_sepstem.yaml
+  3bc36c31e913072f  D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\dataset.yaml
+  8b56d5aaf6e241e7  D:\gyt\AIC\urban_multimodal_detection\runs\urban_multimodal_det_yolo11_rgbid_sepstem_clahe\args.yaml
+  53c75148fc168a53  D:\gyt\AIC\urban_multimodal_detection\ultralytics\data\augment.py
+  db4371e360ae0e38  D:\gyt\AIC\urban_multimodal_detection\scripts\train.py
+
+====================================================================================================
+[Gate 8] REAL TRANSFORM ORDER
+====================================================================================================
+  D′+F1 Compose 顺序: ['NativeSmallReplay', 'ObjectScaleAug', 'Compose', 'MixUp', 'Albumentations', 'RandomHSV', 'RandomFlip', 'RandomFlip', 'Format']
+  pre_transform 内部:  ['Mosaic', 'CopyPaste', 'RandomPerspective']
+  D′ 原顺序（augment.py 未加 F1 时）: ['ObjectScaleAug','Compose','MixUp','Albumentations','RandomHSV','RandomFlip','RandomFlip']
+  F1 顺序:                            ['NativeSmallReplay','ObjectScaleAug','Compose','MixUp','Albumentations','RandomHSV','RandomFlip','RandomFlip']
+  ⇒ F1 的插入点是 **Compose 的第一个元素**，即 load_image 之后、Mosaic **之前**（协议 §17）
+  [PASS] G8_transform_order
+        order[0]=NativeSmallReplay; NativeSmallReplay 定位=OK
+
+====================================================================================================
+[Gate 9] D′ EQUIVALENCE —— 有效配置逐项 diff
+====================================================================================================
+  仅 D′ 有: {}
+  仅 F1 有: ['native_small_replay', 'native_small_replay_max_new_instances']
+  值不同的键: {'name': ['urban_multimodal_det_yolo11_rgbid_sepstem_clahe', 'urban_multimodal_det_yolo11_rgbid_sepstem_clahe_f1']}
+  ⇒ 期望：唯一**训练变量**差异 = `native_small_replay=1.0` + `native_small_replay_max_new_instances=2`；
+     `name`（= experiment_name）也必然不同 —— 它只决定 run 目录（协议 §26/§38 要求独立目录），
+     不属于训练变量，故列入**预期差异白名单**（并校验其值 = F1 的 experiment_name）。
+  [PASS] G9_config_equivalence
+        only_f1={'native_small_replay': 1.0, 'native_small_replay_max_new_instances': 2} training_var_diff={} name_only_diff=True
+  继承自 D′ args.yaml 的关键项（逐项比对 F1 的有效 cfg）：
+    ir_encoding     D′='clahe'                      F1='clahe'                      OK
+    use_simotm      D′='RGBID'                      F1='RGBID'                      OK
+    channels        D′=5                            F1=5                            OK
+    imgsz           D′=1280                         F1=1280                         OK
+    epochs          D′=300                          F1=300                          OK
+    batch           D′=8                            F1=8                            OK
+    optimizer       D′='SGD'                        F1='SGD'                        OK
+    lr0             D′=0.005                        F1=0.005                        OK
+    lrf             D′=0.01                         F1=0.01                         OK
+    momentum        D′=0.937                        F1=0.937                        OK
+    weight_decay    D′=0.0005                       F1=0.0005                       OK
+    warmup_epochs   D′=3.0                          F1=3.0                          OK
+    seed            D′=42                           F1=42                           OK
+    mosaic          D′=1.0                          F1=1.0                          OK
+    close_mosaic    D′=10                           F1=10                           OK
+    translate       D′=0.1                          F1=0.1                          OK
+    scale           D′=0.5                          F1=0.5                          OK
+    degrees         D′=0.0                          F1=0.0                          OK
+    shear           D′=0.0                          F1=0.0                          OK
+    perspective     D′=0.0                          F1=0.0                          OK
+    fliplr          D′=0.5                          F1=0.5                          OK
+    flipud          D′=0.0                          F1=0.0                          OK
+    mixup           D′=0.0                          F1=0.0                          OK
+    copy_paste      D′=0.0                          F1=0.0                          OK
+    rect            D′=False                        F1=False                        OK
+    pretrained      D′='yolo11m.pt'                 F1='yolo11m.pt'                 OK
+    patience        D′=0                            F1=0                            OK
+    amp             D′=True                         F1=True                         OK
+  [PASS] G9b_inherited_args
+        mismatch=[]
+
+====================================================================================================
+[Gate 10] RNG NEUTRALITY
+====================================================================================================
+  [PASS] G10a_construction_rng_neutral
+        构建 F1 的 transforms 前后 global RNG state 逐位相同
+  [PASS] G10b_p0_no_rng_consumption
+        p=0 时连续 10 次调用不消耗任何 RNG ⇒ D′ 数据流逐位不变
+
+====================================================================================================
+[SMOKE TEST] 20 training samples（dataset 层；无模型/无 forward/无 backward）
+====================================================================================================
+  样本 20：异常 0
+  图像 shape 集合: [(5, 1280, 1280)]
+  通道数集合（CHW，取 shape[0]）: [5]
+  label 数（变换后）: [9, 15, 25, 11, 6, 5, 27, 28, 20, 10, 9, 7, 15, 9, 6, 30, 13, 9, 8, 28]
+  stats: {'seen': 20, 'eligible': 20, 'replayed': 20, 'instances_added': 40, 'multi': 20, 'max_per_call': 2, 'skip_prob': 0, 'skip_nosmall': 0, 'skip_attempts': 0}
+  捕获 replay 记录: 40
+  [PASS] SMOKE_no_error
+        异常 0
+  [PASS] SMOKE_5ch
+        Format 后为 CHW；shape[0] == 5（RGBID 5 通道）
+  [PASS] SMOKE_no_nan
+        无 NaN/Inf
+
+====================================================================================================
+[Gates 1–7] 在大量 replay 记录上取证（需 ≥100 条）
+====================================================================================================
+  扫描 169 张样本；捕获 replay 记录 200 条；stats={'seen': 169, 'eligible': 100, 'replayed': 100, 'instances_added': 200, 'multi': 100, 'max_per_call': 2, 'skip_prob': 0, 'skip_nosmall': 69, 'skip_attempts': 0}
+  实际 replay 率（replayed / eligible）= 1.0000（配置 native_small_replay=1.0）
+  [PASS] G1_source_is_native_small
+        n=200；越界条数=0
+  [PASS] G2_scale_1p0
+        max|Δw|,max|Δh| = 1.137e-13（阈值 1e-6）
+  [PASS] G3_multimodal_5ch_sync
+        n=200；5 通道逐通道和 paste前后不一致 = 0
+  [PASS] G4_bbox_size_preserved
+        max|Δ| = 1.137e-13
+  [PASS] G5_class_preserved
+        新标签类 ≠ source 类 的条数 = 0
+  [PASS] G6_overlap_le_0.10
+        n=200；最大 IoU = 0.0629（阈值 0.10）；越界对数 = 0
+  [PASS] G7_label_integrity
+        原标签被保留 + 恰好新增 1 条：违例 = 0
+  [PASS] G7b_per_image_ceiling
+        实测每个 sample 最多新增 2 个（上限 max_new_instances=2）；multi(>=2) 样本数=100
+
+====================================================================================================
+[§23] PARAMETER COUNT GATE
+====================================================================================================
+  F1 的 --model_config 与 D′ **同一文件**：`configs/yolo11m_sepstem.yaml` sha=9b14f29460733384
+  D′ args.yaml 记录的 model = configs/yolo11m_sepstem.yaml
+  [PASS] PARAM_model_config_identical
+        F1 不接触任何模型代码；model config 与实际架构由同一 yaml 决定
+  F1 的改动仅位于：`ultralytics/data/augment.py`（新增一个 transform 类 + 在 Compose 首插一项）
+                    `scripts/train.py`（转发 native_small_replay* 键）
+                    `configs/train_rgbid_sepstem_clahe_f1.yaml`（新增）
+  ⇒ **模型参数量必然不变**（0 参数变化）
+
+====================================================================================================
+[SUMMARY]
+====================================================================================================
+  PASS  G8_transform_order
+  PASS  G9_config_equivalence
+  PASS  G9b_inherited_args
+  PASS  G10a_construction_rng_neutral
+  PASS  G10b_p0_no_rng_consumption
+  PASS  SMOKE_no_error
+  PASS  SMOKE_5ch
+  PASS  SMOKE_no_nan
+  PASS  G1_source_is_native_small
+  PASS  G2_scale_1p0
+  PASS  G3_multimodal_5ch_sync
+  PASS  G4_bbox_size_preserved
+  PASS  G5_class_preserved
+  PASS  G6_overlap_le_0.10
+  PASS  G7_label_integrity
+  PASS  G7b_per_image_ceiling
+  PASS  PARAM_model_config_identical
+
+  n_gates = 17  n_fail = 0  ⇒  EXPERIMENT READY

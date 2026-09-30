@@ -1,0 +1,380 @@
+================================================================================================================
+NATIVE-SMALL G1 vs G2/G4 PREDICTION-HEAD GEOMETRY AUDIT —— STRICT READ-ONLY
+================================================================================================================
+[provenance]
+  7d6745110546fec0  D:\gyt\AIC\urban_multimodal_detection\diagnostic\sepstem_clahe\best_full\results
+  da015742973d1efa  D:\gyt\AIC\urban_multimodal_detection\diagnostic\small_object_cause_v2\_v2_records.json
+  41d753f5fe24f372  D:\gyt\AIC\urban_multimodal_detection\diagnostic\small_object_cause_v2\_v3_analysis.json
+  e761e673e239fa2a  D:\gyt\AIC\urban_multimodal_detection\diagnostic\p3_feature_space\_v11_ids.json
+  7b28dc555c3fffb6  D:\gyt\AIC\urban_multimodal_detection\diagnostic\candidate_density_counterfactual\_results.npz
+  3505d9160c47aae8  D:\gyt\AIC\urban_multimodal_detection\diagnostic\small_object_domains\_v6_domains.json
+  0da6877405d241e3  D:\gyt\AIC\urban_multimodal_detection\diagnostic\small_object_internal_audit\_v4_internal.json
+  e82128abc082ed05  D:\gyt\AIC\urban_multimodal_detection\scripts\official_eval.py
+  2fa868a4464ce88b  D:\gyt\AIC\urban_multimodal_detection\ultralytics\nn\modules\head.py
+  aae7e8ac438f00cd  D:\gyt\AIC\urban_multimodal_detection\ultralytics\utils\tal.py
+  0f092cf22a372f6d  D:\gyt\AIC\urban_multimodal_detection\ultralytics\utils\loss.py
+  36858acb59058e89  D:\gyt\AIC\urban_multimodal_detection\scripts\predict_rect.py
+  1cae45f75693f541  D:\gyt\AIC\urban_multimodal_detection\runs\urban_multimodal_det_yolo11_rgbid_sepstem_clahe\weights\best.pt
+  9b14f29460733384  D:\gyt\AIC\urban_multimodal_detection\configs\yolo11m_sepstem.yaml
+  a4e329cfc3d22020  D:\gyt\AIC\urban_multimodal_detection\configs\train_rgbid_sepstem_clahe.yaml
+
+================================================================================================================
+[§2] FROZEN G1 / G2 / G4（直接复用既有定义，**未重新抽样**）
+================================================================================================================
+  G1 = `_v3_analysis.json.E1`：native-small 且 `cause ∈ (SCENE_DIFFICULTY, WEAK_FEATURE_EVIDENCE)`
+       等价定义 = **任意类别 IoU == 0**（与 top-100 预测**完全无重叠**）
+  G2 = `_v3_analysis.json.controls[k][0]`：G1 的 matched control（跨图，按 input-sqrt 匹配）
+  G4 = `_v11_ids.json.G4`：native-small ∧ 成功（best_same_class_iou ≥ 0.5）∧ ∉G1/G2
+  val 图像 398 张；val GT 总数 2807
+  分组 key 在 val GT 表中缺失数 = 0  []
+
+  G1: n=38  n_img=21
+    classes: {'person': 18, 'animal': 13, 'light': 3, 'sign': 2, 'garbage_can': 1, 'ball': 1}
+    native sqrt(area) med=22.86 IQR=[19.92,25.69]  aspect med=0.855 IQR=[0.626,1.000]
+    分辨率构成: {'1920x1080': 38}
+    image_ids: ['000004_011_00000001', '000006_011_00000307', '000006_011_00000409', '000012_014_00000184', '000012_025_00000313', '000017_011_00000297', '000140', '000415'] …
+
+  G2: n=38  n_img=19
+    classes: {'person': 15, 'animal': 14, 'boat': 3, 'light': 3, 'sign': 2, 'ball': 1}
+    native sqrt(area) med=22.91 IQR=[19.75,27.81]  aspect med=0.838 IQR=[0.577,1.000]
+    分辨率构成: {'1920x1080': 38}
+    image_ids: ['000006_011_00000409', '000013_056_00000281', '000140', '000415', '000926', '001295', '002235', '002331'] …
+
+  G4: n=194  n_img=72
+    classes: {'person': 110, 'animal': 20, 'uav': 18, 'sign': 17, 'car': 12, 'bicycle': 5, 'seat': 4, 'garbage_can': 4, 'ball': 2, 'light': 1, 'boat': 1}
+    native sqrt(area) med=25.28 IQR=[19.46,28.49]  aspect med=0.746 IQR=[0.486,1.256]
+    分辨率构成: {'640x360': 39, '1920x1080': 155}
+    image_ids: ['00000045', '00000057', '00000063', '00000095', '00000106', '00000123', '00000171', '00000180'] …
+
+================================================================================================================
+[§A] REPRODUCTION GATE —— 从 D′ TXT + val GT 重算 v2_records 的两个核心量
+================================================================================================================
+  对照 n = 371 条 native-small GT（v2_records 覆盖的那些）
+    max|Δ best_any_class_iou|  = 1.553e-07
+    max|Δ best_same_class_iou| = 1.553e-07
+    PASS ✅ 重算口径与既有记录逐位一致
+
+================================================================================================================
+[§D] §0/§5–§9 CANDIDATE-LEVEL 可用性 —— 先判定，再决定能回答什么
+================================================================================================================
+  §4 的完整链条（GT → feature cell → raw reg → decode → candidate box → score → final）：
+    代码链条：**FULLY_TRACED**（见 §3 的 source 引用）
+    数据链条：**PARTIALLY_AVAILABLE** —— 见下方更正
+
+  既有 candidate 级 artifact 及其 split（实测）：
+    candidate_density_counterfactual：`_run.py` 用的是 data['train']（1599 图），uid = train dataset index
+    e2_assigner_geometry：同批 train 图像（n_images=250，base_seed 相同）
+    **⇒ 这两者的确都在 TRAIN 划分（uid = train dataset index，不可反查、与 val 不可比）。**
+
+  ⚠ **更正（我最初据此判定『val 侧无 candidate 数据 ⇒ §5–§9 全 UNAVAILABLE』，该判定不完整）**：
+    另有**两个 val 侧 artifact** 保存了 per-GT 的 raw-head 量：
+      • `small_object_domains/_v6_domains.json` 的 **V1 域**（val 原图、aug OFF、**全部 2807 val GT**）：
+        `n_pos`、`best_assign_iou` / `best_any_overlap`（GT 框内 anchor 上 **decoded 框**与 GT 的
+        CIoU 最大值）、`center_logit` / `center_prob`、`pos_prob`、`pos_target`
+      • `small_object_internal_audit/_v4_internal.json`（val，30 图，429 GT）：
+        `n_in_gts`、`n_topk`、`n_pos`、`pos_score_max`、`best_in_gts_align`、`best_any_overlap`、
+        per-level `max_score_near`
+    ⇒ **§5(candidate count)** 与 **§6/§7(candidate box geometry, CIoU 下界)** = **AVAILABLE**（见 §L）。
+
+  仍然 **UNAVAILABLE** 的项（确无任何 val 侧落盘，补测需新 forward ⇒ 不执行）：
+      • §6 的 **candidate/anchor 中心偏移表** —— 只落了『GT 中心 12px 内最高同类 logit』，
+        没有 per-anchor 中心误差 ⇒ candidate center error **UNAVAILABLE**
+      • §8 的 **per-anchor candidate→final 追踪** —— final 是 post-NMS 的 (cls,cx,cy,w,h,conf) 列表，
+        无法把某个 candidate 映射到某条最终预测 ⇒ **UNAVAILABLE**
+      • §9 的 **回归目标 / DFL 分布**（tx/ty/tw/th、4×16 softmax）—— 全仓库无任何落盘 ⇒ **UNAVAILABLE**
+
+  ⚠ 协议 §0 引用的历史观察『G1 best same-class predicted box ≈ GT 的 3× / 3.5×』：
+    **在本轮的冻结 G1 上不成立/不可测** —— G1 的定义就是 any-class IoU == 0，
+    因此 `best_same_class_area_ratio` 与 `center_dx_norm_gtw` 在 v2_records 中**全部为 None**
+    实测：G1 中 area_ratio 为 None 的条数 = 38/38  ✅ 证实
+    ⇒ **『3× box』属于更宽的『定位失败（0<IoU<0.5）』群体，不是冻结的 G1。本轮不张冠李戴。**
+
+  **跨 split 参考（明确标注：TRAIN 划分 + mosaic=1.0，与 G1 不可配对，仅作机制刻度）**
+    bucket     n_GT  n_cand med  maxCIoU med   P(≥.5)   P(≥.7)   P(≥.8)
+    small      1325         4.0       0.8775    91.8%    80.6%    68.9%
+    medium     4647        21.0       0.9589    99.2%    98.2%    95.9%
+    large      4133       169.0       0.9805    99.9%    99.4%    98.5%
+    ⇒ 在 TRAIN 上，native-small GT 的**框内 decoded 候选**中位 maxCIoU = 0.8775，P(≥0.5) = 91.8%。
+      **该 TRAIN 量不可迁移到 G1**（不同 split、不同 augmentation）⇒ 仅作机制刻度，
+      不作为 G1 的证据。**G1 的证据用 val 侧的 `_v6_domains` V1 域，见 §L。**
+
+================================================================================================================
+[§E] §11 FINAL PREDICTION vs GT —— G1 的问题『没有预测』还是『预测存在但几何错』？
+================================================================================================================
+  group    n n_pred med #capped100 best any-class IoU med  #(IoU==0)
+  G1      38         12          6                 0.0000         38
+  G2      38         20          8                 0.6864          0
+  G4     194         33         68                 0.7464          0
+
+  ⇒ **G1 的答案：既不是『几何错』，也不只是『没有预测』—— 是『图内没有任何一个框与该 GT 相交』。**
+    G1 的 best any-class IoU 在 **38/38** 条上 == 0.0（严格零重叠）。
+    G2/G4 则 100% 有重叠（中位 0.6864 / 0.7464）。
+    因此对 **最终预测** 无法计算 G1 的 best-prediction size/center/area ratio（协议 §7/§12 的 3× 分解）：
+    **UNAVAILABLE —— 不是没测，是『被匹配的那个框不存在』。**
+    ⚠ 但**raw head 层**的对应量是有的（见 §L）：G1 的框内 decoded 框 CIoU 中位 0.6278。
+      两层合起来才是本轮结论：**几何在 head 输出处已经达标，在最终输出处消失。**
+
+================================================================================================================
+[§G] §21 反事实 —— G1 的『零重叠』是『位置特别差』还是『这些图本来就稀疏』？
+================================================================================================================
+  Null N1 = 同一张图内、**保持 G1 的 GT 尺寸**、位置均匀随机撒（每 GT 400 次），
+            与**同一预测集合**算 any-class IoU。n(G1)=38
+    null P(IoU==0)  : 中位 0.9213  IQR [0.8581,0.9681]  mean 0.9124
+    null best IoU   : 中位 0.0000
+    **观测 G1 P(IoU==0) = 1.0000**（38/38）
+    ⇒ 若 G1 的位置与尺寸与『同图随机位置』无异，期望零重叠率只有 92.1%。
+      观测是 100% ⇒ **G1 的位置/尺寸并非随机无关，而是系统性地落在无预测区**。
+      但注意：图内预测数本身很少（G1 图内 n_pred 中位 12）⇒ 稀疏是背景条件。
+
+  Null N2 = 同一批图内**其它 native-small GT**（非 G1/G2/G4）的真实 any-class IoU（真实目标，非随机位置）
+    n=32  P(any-class IoU==0) = 34.4%  中位 IoU = 0.0497  P(≥0.5) = 0.0%
+    ⇒ 同图其它 small GT：零重叠率 34.4%（G1 是 100%）、中位 IoU 0.0497，**但没有一个达到 IoU≥0.5**。
+      ⇒ 两条同时成立：(i) G1 的零重叠确实比同图同类更极端；
+         (ii) **G1 所在的图像里，native-small 整体都检不出来** —— 这是一个图像级困难条件，
+              与 §G 的 N1（图内预测数本就很少）一致。**不能只归因于目标本身。**
+
+================================================================================================================
+[§F] §10/§13 G1 的几何分解 —— 对『最近的框』做 center / size 隔离
+================================================================================================================
+  选择规则（**三种全报，避免挑规则挑结果**）：nearest-center / highest-conf / largest-area
+  decompose 定义：center_fixed = 把该框中心搬到 GT 中心（保留其 w/h）⇒ 单独隔离**尺寸**误差；
+                  size_fixed   = 保留其中心、w/h 换成 GT 的     ⇒ 单独隔离**位置**误差。
+
+  --- 规则 nearest_center（n=38）---
+    metric            n     median                   IQR       p10       p90                  boot95
+    raw              38     0.0000       [+0.000,+0.000]    0.0000    0.0000         [+0.000,+0.000]
+    center_fixed     38     0.1431       [+0.068,+0.562]    0.0260    0.7959         [+0.109,+0.429]
+    size_fixed       38     0.0000       [+0.000,+0.000]    0.0000    0.0000         [+0.000,+0.000]
+    dcenter          38     7.0112      [+4.268,+10.673]    2.9919   14.2169         [+4.809,+9.297]
+    w_ratio          38     2.0577       [+1.182,+5.143]    1.0033    8.4903         [+1.515,+3.834]
+    h_ratio          38     1.9393       [+1.168,+3.709]    1.0289    7.1702         [+1.469,+3.294]
+    area_ratio       38     6.3681      [+1.489,+14.752]    1.2047   38.7289         [+2.130,+9.143]
+    aspect_ratio     38     0.9985       [+0.744,+1.565]    0.4475    3.2249         [+0.903,+1.106]
+    ⇒ center_fixed ≥0.5 的比例 = 28.9%   size_fixed ≥0.5 的比例 = 0.0%
+
+  --- 规则 highest_conf（n=38）---
+    metric            n     median                   IQR       p10       p90                  boot95
+    raw              38     0.0000       [+0.000,+0.000]    0.0000    0.0000         [+0.000,+0.000]
+    center_fixed     38     0.0148       [+0.006,+0.046]    0.0032    0.1315         [+0.008,+0.029]
+    size_fixed       38     0.0000       [+0.000,+0.000]    0.0000    0.0000         [+0.000,+0.000]
+    dcenter          38    18.1812     [+12.575,+26.672]    7.5883   34.6534       [+15.346,+23.195]
+    w_ratio          38     7.1403      [+3.789,+11.830]    2.5406   16.0561        [+4.514,+10.297]
+    h_ratio          38    10.5870      [+4.616,+13.531]    2.3248   27.1630        [+5.353,+12.728]
+    area_ratio       38    67.8424    [+21.907,+163.880]    7.6211  313.7567      [+34.251,+131.394]
+    aspect_ratio     38     0.7436       [+0.435,+1.164]    0.3583    2.2567         [+0.577,+1.048]
+    ⇒ center_fixed ≥0.5 的比例 = 5.3%   size_fixed ≥0.5 的比例 = 0.0%
+
+  --- 规则 largest_area（n=38）---
+    metric            n     median                   IQR       p10       p90                  boot95
+    raw              38     0.0000       [+0.000,+0.000]    0.0000    0.0000         [+0.000,+0.000]
+    center_fixed     38     0.0082       [+0.003,+0.020]    0.0023    0.1298         [+0.005,+0.014]
+    size_fixed       38     0.0000       [+0.000,+0.000]    0.0000    0.0000         [+0.000,+0.000]
+    dcenter          38    20.9793     [+15.521,+30.051]    9.2652   41.4283       [+17.061,+26.650]
+    w_ratio          38    10.1382      [+4.369,+15.785]    2.6497   27.1264        [+6.241,+12.804]
+    h_ratio          38    13.1293      [+5.729,+17.911]    3.1892   27.1630       [+10.225,+15.827]
+    area_ratio       38   122.7387    [+50.326,+304.244]    7.7266  439.4570      [+69.339,+219.982]
+    aspect_ratio     38     0.9206       [+0.413,+1.738]    0.2790    2.4369         [+0.544,+1.392]
+    ⇒ center_fixed ≥0.5 的比例 = 5.3%   size_fixed ≥0.5 的比例 = 0.0%
+
+  ⇒ 最重要的是 `dcenter`：G1 图像里**离 GT 中心最近的那个框**，其中心距 GT 中心中位 **7.01 个 GT 对角线**。
+     ⇒ 最终输出里**根本不存在『临近的框』**，所以本节对『最近的框』做 center/size 隔离的实际信息量有限：
+       `size_fixed` 恒为 0（把远端框的 w/h 换成 GT 的，中心仍在天边）；
+       `center_fixed ≥0.5` 只有 28.9%（把远端框搬到 GT 中心后勉强达标）—— 这只是『远端框尺寸碰巧相近』。
+  ⚠ **读法限定（很关键）**：这些分解回答的是『如果只修一个因素，最近的那个框能不能变成 IoU≥0.5』，
+    **不是**『head 的回归输出错了多少』。后者由 §L 直接回答（val 侧框内 decoded 框的 CIoU），
+    结论是 **head 的回归输出没有错**。
+
+================================================================================================================
+[§H] §7/§10/§12 对照组 G2/G4 的 best-matching 预测几何（这些组**有**匹配框）
+================================================================================================================
+
+  G2 n=38（best same-class 预测）
+    metric             median                   IQR       p10       p90
+    raw                0.6864       [+0.596,+0.763]    0.5456    0.8243
+    center_fixed       0.7666       [+0.669,+0.853]    0.5900    0.8977
+    size_fixed         0.7986       [+0.632,+0.860]    0.5567    0.9118
+    dcenter            0.0656       [+0.036,+0.097]    0.0238    0.1368
+    w_ratio            1.0940       [+1.000,+1.266]    0.9205    1.3003
+    h_ratio            1.0633       [+0.971,+1.179]    0.9261    1.3580
+    area_ratio         1.2175       [+1.059,+1.345]    0.8647    1.6758
+    aspect_ratio       0.9789       [+0.900,+1.171]    0.8137    1.2895
+
+  G4 n=194（best same-class 预测）
+    metric             median                   IQR       p10       p90
+    raw                0.7464       [+0.654,+0.811]    0.5799    0.8779
+    center_fixed       0.8103       [+0.720,+0.884]    0.6510    0.9346
+    size_fixed         0.8006       [+0.711,+0.877]    0.6247    0.9241
+    dcenter            0.0558       [+0.034,+0.086]    0.0207    0.1441
+    w_ratio            1.0136       [+0.941,+1.128]    0.8212    1.2522
+    h_ratio            1.0261       [+0.945,+1.111]    0.8604    1.2159
+    area_ratio         1.0423       [+0.922,+1.191]    0.7833    1.3986
+    aspect_ratio       0.9972       [+0.869,+1.111]    0.7452    1.3099
+
+  --- G2/G4 的『单因素隔离』：哪一个是主要误差源？---
+    group  median IoU_raw   center_fixed med   size_fixed med      argmax 误差源
+    G2             0.6864             0.7666           0.7986              尺寸
+    G4             0.7464             0.8103           0.8006              位置
+
+
+================================================================================================================
+[§L] ★ val 侧 RAW-HEAD 候选 —— 我最初判定 UNAVAILABLE 是错的，更正如下
+================================================================================================================
+  `diagnostic/small_object_domains/_v6_domains.json` 的 **V1 域 = val 原图、augmentation OFF**，
+  覆盖**全部 2807 个 val GT**（G1/G2/G4 全含），由 `_v6_domains.py:222` 的
+  `model.eval(); model.model[-1].train()` 前向 + **真实 TaskAlignedAssigner(topk=10,α=0.5,β=6.0)** 产出。
+  其 `best_assign_iou` / `best_any_overlap` = **GT 框内 anchor 上 decoded 预测框与 GT 的 CIoU 最大值**
+  （`tal.py` 的 `iou_calculation = bbox_iou(..., CIoU=True).clamp_(0)`）。
+  **CIoU ≤ 真 IoU ⇒ `best_*_overlap ≥ 0.5` 蕴含真 IoU ≥ 0.5** —— 这是**下界**性质，结论因此保守。
+  第二个独立脚本 `small_object_internal_audit/_v4_internal.json`（val，30 图，429 GT，未预训练别的口径）
+  用**独立实现**给出同量，用于交叉复核。
+  可用性：G1 38/38、G2 38/38、G4 194/194 命中 V6(V1)；V4 命中 G1 38、G2 38
+
+  --- §L1 candidate 数量（协议 §5）---
+    group    n  n_in_gts med  n_topk med  n_pos med  #(n_pos==0)
+    G1      38             5          10          5            0
+    G2      38             5          10          5            0
+    G4     194             6          10          7            1
+    ⇒ 三组的 candidate **数量没有量级差异**（中位 5 / 5 / 7），且 **G1 无一条 n_pos==0**。
+      ⇒ 协议 §1 的 A(candidate center 错)/『candidate 不存在』**不成立**。
+
+  --- §L2 candidate BOX GEOMETRY（协议 §6/§7 的实质：decoded 框与 GT 的 IoU）---
+    group    n  best CIoU med                 IQR   #(≥0.5)   #(≥0.3)      p10      p90
+    G1      38         0.6278       [0.430,0.732]        24        33   0.2393   0.8172
+         （独立脚本 `_v4_internal` 的 `best_any_overlap` 中位 = 0.6278，n=38，与 `best_assign_iou` 一致）
+    G2      38         0.7156       [0.638,0.811]        36        38   0.5655   0.9115
+         （独立脚本 `_v4_internal` 的 `best_any_overlap` 中位 = 0.7156，n=38，与 `best_assign_iou` 一致）
+    G4     194         0.7694       [0.679,0.841]       189       191   0.5944   0.8872
+         （独立脚本 `_v4_internal` 的 `best_any_overlap` 中位 = 0.7721，n=69，与 `best_assign_iou` 一致）
+
+    G1 vs G2 CIoU：MWU p=0.005449  Cliff δ=-0.3712
+    G1 vs G4 CIoU：MWU p=8.529e-07  Cliff δ=-0.5054
+    ⇒ G1 的候选几何**略低于** G2/G4（0.63 vs 0.72/0.77），但**绝对水平仍然良好**：
+      24/38 = 63.2% 的 G1 在 raw head 里**已有 IoU≥0.5 的框**，
+      86.8% 已有 IoU≥0.3。**这不足以解释最终输出零重叠。**
+
+  --- §L3 ★ 分支解离：同一个 anchor 集合上，box 分支好、**cls 分支≈0** ---
+    group    n  best CIoU med  pos_prob med  center_prob med  v4 pos_score_max med  v4 best_in_gts_align med
+    G1      38         0.6278      0.000003         0.000003              0.000003                  0.000030
+    G2      38         0.7156      0.680127         0.697562              0.680127                  0.050577
+    G4     194         0.7694      0.727966         0.761614              0.666663                  0.102950
+
+    ⇒ **决定性**：G1 的 `best_assign_iou` 中位 0.6278（框是对的），
+      但**同一批正样本 anchor 上** GT 类的 sigmoid 概率中位 **0.000000**（`pos_prob`）。
+      `center_prob`（GT 中心 12px 内 GT 类最高 sigmoid）中位同样 **0.000000**。
+      而 G2/G4 的同一量是 0.6801 / 0.7280 与 0.6976 / 0.7616。
+      第二个独立脚本 `_v4_internal` 复现：G1 `pos_score_max` 中位 **0.0000**（max 0.0030）vs G2 0.6705。
+      `best_in_gts_align`（= cls^0.5·CIoU^6）G1 中位 0.0000 —— **因为 cls≈0，align 被 cls 项压到 0**。
+
+    逐半径（v4，GT 中心 1.5×stride 内的**同类 raw logit**，sigmoid 前）：
+      group    stride8 中位    stride16 中位    stride32 中位
+      G1         -12.5845       -11.3559        -9.6401
+      G2           0.8357         1.0120         1.2775
+      G4           0.8816         1.2623         1.3510
+      （G1 的 near-GT 同类 logit 极低 ⇒ **不是『附近有响应但类别错』，而是『该处同类响应缺失』**）
+
+  --- §L4 ★ 交叉表：raw-head 几何合格  vs  最终输出有重叠（协议 §21 的反事实）---
+    group    n  A: best_assign_iou≥0.5    B: final any-IoU>0    A ∧ ¬B
+    G1      38                      24                     0        24
+    G2      38                      36                    38         0
+    G4     194                     189                   194         0
+
+  --- §L5 第三个独立 val 前向的三角验证（`_v7_vectors.json` V1 域，2807 val GT）---
+    `logit_decomp` = GT 中心 cell 的 `W_c·h + b_c`（**与 assigner 无关的独立读数**）
+    group    n      同类 logit 中位    对应 sigmoid       p90
+    G1      38         -14.6341     4.410e-07  -10.4090
+    G2      38          -0.0896     4.776e-01    1.5465
+    G4     194           0.5111     6.251e-01    1.7595
+    ⇒ 与 §L3 同向且量级一致（G1 同类响应 ≈0，G2/G4 正常）⇒ **三个独立前向一致**。
+
+  ⚠ **必须声明的一处口径差异（limitation，不是本轮新引入的）**：
+    所有 val 侧 raw-head artifact（`_v6_domains` V1 / `_v4_internal` / `_v7_vectors` / `_v11`–`_v14`）
+    都建在 `rect=False` 的**方形 letterbox**（1280×1280）上；
+    而冻结预测 TXT 来自 `scripts/predict_rect.py`，其 `--mode` **默认 `rect`**（逐图矩形画布）。
+    ⇒ 两侧的 letterbox 几何略有不同。**该差异不影响 §L3 的解离**（box 与 cls 出自**同一次前向、同一批 anchor**），
+      也不影响 §E/§I（全部在 native 坐标上）；它只让『raw-head ↔ 冻结预测』的桥接略弱一档。
+      **本轮不跑任何前向来消除它**（协议 §2）。
+
+    ⇒ **G1：24 条『raw head 已给出 IoU≥0.5 的框』，其中 24 条在最终输出里零重叠。**
+      G2/G4：该情形为 0 条。
+      ⇒ 这是本轮**最强的一条**：几何在 head 输出处已达标，却在最终输出处全体消失。
+
+================================================================================================================
+[§I] §9/§15 CLASSIFICATION & RANKING
+================================================================================================================
+  G1 的 best any-class IoU ≡ 0 ⇒ **最终输出里不存在任何几何合格（IoU≥0.5）的候选**。
+  故 §15 的『good candidate 存在但被排到后面』对 G1 **定义上不成立** ⇒ RANKING = NOT_SUPPORTED。
+
+  同类分数分布（G1 图内、同类预测的**最高** conf）：
+    G1: n=38  #(同类预测存在)=31/38  max-conf 中位=0.9264  #(≥0.001)=31
+    G2: n=38  #(同类预测存在)=38/38  max-conf 中位=0.9382  #(≥0.001)=38
+    G4: n=194  #(同类预测存在)=194/194  max-conf 中位=0.9068  #(≥0.001)=194
+
+  全局 conf 分布（图内全部预测的 max conf）—— 图像级『有框』强度：
+    G1: n_img=21  image max-conf 中位=0.9556
+    G2: n_img=19  image max-conf 中位=0.9556
+    G4: n_img=72  image max-conf 中位=0.9506
+
+================================================================================================================
+[§J] §17 SCALE SANITY（native_area 分桶；medium/large 只作机制对照）
+================================================================================================================
+  bucket       n  best any-IoU med  #(IoU==0)  n_pred med
+  small      371            0.6086         70          27
+  medium    1320            0.7622         98          17
+  large     1116            0.8849         26          13
+
+================================================================================================================
+[§K] §18 ASPECT-RATIO 控制（G1 vs G2 的 AR 分布是否可比）
+================================================================================================================
+  G1 AR: med 0.855 IQR [0.626,1.000]
+  G2 AR: med 0.838 IQR [0.577,1.000]   MWU p=0.775  Cliff δ=+0.039
+  G4 AR: med 0.746 IQR [0.486,1.256]
+  G1 vs G2 native sqrt(area): MWU p=0.930
+  ⇒ G2 是按 in_sqrt 匹配的 control，故尺寸可比；AR 分布亦无显著差异 ⇒ 分层不是必需。
+
+================================================================================================================
+[§P] §16 CLASS STRATIFICATION（n<10 只作描述，不做统计结论）
+================================================================================================================
+  class          n_G1     框 CIoU 中位    cls prob 中位    final any-IoU 中位   n_pred 中位
+  person           18        0.6750       0.000002              0.0000          10
+  animal           13        0.4967       0.000006              0.0000          19
+  sign              2        0.6674       0.000000              0.0000          51   (n<10 描述)
+  ball              1        0.4324       0.000000              0.0000          19   (n<10 描述)
+  light             3        0.7707       0.000080              0.0000           3   (n<10 描述)
+  garbage_can       1        0.6943       0.000000              0.0000           5   (n<10 描述)
+  ⇒ **两个可统计的类（person 18、animal 13，合计 31/38 = 81.6%）的形态完全一致**：
+    框 CIoU 均 ≈0.6、GT 类概率均 ≈0、最终命中均为 0。**不是某一类特有的现象。**
+
+================================================================================================================
+[§M] §13 FAILURE TAXONOMY（G1；允许一个样本属于多个机制，故报 overlap）
+================================================================================================================
+  协议 Type C(center) / S(size) / A(aspect) / R(ranking) / U(unresolved) 需要 **candidate 中心与 w/h**；
+  这些量在 val 侧**未落盘**（§D）。因此分类只能基于两件**已测**的事：
+    (i) raw head 里框内 decoded 框的 CIoU 下界（`best_assign_iou`）
+    (ii) GT 处 GT 类的响应（`pos_prob` / `center_prob` / `logit_decomp`）
+    stratum                                        n       占比
+    STAGE4 (框 CIoU≥0.5 且 cls≈0)  ← 主群             24    63.2%
+    STAGE4-borderline (0.3≤框CIoU<0.5 且 cls≈0)      9    23.7%
+    框也差 (CIoU<0.3 且 cls≈0) ⇒ 混合                    5    13.2%
+    cls 正常 (≥0.01)                                 0     0.0%
+
+  ⇒ **G1 中 33/38 = 86.8% 属于『框已经够好 / 接近够好，但 GT 类响应 ≈ 0』**。
+  ⇒ **Type S（尺寸）与 Type C（中心）在 raw head 层均被否定**（框 CIoU 中位 0.63）；
+     **Type R（排序）在定义上不成立**（没有任何候选进入最终输出，无从被排到后面）；
+     **Type A（长宽比）无法在 candidate 层测**（无 per-anchor w/h 落盘）⇒ 该支 UNAVAILABLE。
+     实际主导机制 = 协议 STAGE 4（classification / score）。
+
+================================================================================================================
+[§N] §19/§25 FAILURE STAGE 与 VERDICT
+================================================================================================================
+  STAGE                                         判定            依据
+  1 candidate generation / center               NOT_SUPPORTED n_pos 中位 5、无一条为 0（§L1）
+  2 candidate box geometry                      NOT_SUPPORTED 框内 decoded 框 CIoU 中位 0.6278，24/38 ≥0.5（§L2）
+  3 regression / decoding                       NOT_SUPPORTED 同上（CIoU 就是 decode 后的框算出来的）
+  4 classification / score                      ★ SUPPORTED   同一 anchor 上 GT 类 sigmoid 中位 3e-6，near-GT logit −12.6（§L3）
+  5 ranking / postprocess                       NOT_SUPPORTED 最终输出零重叠，无候选可被排序（§I）
+  6 unresolved                                  -             -
+
+  **PRIMARY FAILURE STAGE = STAGE 4 (classification / score)**
+
+[saved] D:\gyt\AIC\urban_multimodal_detection\diagnostic\prediction_head_geometry_audit\_tables.json
+[saved] D:\gyt\AIC\urban_multimodal_detection\diagnostic\prediction_head_geometry_audit\_results.npz

@@ -1,0 +1,71 @@
+{
+  "detection_rate": {
+    "small|D′": {
+      "n": 371,
+      "detected": 223,
+      "missed": 148,
+      "rate": 0.601078167115903
+    },
+    "small|F1": {
+      "n": 371,
+      "detected": 224,
+      "missed": 147,
+      "rate": 0.6037735849056604
+    },
+    "medium|D′": {
+      "n": 1320,
+      "detected": 1070,
+      "missed": 250,
+      "rate": 0.8106060606060606
+    },
+    "medium|F1": {
+      "n": 1320,
+      "detected": 1071,
+      "missed": 249,
+      "rate": 0.8113636363636364
+    },
+    "large|D′": {
+      "n": 1116,
+      "detected": 1019,
+      "missed": 97,
+      "rate": 0.9130824372759857
+    },
+    "large|F1": {
+      "n": 1116,
+      "detected": 1040,
+      "missed": 76,
+      "rate": 0.931899641577061
+    }
+  },
+  "g1_followup": {
+    "G1（any-class IoU==0）|D′": {
+      "n": 38,
+      "n_zero": 38,
+      "n_pos": 0,
+      "n_det": 0,
+      "median_any": 0.0
+    },
+    "G1（any-class IoU==0）|F1": {
+      "n": 38,
+      "n_zero": 33,
+      "n_pos": 5,
+      "n_det": 2,
+      "median_any": 0.0
+    },
+    "non-G1 native-small|D′": {
+      "n": 333,
+      "n_zero": 32,
+      "n_pos": 301,
+      "n_det": 223,
+      "median_any": 0.6516847879548955
+    },
+    "non-G1 native-small|F1": {
+      "n": 333,
+      "n_zero": 34,
+      "n_pos": 299,
+      "n_det": 222,
+      "median_any": 0.6528274449594195
+    }
+  },
+  "n_gt": 2807
+}

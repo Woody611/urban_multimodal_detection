@@ -1,0 +1,167 @@
+{
+  "provenance": {
+    "ultralytics/utils/tal.py": "aae7e8ac438f00cda88d7e151795b3f78270ec4ed56b883f413fd16233b7e527",
+    "ultralytics/utils/loss.py": "0f092cf22a372f6d5c5e7197d7adde51cbb23c02ac4522978f42df5b23a6543b",
+    "ultralytics/utils/instance.py": "78a72d1f4354c29fe11ca24cbdcd3faa44e4e1adb3ecae0f4df2f228283e4931",
+    "ultralytics/data/augment.py": "5cb9a407625921ce3f12ffc13df2d703f0a49d9ce1ba067edaf025bced96c518",
+    "ultralytics/data/base.py": "8bcf834930155bd58a99ccfc5e87113398f740aeb720b5827ff05ba45c5871d9",
+    "ultralytics/data/build.py": "f014263f2bfe5921acaf5396b1663b60849f7952210b0b563f55e0bfe07c2013",
+    "ultralytics/data/dataset.py": "0aba2bc14793ab85ac477d0eab0cf4083adcd585569a9f99021e8ae03278c938",
+    "configs/yolo11m_sepstem.yaml": "9b14f2946073338414b4441784b6df87a868b982be32ac8d50b6d1c4a17f3dd8",
+    "configs/train_rgbid_sepstem_clahe.yaml": "a4e329cfc3d220206448cdd3377c1b3f5126c50f13c907ada522d98725486e12",
+    "runs\\urban_multimodal_det_yolo11_rgbid_sepstem_clahe\\weights\\best.pt": "1cae45f75693f54146e35c5fa076c0a6f78ca1cfa95595de74d959f40fae4fda"
+  },
+  "settings": [
+    [
+      0.25,
+      2,
+      5
+    ],
+    [
+      0.25,
+      2,
+      10
+    ],
+    [
+      0.25,
+      2,
+      20
+    ],
+    [
+      0.25,
+      4,
+      5
+    ],
+    [
+      0.25,
+      4,
+      10
+    ],
+    [
+      0.25,
+      4,
+      20
+    ],
+    [
+      0.25,
+      6,
+      5
+    ],
+    [
+      0.25,
+      6,
+      10
+    ],
+    [
+      0.25,
+      6,
+      20
+    ],
+    [
+      0.5,
+      2,
+      5
+    ],
+    [
+      0.5,
+      2,
+      10
+    ],
+    [
+      0.5,
+      2,
+      20
+    ],
+    [
+      0.5,
+      4,
+      5
+    ],
+    [
+      0.5,
+      4,
+      10
+    ],
+    [
+      0.5,
+      4,
+      20
+    ],
+    [
+      0.5,
+      6,
+      5
+    ],
+    [
+      0.5,
+      6,
+      10
+    ],
+    [
+      0.5,
+      6,
+      20
+    ],
+    [
+      0.75,
+      2,
+      5
+    ],
+    [
+      0.75,
+      2,
+      10
+    ],
+    [
+      0.75,
+      2,
+      20
+    ],
+    [
+      0.75,
+      4,
+      5
+    ],
+    [
+      0.75,
+      4,
+      10
+    ],
+    [
+      0.75,
+      4,
+      20
+    ],
+    [
+      0.75,
+      6,
+      5
+    ],
+    [
+      0.75,
+      6,
+      10
+    ],
+    [
+      0.75,
+      6,
+      20
+    ]
+  ],
+  "baseline": [
+    0.5,
+    6,
+    10
+  ],
+  "n_images": 250,
+  "epochs": 3,
+  "base_seed": 20260928,
+  "real_assigner": {
+    "topk": 10,
+    "alpha": 0.5,
+    "beta": 6.0,
+    "num_classes": 12
+  },
+  "full_assigner_replay": true,
+  "note": "alpha/beta/topk 是实例属性，改属性后重调 _forward 等价于完整 assigner 重跑（含 candidate/top-k/冲突消解）。输入张量与 augmentation realization 完全不变。"
+}

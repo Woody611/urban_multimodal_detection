@@ -1,0 +1,22 @@
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 661/661 items from pretrained weights
+hooks: P3=layer23 out, S1=cv3[0][0] out, S2=cv3[0][1] out (=H)
+[34m[1mval: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\train\visible.cache... 1600 images, 0 backgrounds, 1 corrupt: 100%|██████████| 1600/1600 [00:00<?, ?it/s][34m[1mval: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\train\visible.cache... 1600 images, 0 backgrounds, 1 corrupt: 100%|██████████| 1600/1600 [00:00<?, ?it/s]
+[34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\000013_046_00000202.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\003107.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0065]
+[34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\hehe_10_00000044.png: 1 duplicate labels removed
+  [T1] 2153 GT
+[34m[1mval: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\val\visible.cache... 400 images, 0 backgrounds, 2 corrupt: 100%|██████████| 400/400 [00:00<?, ?it/s][34m[1mval: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\val\visible.cache... 400 images, 0 backgrounds, 2 corrupt: 100%|██████████| 400/400 [00:00<?, ?it/s]
+[34m[1mval: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\val\visible\000050.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0034       1.001]
+[34m[1mval: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\val\visible\003817.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0019]
+  [V1] 2807 GT
+[saved] D:\gyt\AIC\urban_multimodal_detection\diagnostic\p3_feature_space\_v10_stages.json (4960 GT)
+
+============================================================================================================
+§10 核心表：逐 stage 的 distribution shift（G1 vs train-success small）
+============================================================================================================
+  n: G1=38  T_success=467  G4=194
+
+  Stage   |G1| med  |TS| med   cos→μ_TS   kNN5→TS  AUC(G1/TS)    balAcc   CliffΔ               ΔCI95
+  P3         40.64    185.62    -0.4284    1.1696      0.9941    0.9625    1.000     [+10.92,+14.23]
+  S1         99.33    694.46    -0.6958    1.0735      1.0000    0.9936    1.000     [+17.25,+21.48]

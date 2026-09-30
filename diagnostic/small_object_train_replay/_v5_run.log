@@ -1,0 +1,17 @@
+==============================================================================
+SMALL_OBJECT_TRAIN_REPLAY_AUDIT_V1（只读）
+==============================================================================
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 661/661 items from pretrained weights
+  seed=20260926  nc=12 topk=10 stride=[8.0, 16.0, 32.0]
+[34m[1mtrain: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\train\visible.cache... 1600 images, 0 backgrounds, 1 corrupt: 100%|██████████| 1600/1600 [00:00<?, ?it/s][34m[1mtrain: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\train\visible.cache... 1600 images, 0 backgrounds, 1 corrupt: 100%|██████████| 1600/1600 [00:00<?, ?it/s][34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\000013_046_00000202.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\003107.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0065]
+[34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\hehe_10_00000044.png: 1 duplicate labels removed
+
+  train 数据集 n=1599  (mosaic p=1.0)
+  采样 train 图 = 250 / 1599（带放回无关，固定 stride 采样）
+    ...200 条
+    ...1500 条
+
+  映射校验: 可追踪 6 / 不可追踪 244；mosaic 后丢 GT 0
+[saved] D:\gyt\AIC\urban_multimodal_detection\diagnostic\small_object_train_replay\_v5_replay.json  (3544 条)

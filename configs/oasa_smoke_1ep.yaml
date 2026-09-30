@@ -1,0 +1,116 @@
+# ============================================================
+# OASA STEP 4 —— A100 SMOKE（1 epoch，**仅运行闭环验证**）
+# ============================================================
+# 本文件 = configs/oasa_pre_mosaic.yaml 的副本，**仅两处不同**：
+#   experiment_name -> "..._oasa_SMOKE_1ep"（独立目录，绝不覆盖正式实验）
+#   epochs          -> 1
+# ⚠ 这不是正式实验配置；正式实验用 configs/oasa_pre_mosaic.yaml（epochs=300）。
+#   close_mosaic=10 在 1 epoch 下不会触发（epoch==1-10 永假），因此本 smoke
+#   覆盖：Mosaic ON + OASA ON + 真实 validation。close_mosaic 的 OASA OFF
+#   已由 STEP 3 TEST 4 在本地以真实 close_mosaic() 入口验证过。
+# ============================================================
+# ============================================================
+# OASA（方案 A · Pre-Mosaic Object-Aware Small-object Scale Aug）—— 训练配置
+# ============================================================
+# 本文件是 configs/train_rgbid_sepstem_clahe.yaml 的逐行副本，**唯一改动**：
+#   experiment_name: "..._sepstem_clahe" -> "..._sepstem_clahe_oasa"
+#   + 末尾新增 OASA 段（object_scale_aug 等 6 个键）
+#
+# 因此 baseline(D') vs OASA 的差异**恰好两项**：object_scale_aug 段 + experiment_name。
+# 其余训练超参逐项相同。
+#
+# 几何事实（STEP 2 / 2.5 实例级实测，非推算）：
+#   baseline(mosaic期) small anchor 最终输入 √area = 8.59 px
+#   OASA            small anchor 最终输入 √area = 17.18 px   ⇒ 2.000×
+#   Mosaic 四 tile 拓扑不变；anchor 可见度 >=0.95 = 100%
+#
+# gating：train + Mosaic ON -> ON；close_mosaic -> OFF（读实际 Mosaic.p）；val/test -> OFF
+#
+# 命令:
+#   python scripts/train.py --model_config configs/yolo11m_sepstem.yaml #       --train_config configs/oasa_pre_mosaic.yaml
+# ============================================================
+# ============================================================
+# D' = IR-CLAHE + Separate-Stem Fusion —— 训练配置
+# ============================================================
+# 本文件是 configs/train_rgbid_ir_clahe.yaml（= 线上 0.5553 的 D 的实际训练配置）
+# 的**逐行副本**，唯一改动：
+#
+#   experiment_name: "urban_multimodal_det_yolo11_rgbid_ir_clahe"
+#                 -> "urban_multimodal_det_yolo11_rgbid_sepstem_clahe"   （独立目录，绝不覆盖 D）
+#
+# 另一个变量（fusion architecture）不在本文件内，而由 CLI 的 --model_config 承载：
+#   D : --model_config configs/yolo11m_earlyfusion.yaml   （单层 Conv(5→64,3,2)）
+#   D': --model_config configs/yolo11m_sepstem.yaml       （3 stem 48/8/8 + Concat → 64）
+#
+# 因此 D vs D' 的差异**恰好两项**：model_config（fusion architecture） + experiment_name。
+# 除此之外逐字相同（含 ir_encoding: clahe 与 patience: 0）。
+#
+# 命令:
+#   python scripts/train.py --model_config configs/yolo11m_sepstem.yaml \
+#       --train_config configs/train_rgbid_sepstem_clahe.yaml
+#
+# ⚠ 本文件由 train_rgbid_ir_clahe.yaml 复制而来，任何训练超参都**不得**在此改动 ——
+#   动任何一项都会导致 D vs D' 不再是单变量对照。
+# ============================================================
+
+experiment_name: "urban_multimodal_det_yolo11_rgbid_oasa_SMOKE_1ep"
+seed: 42
+pretrained: "yolo11m.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 1
+patience: 0              # 禁用早停（torch_utils.py:762 `patience or inf`）—— 与 D 的完整 300 epoch 预算严格一致
+batch_size: 8
+image_size: [1280, 1280]
+num_workers: 4
+
+learning_rate: 5.0e-3
+warmup_epochs: 3
+
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2
+
+use_simotm: "RGBID"
+pairs_rgb_ir: ["visible", "infrared"]
+pairs_rgb_depth: ["visible", "depth"]
+channels: 5
+
+# ⚠️ 本实验的核心变量之一，**不可删**。放在这里（而不是文件末尾）是刻意的：
+#    2026-09-20 的事故正是因为云上那份配置丢了这一行 —— base.py:333 会静默回落 percentile，
+#    使 "IR-CLAHE + Separate-Stem" 变成 "percentile + Separate-Stem"。
+#    scripts/train.py 现在会在缺这一行时**硬失败**；scripts/preflight_check_train_config.py 也会拦。
+ir_encoding: clahe
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: false
+  resume_path: ""
+
+# ---- D 的唯一变量：IR 对比度处理 percentile -> CLAHE（D' 必须继承，不得改动）----
+# percentile(默认) = 1%/99% 分位数线性拉伸（baseline 既有行为）
+# clahe           = CLAHE(clipLimit=2.0, tileGridSize=(8,8))，与 percentile 互斥（非叠加）
+# 二者在 base.py 的 RGBID 分支中二选一；CLAHE 的 in/out dtype 与 range 均与 percentile 相同。
+#
+# 注意：实际的 `ir_encoding: clahe` 键写在**文件上方**（紧跟 channels），此处只留说明 ——
+#       放在末尾时极易在手工复制/截断时丢失，那正是 2026-09-20 事故的成因。
+
+# ---- OASA（方案 A · Pre-Mosaic）----
+object_scale_aug: true
+object_scale_aug_prob: 0.5
+object_scale_aug_scale: 2.0
+object_scale_aug_small_area: 1024.0
+object_scale_aug_min_visible: 0.8
+object_scale_aug_log_every: 200

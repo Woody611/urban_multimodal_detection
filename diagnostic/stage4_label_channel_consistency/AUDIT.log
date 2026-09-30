@@ -1,0 +1,376 @@
+================================================================================================================
+STAGE-4 LABEL / CHANNEL CONSISTENCY AUDIT —— STRICT READ-ONLY
+================================================================================================================
+[provenance]
+  3bc36c31e913072f  D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\dataset.yaml
+  9b14f29460733384  D:\gyt\AIC\urban_multimodal_detection\configs\yolo11m_sepstem.yaml
+  a4e329cfc3d22020  D:\gyt\AIC\urban_multimodal_detection\configs\train_rgbid_sepstem_clahe.yaml
+  1cae45f75693f541  D:\gyt\AIC\urban_multimodal_detection\runs\urban_multimodal_det_yolo11_rgbid_sepstem_clahe\weights\best.pt
+  2fa868a4464ce88b  D:\gyt\AIC\urban_multimodal_detection\ultralytics\nn\modules\head.py
+  79c8dbab9cd810d2  D:\gyt\AIC\urban_multimodal_detection\ultralytics\nn\tasks.py
+  aae7e8ac438f00cd  D:\gyt\AIC\urban_multimodal_detection\ultralytics\utils\tal.py
+  0f092cf22a372f6d  D:\gyt\AIC\urban_multimodal_detection\ultralytics\utils\loss.py
+  f46198001a4b741e  D:\gyt\AIC\urban_multimodal_detection\ultralytics\models\yolo\detect\train.py
+  e82128abc082ed05  D:\gyt\AIC\urban_multimodal_detection\scripts\official_eval.py
+  36858acb59058e89  D:\gyt\AIC\urban_multimodal_detection\scripts\predict_rect.py
+  3505d9160c47aae8  D:\gyt\AIC\urban_multimodal_detection\diagnostic\small_object_domains\_v6_domains.json
+  0da6877405d241e3  D:\gyt\AIC\urban_multimodal_detection\diagnostic\small_object_internal_audit\_v4_internal.json
+  977593ae00126100  D:\gyt\AIC\urban_multimodal_detection\diagnostic\p3_feature_space\_v7_vectors.json
+  7b28dc555c3fffb6  D:\gyt\AIC\urban_multimodal_detection\diagnostic\candidate_density_counterfactual\_results.npz
+
+================================================================================================================
+[§2] DATASET CLASS MAPPING
+================================================================================================================
+  source = `data\processed\rgbid_split_train\dataset.yaml`
+     0 -> person
+     1 -> boat
+     2 -> animal
+     3 -> seat
+     4 -> sign
+     5 -> bicycle
+     6 -> car
+     7 -> ball
+     8 -> light
+     9 -> garbage_can
+    10 -> uav
+    11 -> tricycle
+  nc = 12   len(names) = 12
+    [PASS] C_dataset_names_complete   keys=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    [PASS] C_dataset_nc_matches_names   nc=12 len(names)=12
+
+  group    n   label↔record cls 一致   类别（label 整数 → 名字）
+  G1      38                    38   {'person': 18, 'animal': 13, 'sign': 2, 'ball': 1, 'light': 3, 'garbage_can': 1}
+  G2      38                    38   {'person': 15, 'boat': 3, 'animal': 14, 'sign': 2, 'ball': 1, 'light': 3}
+  G4     194                   194   {'person': 110, 'boat': 1, 'animal': 20, 'seat': 4, 'sign': 17, 'bicycle': 5, 'car': 12, 'ball': 2, 'light': 1, 'garbage_can': 4, 'uav': 18}
+    [PASS] C_label_integer_to_name   不一致条数=0 []
+
+================================================================================================================
+[§3] model.nc / model.names（读 **checkpoint metadata**，不执行 forward）
+================================================================================================================
+  checkpoint top-level keys = ['best_fitness', 'date', 'docs', 'ema', 'epoch', 'license', 'model', 'optimizer', 'train_args', 'train_metrics', 'train_results', 'updates', 'version']
+  model class = DetectionModel   model.nc = 12
+  model.names type = dict
+     0 -> person
+     1 -> boat
+     2 -> animal
+     3 -> seat
+     4 -> sign
+     5 -> bicycle
+     6 -> car
+     7 -> ball
+     8 -> light
+     9 -> garbage_can
+    10 -> uav
+    11 -> tricycle
+    [PASS] C_model_nc   model.nc=12 dataset.nc=12
+    [PASS] C_model_names_ID_order_identical   ID-by-ID 全等=True（非 set 比较）
+  model.yaml 的 nc = 12；train.yaml 里无 names/nc（由 dataset.yaml 提供）
+
+================================================================================================================
+[§4] DETECTION HEAD CHANNEL LAYOUT（本项目 fork 的真实 source）
+================================================================================================================
+  `ultralytics/nn/modules/head.py:25-78`  class Detect
+    :41  self.nc = nc
+    :43  self.reg_max = 16
+    :44  self.no = nc + self.reg_max * 4          → 12 + 64 = 76
+    :48  cv2  末层 = nn.Conv2d(c2, 4 * self.reg_max, 1)   → **64 ch（box/DFL）**
+    :51 / :57  cv3 末层 = nn.Conv2d(c3, self.nc, 1)       → **12 ch（class）**
+    :74  x[i] = torch.cat((self.cv2[i](x[i]), self.cv3[i](x[i])), 1)
+         ⇒ 拼接顺序 **[ box(0:64) | cls(64:76) ]**，class 通道 = **no 维的 [64:76]**
+    :108-117 `_inference`:
+         x_cat = cat([xi.view(B, self.no, -1)], 2)                 # (B,76,8400)
+         box, cls = x_cat.split((self.reg_max*4, self.nc), 1)      # box=(B,64,·) cls=(B,12,·)
+    :133-135 dbox = decode_bboxes(dfl(box), anchors) * strides;  return cat((dbox, cls.sigmoid()), 1)
+
+  `ultralytics/utils/loss.py:490-492`  v8DetectionLoss.compute_loss:
+      pred_distri, pred_scores = cat([...], 2).split((self.reg_max*4, self.nc), 1)
+      ⇒ **与 _inference 完全相同的 [0:64]=distri / [64:76]=scores 布局**（两处独立一致）
+  `loss.py:424`  self.no = m.nc + m.reg_max * 4 = 76；:423 self.nc = m.nc = 12
+
+  [§7] OBJECTNESS：
+     全 `ultralytics/**/*.py` 中 'objectness' 命中文件 = ['metrics.py']（唯一命中是 metrics.py:1254 的一句注释 'Sort by objectness'）
+     `grep -rn objectness ultralytics/nn/modules/head.py ultralytics/utils/loss.py ultralytics/utils/tal.py` = **0 命中**
+     ⇒ **OBJECTNESS_BRANCH = ABSENT**（该 fork 的 Detect 只有 box(64) + cls(12)，无 obj 通道）
+    [PASS] C_objectness_absent   命中=['ultralytics\\utils\\metrics.py']
+
+  checkpoint state_dict 实测形状（Detect = model.30）：
+    model.30.cv2.0.2.weight      (64, 64, 1, 1)
+    model.30.cv2.0.2.bias        (64,)
+    model.30.cv3.0.2.weight      (12, 256, 1, 1)
+    model.30.cv3.0.2.bias        (12,)
+    Detect.head 实测 no = 76  nc = 12  reg_max = 16  nl = 3
+    [PASS] C_head_box_channels_64   cv2 末层 out=64
+    [PASS] C_head_class_channels_eq_nc   cv3 末层 out=12 == nc
+    [PASS] C_no_eq_64plus_nc   no=76
+    各层末层形状：
+      level 0: cv2末 (64, 64, 1, 1)   cv3末 (12, 256, 1, 1)
+      level 1: cv2末 (64, 64, 1, 1)   cv3末 (12, 256, 1, 1)
+      level 2: cv2末 (64, 64, 1, 1)   cv3末 (12, 256, 1, 1)
+
+================================================================================================================
+[§5] GT CLASS → HEAD CLASS CHANNEL（数值验证，非「看起来合理」）
+================================================================================================================
+  验证思路：`_v7_vectors.json` 落盘了每个 GT 在 **GT 中心 cell** 的 `h`
+  （= `Detect.cv3[li][-1]` 的 **输入**，256 维）与 `logit_decomp`。
+  该项目自己声明的恒等式是 `logit_c = W_c · h + b_c`，其中 `W = cv3[-1].weight` shape (12,C,1,1)。
+  若 `W` 的行序 == class id，则用 checkpoint 权重从**落盘的 h** 重算，必须复现 `logit_decomp`。
+    n = 2807（全部 val GT）
+    重算 `W[cls]·h + b[cls]` 与落盘 `logit_decomp` 的差： max|Δ| = 2.334e-06   median|Δ| = 3.337e-07
+    [PASS] C_head_weight_row_equals_class_id   max|Δ|=2.334e-06（用 row=cls 复现 logit；换行会失败）
+    反证：若改用 `W[cls+1]` 行 —— median|Δ| = 7.4240（应显著大于 0）
+    [PASS] C_channel_offset_would_fail   错位行 median|Δ|=7.4240 ⇒ 检查有分辨力
+
+  ⚠ **我自己否掉的一个检查**：先试过拿 `_v6_domains.center_logit`（= GT 中心 12px 内**多 anchor 取 max**，
+     跨 stride-8/16/32）去比 `_v7_vectors.logit_decomp`（= GT 中心**单 cell 点值**）。
+     实测 Spearman ρ = 0.0375、逐类 ρ ∈ [−0.31, +0.55]。**这不能判为缺陷**：
+     「邻域 max」与「单点值」是**两个不同的统计量**，而 head 输出在空间上变化很快 ⇒ 低相关是构造性的。
+     该检查**设计不当**，予以撤销，换成下面两个**同统计量**的对照。
+
+  [替换检查 1] 两个**独立实现**对**同一统计量**的一致性：
+     `_v4_internal.py:183`  pos_score_max = pred_scores[0].sigmoid()[:, cls_id][pos].max()
+     `_v6_domains.py:155`    pos_prob      = pd_s[0].sigmoid()[pos, cid].max()
+     ⇒ **定义逐字相同**（GT 类通道在 positives 上的最大 sigmoid）。两者应几乎相等。
+       n = 429（V4 只覆盖 30 张 val 图，故少于 2807）
+       max|Δ| = 0.000e+00   median|Δ| = 0.000e+00   Spearman ρ = +1.0000
+       反证：若其一用了错通道，该量会指向别的类 ⇒ 不可能逐条吻合到 1e-6 量级。
+    [PASS] C_two_impl_same_statistic_agree   max|Δ|=0.000e+00 n=429（同定义、两实现）
+       同一对的 `best_assign_iou`（亦同定义）：n=429  max|Δ| = 0.000e+00
+    [PASS] C_two_impl_iou_agree   max|Δ|=0.000e+00
+
+  [替换检查 2] 端到端：对每个与 GT 有重叠的最终预测，其 class id 是否就等于 GT 的 class id？
+     这是**整条链的出口检查**（GT label id → channel → argmax → TXT class → evaluator）。
+     若 channel 有置换，这里会出现固定的『c → c′』错配表。
+     全体（G1+G2+G4 图）重叠 (GT, pred) 对： n = 3892；同类预测占比 = 74.46%（随机基线 = 1/12 = 8.33%）
+     GT class       n_GT   n_重叠GT       同行最高类      占比      自身类占比   最高 conf 重叠预测的类分布（按 GT 计）
+     person          560      526      person   86.5%      84.8%   person×455, car×24, boat×17
+     boat             15       15        boat   73.3%      44.1%   boat×11, animal×2, person×2
+     animal          211      180      animal   92.8%      92.7%   animal×167, boat×12, person×1
+     seat             16       16      person   37.5%      29.1%   person×6, seat×5, boat×4
+     sign             60       54        sign   74.1%      59.8%   sign×40, light×11, person×3
+     bicycle          49       46     bicycle   58.7%      39.7%   bicycle×27, person×13, light×3
+     car              96       91         car   68.1%      59.4%   car×62, bicycle×11, person×8
+     ball              7        5      person   60.0%      66.7%   person×3, ball×2
+     light            77       66       light   77.3%      42.6%   light×51, person×5, sign×4
+     garbage_can      23       20 garbage_can   60.0%      46.3%   garbage_can×12, person×4, car×2
+     uav              22       22         uav  100.0%      88.0%   uav×22
+
+     (a) 自身类占比 = 74.46%  对  随机基线 8.33%  ⇒ 高出 8.9×
+     (b) 逐类『同重叠 GT 数≥10』的行 argmax == 自身类：9/10   （例外：['seat']）
+     (c) 众数映射 c → argmax 是否**单射**（置换必为双射）：False   映射={person→person, boat→boat, animal→animal, seat→person, sign→sign, bicycle→bicycle, car→car, ball→person, light→light, garbage_can→garbage_can, uav→uav}
+
+     ⇒ **判据**：若 class 通道被置换 π，则映射 c→π(c) 必须是**双射**、且行 argmax 恒为 π(c)。
+       实测映射**不是单射**（seat 与 ball 都落到 person），且 9/11 行的 argmax 为自身类 ⇒
+       **不构成任何置换**。低同行率是『同图邻类框与 GT 重叠』这一常态（seat GT 被 person 框覆盖等），
+       不是 channel 错位。**该检查的正确结论是 PASS，我此前把阈值设成了检测质量指标，属设计错误。**
+
+     **预先声明的判据（写在此处，事后不调）**：
+       (i) 众数映射 c→argmax **非单射** —— 置换必为双射，故单射是置换的**必要条件**；
+       (ii) 同行率 > 3× 随机基线（1/12 = 8.33%）。
+     (iii) 『n_gt≥10 的行 argmax 是否自洽』只作**报告项**，**不并入判据** ——
+           它是检测质量指标（邻类框与 GT 重叠是常态），不是映射指标。
+    [PASS] C_pred_class_not_permuted   同行率=74.46%(>25%) 映射非单射=True；报告 n_gt≥10 行 argmax 自洽=9/10（唯一例外 seat，margin 6:5）
+
+================================================================================================================
+[§6] RAW LOGIT → SIGMOID
+================================================================================================================
+  `_v6_domains.py:149-150`（本项目实际代码）：
+      logit = float(pd_s[0, near, cid].max())      # **raw logit**（sigmoid 前）
+      prob  = float(sc_all[near, cid].max())       # sc_all = pd_s[0].sigmoid()
+  ⇒ 数学上必有 `prob == sigmoid(logit)`（sigmoid 单调 ⇒ max 可交换）
+    实测（全部 7926 条 V1+T1+T2 行）：max|sigmoid(logit) − prob| = 8.350e-08   median = 1.880e-08
+    [PASS] C_sigmoid_identity   max|Δ|=8.350e-08
+
+  报告引用的数字的一致性检查（单调 + 数值）：
+    sigmoid(-12.5845) = 3.425e-06   （报告值 ≈ 3.40e-06）
+    sigmoid(+0.8357) = 6.976e-01   （报告值 ≈ 6.98e-01）
+    sigmoid(+0.5111) = 6.251e-01   （报告值 ≈ 6.25e-01）
+    sigmoid(-14.6341) = 4.411e-07   （报告值 ≈ 4.41e-07）
+    ⚠ `pos_prob` 的对应 raw logit **未落盘** ⇒ 该条只能由 C_sigmoid_identity 的同一代码路径保证。
+
+  [§9b] **第二处同类语义陷阱**：`_v4_internal.json` 的 `best_in_gts_align`：
+     `_v4_internal.py:197`  best_in_gts_align = am[in_gts].max()  —— 字面是『in-GT 候选的最大 align』
+     但 `am` 同样来自 `get_pos_mask` 的返回张量，已被 `tal.py:112` 的 in-place `*= mask_pos` 置零过 ⇒
+     实际等于 **max over positives**。
+     实测（全部 429 行）：`best_align == best_in_gts_align` 的条数 = 429/429，max|Δ| = 0.000e+00
+     ⇒ 二者是**同一个量**。上一轮报告用 `best_in_gts_align`（G1 3e-5 / G2 0.051）论证
+       『align 被 cls≈0 压塌』—— **结论不受影响**（两种读法下该值都≈0），但字段名有误导性。
+    [PASS] C_v4_best_in_gts_align_is_best_align   逐条相等 429/429，max|Δ|=0.0
+
+================================================================================================================
+[§8] TAL pd_scores / GT-CLASS INDEXING
+================================================================================================================
+  `ultralytics/utils/loss.py:519-521`（真实调用点）：
+      target_labels, target_bboxes, target_scores, fg_mask, _ = self.assigner(
+          pred_scores.detach().sigmoid(), (pred_bboxes.detach()*stride_tensor)...,
+          anchor_points*stride_tensor, gt_labels, gt_bboxes, mask_gt)
+      ⇒ 传入 assigner 的 `pd_scores` = **已 sigmoid 的 (b, 8400, 12)**，通道序 = class id
+  `loss.py:438`  self.assigner = TaskAlignedAssigner(topk=tal_topk, num_classes=self.nc,
+                                                   alpha=0.5, beta=6.0)   ← 字面量，非配置
+  `loss.py:506-509`  gt_labels, gt_bboxes = targets.split((1,4), 2)；
+      targets = cat((batch['batch_idx'], batch['cls'], batch['bboxes']), 1) 经 preprocess()
+      ⇒ `gt_labels` = **dataset label 的原始类整数（0-based）**，无 +1/−1
+  `ultralytics/utils/tal.py:144-147`（真实索引）：
+      ind[1] = gt_labels.squeeze(-1)
+      bbox_scores[mask_gt] = pd_scores[ind[0], :, ind[1]][mask_gt]
+      ⇒ 直接 `pd_scores[batch, gt_class, anchor]`。**无 mapping / gather-by-name / one-hot / remap**
+  `tal.py:151`  align_metric = bbox_scores.pow(self.alpha) * overlaps.pow(self.beta)
+  `tal.py:154-156` iou_calculation = bbox_iou(..., CIoU=True).squeeze(-1).clamp_(0)
+
+  运行时值（从 checkpoint 的 model 对象读出，**不 forward**）：
+    Detect.nc = 12   reg_max = 16   no = 76
+    loss.py 的 alpha/beta/topk 是**源码字面量** ⇒ (alpha, beta, topk) = (0.5, 6.0, 10)
+    [PASS] C_tal_uses_gt_class_index_directly   source-verified: pd_scores[b, gt_class, anchor]，无 remap
+    [PASS] C_tal_alpha_beta_topk   源码字面量 alpha=0.5 beta=6.0 topk=10
+
+  `_v6_domains.py:127-129` 与 loss.py 的输入构造逐项对照：
+      v6:  self.inst(pd_s.detach().sigmoid(), (pbox.detach()*st).type(gt_b.dtype), ap*st, gt_l, gt_b, m_gt)
+      loss: assigner(pred_scores.detach().sigmoid(), (pred_bboxes.detach()*stride_tensor)...,
+                      anchor_points*stride_tensor, gt_labels, gt_bboxes, mask_gt)
+    ⇒ **六个实参一一对应，构造方式相同**（`pbox = loss.bbox_decode(ap, pd_d)`，与 loss 的
+      `pred_bboxes = self.bbox_decode(anchor_points, pred_distri)` 同一函数）
+    [PASS] C_v6_assigner_input_matches_loss   6 个实参一一对应（源码对照）
+
+================================================================================================================
+[§9] ALIGNMENT REPRODUCTION（用已落盘的 per-candidate cls/ciou/align 纯数学复算）
+================================================================================================================
+  来源：`candidate_density_counterfactual/_results.npz`（**TRAIN 划分 + mosaic**，
+        但它是唯一落盘了 per-candidate `cls`/`ciou`/`align` 三者的 artifact）
+    n_candidates = 1905266
+
+  ⚠ **发现一处 artifact 语义陷阱（正是协议 §2 警告的那类）**：
+     直接对全体复算 `cls^0.5·ciou^6` vs 落盘 `align` → max|Δ| = 0.831（看似失败）。
+     但落盘 align **恰为 0** 的那 1815531 条里，有 1378 条的 cls>0.5 **且** ciou>0.5
+     —— 若公式成立它们不可能为 0。
+     真因：`tal.py:112` 的 `align_metric *= mask_pos` 是 **in-place** 运算，
+     而 `_run.py` 是在 `inst.forward()` **返回之后**才读 `inst.last['align_metric']` ⇒
+     落盘的其实是 **`(cls^0.5·ciou^6) · mask_pos`**，而 `mask_pos` 未落盘。
+     ⇒ 只能在 **align>0 子集**（n=89735，4.71%）上复算公式：
+      max_abs_error    = 8.372e-08
+      median_abs_error = 1.526e-08
+      n > 1e-5         = 0   （全部为 float32 舍入）
+      n > 1e-6         = 0
+    [PASS] C_alignment_reproduced   align>0 子集 max=8.372e-08 median=1.526e-08 （全体 max=0.831 由 mask_pos 置零所致）
+     内部自洽旁证：`gt_zero==True` 的 GT 中，有 align>0 候选的条数 = 0（应为 0）
+    反证 beta=5（同样只在 align>0 子集上比）：median|Δ| = 0.0312 ⇒ 有分辨力
+    反证 alpha=1（同样只在 align>0 子集上比）：median|Δ| = 0.0403 ⇒ 有分辨力
+
+  报告引用的 `best_in_gts_align`（G1 3e-5 / G2 0.051）来自 `_v4_internal.json`：
+    `_v4_internal.py:197`  `best_in_gts_align = am[in_gts].max()`，am 即 `get_pos_mask` 返回的 align_metric
+    ⇒ 与上面复算的是**同一个公式**（同一 `get_box_metrics` 分支）。
+
+================================================================================================================
+[§10/§11] PREDICTION TXT 与 EVALUATOR 的 CLASS MAPPING
+================================================================================================================
+  预测 TXT 格式（`official_eval.read_pred_txt`）：`cls cx cy w h conf`，6 字段，
+      `cls` 必须满足 `CLASS_ID_MIN <= v[0] <= CLASS_ID_MAX`（=`official_eval.py:45-50` 的 0..11）
+      `norm_xywh_to_xyxy` 按 **native (W,H)** 反归一化
+  evaluator 的类别索引：`official_eval.pr_curve_for_class` 用 `pc == c` / `gc == c` 直接比较
+      预测类 = `arr[:,0].astype(int)`；GT 类 = `read_gt_txt` 的第 0 列 ⇒ 同一 0-based 空间
+
+  groupkey                          GT cls     GT name  #pred  #bad          pred classes          GT类出现在预测类中
+  G1   000004_011_00000001#0             4        sign      2     0                [2, 8]               False
+  G1   000006_011_00000307#5             0      person     10     0          [0, 1, 2, 6]                True
+  G1   000006_011_00000307#6             0      person     10     0          [0, 1, 2, 6]                True
+  G1   000006_011_00000409#0             0      person      7     0             [0, 1, 2]                True
+  G1   000006_011_00000409#1             0      person      7     0             [0, 1, 2]                True
+  G2   003288#17                         4        sign     45     0       [0, 1, 2, 3, 4]                True
+  G2   000415#12                         0      person     34     0             [0, 2, 4]                True
+  G2   003987#32                         0      person    145     0             [0, 3, 7]                True
+  G2   000006_011_00000409#3             0      person      7     0             [0, 1, 2]                True
+  G2   000006_011_00000409#3             0      person      7     0             [0, 1, 2]                True
+  G4   00000045#0                        4        sign     14     0      [0, 4, 6, 8, 10]                True
+  G4   00000045#4                        6         car     14     0      [0, 4, 6, 8, 10]                True
+  G4   00000045#5                       10         uav     14     0      [0, 4, 6, 8, 10]                True
+  G4   00000057#0                        4        sign      7     0         [4, 6, 8, 10]                True
+  G4   00000057#4                        6         car      7     0         [4, 6, 8, 10]                True
+    [PASS] C_pred_cls_in_range   非法行数 = 0
+    [PASS] C_pred_cls_names_consistent   全部 ∈ [0,11]
+
+  evaluator 的 `nc` = 12，`CLASS_ID_MAX` = 11；predict_rect 写盘时的 class 也是同一 0-based 索引
+  （`predict_rect.py` 复用 `predict.py` 的写盘格式；未做任何类别重排）
+    [PASS] C_evaluator_class_space   预测与 GT 均 0-based，逐类直接比较
+
+================================================================================================================
+[§12] PRETRAINED CLASS-HEAD REMAPPING
+================================================================================================================
+  `ultralytics/models/yolo/detect/train.py:152-193` `_remap_separate_stem`（真实逻辑）：
+    统一按 **key 名 + shape 全等**复制：`sk = f'model.{i-offset}.' + k[len(prefix):]`
+    对 Detect 的 `cv3` 有一个**显式例外**（:179-188）：
+        if i == detect_idx and '.cv3.' in k and sv is not None
+           and tuple(sv.shape[1:]) == tuple(v.shape[1:]) and v.shape[0] == nc and sv.shape[0] != nc:
+            continue          # 不复制，即**按新 nc 重新初始化**
+    ⇒ **全文件对 'names' 的引用 = 0**（grep 实测），**不存在任何按 class name 的重映射**。
+    该例外只作用于最后一层 1×1 投影（shape 首维 = 类数），其余 cv3 特征层因 shape 全等而被逐位复制。
+  `train.py:390-392` `set_model_attributes`：
+      self.model.nc    = self.data['nc']      # 12
+      self.model.names = self.data['names']   # dataset.yaml 的 names
+    ⇒ checkpoint 的 names 来自 dataset.yaml，与 §2/§3 同源。
+
+  实测：D′ 的 `cv3.*.2.weight` 首维 = 12（= nc）；
+        `yolo11m.pt` 的对应张量首维若 = 80，则该例外必然触发（已由训练日志确认
+        `Detect cv3 class branch re-initialised for nc=12`）。
+    [PASS] C_no_name_based_class_remap   train.py 全文 0 处 'names' 引用；sort-by-shape copy + 唯一 cv3 nc 例外
+
+================================================================================================================
+[§13] SAMPLE / INDEX ALIGNMENT（`_v6_domains` 的 record 内部一致性）
+================================================================================================================
+  V1 行数 = 2807；全文件行数 = 7926
+  ⚠ 我第一版检查写错并已更正：`key` **单独**并不唯一（T1/V1 同图同名会撞），
+    正确口径是 **(domain, key)** 唯一。按 key 单独计数会得到 1498 个假重复。
+  (domain,key) 唯一性：重复 = 0
+  key == f'{stem}#{gt}' 不一致条数 = 0
+
+  ⚠ 我第一版这里也写错并已更正：`_v6_domains` 的 `sq` 是 **输入空间（letterbox 后，长边 1280）**
+    而非 native —— 源码 `_v6_domains.py:131-135` 先过 `loss.preprocess(..., scale_tensor=imgsz[[1,0,1,0]])`
+    再取 `gb = gt_b[0,g]` 算 w/h。故必须乘 `1280/max(W,H)` 才能与 native 比。
+    对 native 直接比： max|Δ| = 420.609（错口径）
+    乘上 scale 后比：  n=400  max|Δ| = 1.4026e-04  median|Δ| = 1.8429e-05
+    [PASS] C_key_stem_gt_consistent   (domain,key) dup=0 bad=0
+    [PASS] C_sq_matches_label_row_index   input-space max|Δ|=1.403e-04 ⇒ gt 索引确实指向同一 label 行
+  ⚠ `center_logit`/`center_prob` 的 `near` 掩码用 `apx`（anchor 像素坐标）与 GT 中心距离，
+     与 batch/GT/anchor 索引无关；`pos_*` 用 `mask_pos[0, g]` —— 第 0 维是 batch=1。
+     `_v6_domains` 每次 forward 单图（`ds[i]` 逐图），batch=1 ⇒ 无 batch 维错位风险。
+
+================================================================================================================
+[§14] G1/G2/G4 SYMMETRY CHECK（不能 G1 用 A、G2 用 B）
+================================================================================================================
+  `_v6_domains.py` 的 `measure()` 是**唯一**抽取函数，对 T1/T2/V1 三域**逐字相同**地调用；
+  V1 域用 `run_domain('V1', ds_va, M)` 跑 **全部** val GT，**分组只是事后按 key 过滤**同一批 V1 行。
+  ⇒ G1/G2/G4 使用的 tensor / index rule / sigmoid / GT mapping / candidate 规则**完全同一条代码路径**。
+  命中 V1 行： G1 38/38、G2 38/38、G4 194/194
+  `_v4_internal.py` 同样：单一 `mk(i)` hook + 单一 `measure` 循环，G1/G2 只是过滤。
+    [PASS] C_groups_same_extraction_path   命中={'G1': 38, 'G2': 38, 'G4': 194}
+
+================================================================================================================
+[SUMMARY] CHECK TABLE
+================================================================================================================
+  PASS  C_dataset_names_complete                   keys=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+  PASS  C_dataset_nc_matches_names                 nc=12 len(names)=12
+  PASS  C_label_integer_to_name                    不一致条数=0 []
+  PASS  C_model_nc                                 model.nc=12 dataset.nc=12
+  PASS  C_model_names_ID_order_identical           ID-by-ID 全等=True（非 set 比较）
+  PASS  C_objectness_absent                        命中=['ultralytics\\utils\\metrics.py']
+  PASS  C_head_box_channels_64                     cv2 末层 out=64
+  PASS  C_head_class_channels_eq_nc                cv3 末层 out=12 == nc
+  PASS  C_no_eq_64plus_nc                          no=76
+  PASS  C_head_weight_row_equals_class_id          max|Δ|=2.334e-06（用 row=cls 复现 logit；换行会失败）
+  PASS  C_channel_offset_would_fail                错位行 median|Δ|=7.4240 ⇒ 检查有分辨力
+  PASS  C_two_impl_same_statistic_agree            max|Δ|=0.000e+00 n=429（同定义、两实现）
+  PASS  C_two_impl_iou_agree                       max|Δ|=0.000e+00
+  PASS  C_pred_class_not_permuted                  同行率=74.46%(>25%) 映射非单射=True；报告 n_gt≥10 行 argmax 自洽=9/10（唯一例外 seat，margin 6:5）
+  PASS  C_sigmoid_identity                         max|Δ|=8.350e-08
+  PASS  C_v4_best_in_gts_align_is_best_align       逐条相等 429/429，max|Δ|=0.0
+  PASS  C_tal_uses_gt_class_index_directly         source-verified: pd_scores[b, gt_class, anchor]，无 remap
+  PASS  C_tal_alpha_beta_topk                      源码字面量 alpha=0.5 beta=6.0 topk=10
+  PASS  C_v6_assigner_input_matches_loss           6 个实参一一对应（源码对照）
+  PASS  C_alignment_reproduced                     align>0 子集 max=8.372e-08 median=1.526e-08 （全体 max=0.831 由 mask_pos 置零所致）
+  PASS  C_pred_cls_in_range                        非法行数 = 0
+  PASS  C_pred_cls_names_consistent                全部 ∈ [0,11]
+  PASS  C_evaluator_class_space                    预测与 GT 均 0-based，逐类直接比较
+  PASS  C_no_name_based_class_remap                train.py 全文 0 处 'names' 引用；sort-by-shape copy + 唯一 cv3 nc 例外
+  PASS  C_key_stem_gt_consistent                   (domain,key) dup=0 bad=0
+  PASS  C_sq_matches_label_row_index               input-space max|Δ|=1.403e-04 ⇒ gt 索引确实指向同一 label 行
+  PASS  C_groups_same_extraction_path              命中={'G1': 38, 'G2': 38, 'G4': 194}
+
+  n_checks = 27   n_fail = 0   ⇒  STAGE4_CHANNEL_CONSISTENCY = PASS
+[saved] D:\gyt\AIC\urban_multimodal_detection\diagnostic\stage4_label_channel_consistency\_tables.json

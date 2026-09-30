@@ -1,0 +1,23 @@
+================= oasa14_best =================
+[ckpt] runs/urban_multimodal_det_yolo11_rgbid_sepstem_clahe_oasa_s14/weights/best.pt
+[ckpt] sha256_before = 055795ad884e62a96f57803c7f58db608992e81c236f830349c3005c52054bbe
+[1/3] ç‹¬ç«‹ inferenceï¼ˆLoadImagesAndVideos + LetterBoxï¼ŒOASA OFFï¼‰Fri Sep 25 09:07:35     2026
+      txt=400 / 400
+[predict_rect] use_simotm=RGBID channels=5 ir_encoding=clahe
+[2/3] evaluator regression tests Fri Sep 25 09:14:36     2026
+      ALL PASS
+[3/3] official_map.pyï¼ˆcap=100 å†»ç»“é»˜è®¤ï¼Œä¸è¦†ç›–ï¼‰Fri Sep 25 09:16:33     2026
+[ckpt] sha256_after  = 055795ad884e62a96f57803c7f58db608992e81c236f830349c3005c52054bbe
+================= ç»“æœï¼ˆåŸå§‹è¡Œï¼‰=================
+====================================================================
+¹Ù·½¿Ú¾¶ vs fork ¿Ú¾¶ mAP@50-95
+====================================================================
+images=400  corruptÌŞ³ı=2  GT=2807  pred=4534  min_conf=0.0
+metric=A  max_boxes_per_image=100  ±»½Ø¶ÏÍ¼Êı=3
+--------------------------------------------------------------------
+¿Ú¾¶                                      mAP50      mAP75    mAP50-95
+¹Ù·½ (mean + tail0 + confÆ¥Åä)            0.78890    0.50197     0.50739
+fork (trapz + ramp + IoUÆ¥Åä)           0.81729    0.56970     0.55601
+¹Ù·½Í¬¿Ú¾¶ metric=B                        0.78890    0.50197     0.50739
+²îÖµ (¹Ù·½ - fork)                       -0.02838   -0.06773    -0.04862
+====================================================================

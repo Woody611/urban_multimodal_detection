@@ -1,0 +1,59 @@
+====================================================================================================
+E2 PRE-FEASIBILITY — assigner 几何精确 replay（只读；不训练/不改 assigner/不改配置）
+====================================================================================================
+
+[provenance]
+  aae7e8ac438f00cd  ultralytics/utils/tal.py
+  0f092cf22a372f6d  ultralytics/utils/loss.py
+  78a72d1f4354c29f  ultralytics/utils/instance.py
+  5cb9a407625921ce  ultralytics/data/augment.py
+  8bcf834930155bd5  ultralytics/data/base.py
+  f014263f2bfe5921  ultralytics/data/build.py
+  0aba2bc14793ab85  ultralytics/data/dataset.py
+  9b14f29460733384  configs/yolo11m_sepstem.yaml
+  a4e329cfc3d22020  configs/train_rgbid_sepstem_clahe.yaml
+  1cae45f75693f541  runs\urban_multimodal_det_yolo11_rgbid_sepstem_clahe\weights\best.pt
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 661/661 items from pretrained weights
+
+[real assigner — read from the running object, not from memory]
+  type      = TaskAlignedAssigner
+  topk      = 10
+  alpha     = 0.5
+  beta      = 6.0
+  num_classes = 12   eps = 1e-09
+  __init__ signature = (self, topk=13, num_classes=80, alpha=1.0, beta=6.0, eps=1e-09)
+  loss.py instantiation = def __init__(self, model, tal_topk=10):  # model must be de-paralleled
+  -> (topk, alpha, beta) == (10, 0.5, 6.0)  与 §2 已知一致 ✓
+  align metric (源码) = ['align_metric = bbox_scores.pow(self.alpha) * overlaps.pow(self.beta)']
+  iou (源码)         = ['def iou_calculation(self, gt_bboxes, pd_bboxes):', 'return bbox_iou(gt_bboxes, pd_bboxes, xywh=False, CIoU=True).squeeze(-1).clamp_(0)', 'def iou_calculation(self, gt_bboxes, pd_bboxes):']
+  lineage 插桩已安装: {'desync': 0, 'desync_where': {}, 'concat_no_uid': 0, 'rp_pending_miss': 0}
+[34m[1mtrain: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\train\visible.cache... 1600 images, 0 backgrounds, 1 corrupt: 100%|██████████| 1600/1600 [00:00<?, ?it/s][34m[1mtrain: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\train\visible.cache... 1600 images, 0 backgrounds, 1 corrupt: 100%|██████████| 1600/1600 [00:00<?, ?it/s]
+[34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\000013_046_00000202.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\003107.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0065]
+[34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\hehe_10_00000044.png: 1 duplicate labels removed
+
+  dataset n=1599；采样 250 图 × 3 epoch（与 Exposure Audit 同协议同 seed）
+  --- epoch 1/3 ---
+  [SELF-CHECK] ProbeAssigner vs 父类逐位一致: True  (n_gt=14, fg=138)
+    50/250  AG_records=183
+    100/250  AG_records=421
+    150/250  AG_records=760
+    200/250  AG_records=1213
+    250/250  AG_records=1664
+  --- epoch 2/3 ---
+    50/250  AG_records=1713
+    100/250  AG_records=1742
+    150/250  AG_records=1770
+    200/250  AG_records=1835
+    250/250  AG_records=1874
+  --- epoch 3/3 ---
+    50/250  AG_records=1883
+    100/250  AG_records=1884
+    150/250  AG_records=1893
+    200/250  AG_records=1918
+    250/250  AG_records=1920
+
+  记录：baseline GT 数 = 1920；候选几何 GT 数 = 1920
+[saved] D:\gyt\AIC\urban_multimodal_detection\diagnostic\e2_assigner_geometry\_e2_replay.npz
+EXIT=0

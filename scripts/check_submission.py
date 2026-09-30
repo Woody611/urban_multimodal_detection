@@ -10,10 +10,14 @@
 from __future__ import annotations
 
 import argparse
+import sys
 import zipfile
 from pathlib import Path
 
 import numpy as np
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from official_eval import MAX_BOXES_PER_IMAGE  # noqa: E402  单一真源
 
 CLASS_ID_MIN, CLASS_ID_MAX = 0, 11
 
@@ -38,6 +42,7 @@ def main():
     bad_coord = 0
     boxes_per_img = []
     truncated = 0
+    over_cap = 0
     max_boxes_here = 0
 
     for txt in txts:
@@ -67,8 +72,10 @@ def main():
             n_img += 1
         boxes_per_img.append(n_img)
         max_boxes_here = max(max_boxes_here, n_img)
-        if n_img >= 100:
+        if n_img == MAX_BOXES_PER_IMAGE:
             truncated += 1
+        if n_img > MAX_BOXES_PER_IMAGE:
+            over_cap += 1
 
     boxes = np.array(boxes_per_img)
     n = len(txts)
@@ -84,8 +91,9 @@ def main():
     print(f"[7] 框数分布        : mean={boxes.mean():.2f} median={np.median(boxes):.0f} "
           f"max={boxes.max()} min={boxes.min()}")
     print(f"[8] 框数>0 图片数   : {(boxes > 0).sum()} / {n}")
-    print(f"[9] 达 100 框上限   : {truncated} 张（每图最多写 100 框，触发截断）")
-    print(f"[10] 单图最大框数   : {max_boxes_here}")
+    print(f"[9] 达 {MAX_BOXES_PER_IMAGE} 框上限   : {truncated} 张（恰好触顶，正常）")
+    print(f"[10] 单图最大框数   : {max_boxes_here}  (硬上限 {MAX_BOXES_PER_IMAGE})")
+    print(f"[11] 超过 {MAX_BOXES_PER_IMAGE} 框的图 : {over_cap}  {'OK' if over_cap == 0 else 'RULE VIOLATION'}")
 
     # 打包 zip（archive 内为 results/<name>.txt，与 predict.py 一致）
     zip_path = Path(args.zip)
@@ -102,9 +110,10 @@ def main():
     print("=" * 64)
 
     ok = (n == args.expect and bad_format == 0 and bad_class == 0 and bad_coord == 0
-          and len(names) == args.expect)
+          and len(names) == args.expect and over_cap == 0)     # §九(二) 每图 <=100 框 硬闸门
     print("结论:", "ALL PASS" if ok else "HAS ISSUES - see above")
+    return 0 if ok else 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

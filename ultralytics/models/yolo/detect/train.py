@@ -143,6 +143,11 @@ def _remap_separate_stem(model, src, rgb_stem, aux_stems):
         detect_idx = len(layers) - 1
         nc = int(getattr(model.model[-1], "nc", -1))
         n_cls_untrained = 0
+        n_e1_new = 0
+        # E1 layers are read from the model's OWN yaml (the same keys parse_model used), never
+        # from the filename or a hardcoded list, so the exception below can only ever fire for a
+        # layer the config itself declared.
+        e1_layers = {int(x) for x in (getattr(model, "yaml", {}) or {}).get("e1_layers", []) or []}
         with torch.no_grad():
             for i in range(offset + 1, len(layers)):
                 s = i - offset
@@ -156,7 +161,16 @@ def _remap_separate_stem(model, src, rgb_stem, aux_stems):
                         v.copy_(sv)
                         n += 1
                         continue
-                    # The ONLY legitimately non-transferable block: Detect's class branch
+                    # A SECOND legitimately non-transferable block: the E1 region response gain
+                    # (RegionResponseGain) bolted inside a layer listed in the model yaml's
+                    # `e1_layers`. It is a NEW module by construction — a stock COCO checkpoint can
+                    # never contain a counterpart for it. Constrained to (declared layer index) AND
+                    # (`.e1.` submodule) AND (the layer really carries an `e1` attribute), so any
+                    # other missing key still raises below.
+                    if i in e1_layers and ".e1." in k and getattr(model.model[i], "e1", None) is not None:
+                        n_e1_new += 1
+                        continue
+                    # The other declared exception: Detect's class branch
                     # (cv3). The source checkpoint was trained with a different number of
                     # classes, so its cls head is re-initialised for this dataset — the same
                     # thing stock ultralytics does for every new-nc fine-tune.
@@ -181,6 +195,7 @@ def _remap_separate_stem(model, src, rgb_stem, aux_stems):
     LOGGER.info(
         f"Separate-stem pretrained remap: {n} tensors transferred "
         f"(3 stems + layers {offset + 1}..{len(layers) - 1} <- stock 1..{len(layers) - 1 - offset}); "
+        f"E1 region response gain (layers {sorted(e1_layers) or 'none'}): {n_e1_new} new tensors; "
         f"Detect cv3 class branch re-initialised for nc={nc}: {n_cls_untrained} tensors not transferred"
     )
     return n
@@ -220,6 +235,23 @@ def _transfer_rgb_pretrained(model, weights):
         src = weights["model"] if "model" in weights else weights
     else:
         src = weights.state_dict()
+
+    # ---- 源已是目标架构（resume / 从融合 .pt 微调）→ 无需 remap ----
+    # 下面的分派全部基于**目标模型**的 stem，并假定**源**是单分支 stock COCO。
+    # 若源已经逐个带齐了目标的全部键且 shape 一致，说明 `model.load()` 已经完成全部工作，
+    # 没有任何东西需要 remap —— 而 remap 要找的那个 stock stem 根本不存在。
+    # 缺少本守卫时，resume 一个 sepstem/融合 run 会抛：
+    #   RuntimeError: [sepstem remap] stock stem 'model.0.conv.weight' not present
+    # 更严重的是：即使它侥幸越过 stem，也会把已训好的 Detect cv3 分类分支按 nc 重新初始化，
+    # 直接抹掉分类头。所以这里必须跳过，不能让它继续。
+    _tgt = {k: tuple(v.shape) for k, v in model.state_dict().items()}
+    _src = {k: tuple(v.shape) for k, v in src.items() if hasattr(v, "shape")}
+    if _tgt and all(_src.get(k) == s for k, s in _tgt.items()):
+        LOGGER.info(
+            f"pretrained source already matches the target architecture "
+            f"({len(_tgt)}/{len(_tgt)} keys) -> skip stock->fusion remap"
+        )
+        return 0
 
     # ---- RGBID early fusion: first Conv absorbs all 5 channels (no 1ch stem) ----
     five_ch = next((m for m in stems if getattr(m.conv, "in_channels", None) == 5), None)

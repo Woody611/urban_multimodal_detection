@@ -139,4 +139,29 @@ modality_dropout: {'enabled': False, 'ir_drop_prob': 0.0, 'depth_drop_prob': 0.0
 #   percentile: 1%/99% 分位数线性拉伸（原实现）
 #   clahe     : CLAHE(clipLimit=2.0, tileGridSize=(8,8))，与 percentile **互斥**（不是叠加）
 ir_encoding: percentile
+# OASA（方案 A · Pre-Mosaic Object-Aware Small-object Scale Aug）——默认关闭，对既有实验零影响
+#   位置: load_image → **OASA** → Mosaic → RandomPerspective → LetterBox
+#   gating: enabled 且 **实际 Mosaic 实例的 p>0**（close_mosaic 期自动 OFF）
+#   train-only：val/test 走另一条 Compose，天然不含本模块
+object_scale_aug: false
+object_scale_aug_prob: 0.5
+object_scale_aug_scale: 2.0
+object_scale_aug_small_area: 1024.0 # COCO 口径 native 像素，small < 32^2
+object_scale_aug_min_visible: 0.8
+object_scale_aug_log_every: 200 # 每 N 个样本打一次 [OASA] runtime marker；0=不打
+# F1 Native-small Replay（**默认关闭**；默认值下 transform 立即 return 且**不消耗任何 RNG**
+#   ⇒ 对既有实验（含 D′）数据流与 RNG 序列**逐位不变**）
+#   位置: load_image → **NativeSmallReplay** → OASA → Mosaic → RandomPerspective → ...
+#   语义: 以概率 p 执行至多 max_new_instances 轮；每轮从**本图原始** native-small GT
+#         （native COCO area < small_area）中均匀随机取 1 个，按 **scale=1.0（仅平移）**
+#         复制到本图内另一位置，并新增恰好 1 条标签。
+#         RGB/IR/Depth 同步性由「三者已在 base.py:load_image 合并为单张 5ch 数组」保证。
+#   ⚠ 与 ultralytics 原生 copy_paste **不是同一变量**。
+native_small_replay: 0.0
+native_small_replay_small_area: 1024.0 # COCO 口径 native 像素，small < 32^2
+native_small_replay_margin: 0.10 # crop 的固定 context margin（bbox 宽/高的比例）
+native_small_replay_max_dest_iou: 0.10 # 粘贴框与任一已有 GT 的最大允许 IoU
+native_small_replay_max_src_dst_iou: 0.10 # 粘贴框与 source 框的最大允许 IoU
+native_small_replay_max_attempts: 20 # 每轮 destination 重采样上限；用尽则停止后续轮
+native_small_replay_max_new_instances: 1 # 每个 sample 最多新增的实例数（上限，非保证）
 cls_pw: [] # (list) per-class positive weight for cls loss (class balancing), e.g. [1.0, 6.0, ...]

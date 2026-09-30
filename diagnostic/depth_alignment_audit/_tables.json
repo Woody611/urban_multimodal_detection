@@ -1,0 +1,75 @@
+{
+  "raw_correspondence": {
+    "train": {
+      "n_stem": 2000,
+      "missing": {
+        "visible": 0,
+        "ir": 0,
+        "depth": 0
+      },
+      "formats": {
+        "visible": {
+          "JPEG/RGB": 149,
+          "PNG/RGB": 1851
+        },
+        "ir": {
+          "JPEG/RGB": 149,
+          "PNG/RGB": 1851
+        },
+        "depth": {
+          "JPEG/RGB": 149,
+          "PNG/I;16": 1851
+        }
+      },
+      "shape_combos": {
+        "(640, 360, 640, 360, 640, 360)": 149,
+        "(1920, 1080, 1920, 1080, 1920, 1080)": 1851
+      }
+    },
+    "val": {
+      "n_stem": 400,
+      "missing": {
+        "visible": 0,
+        "ir": 0,
+        "depth": 0
+      },
+      "formats": {
+        "visible": {
+          "JPEG/RGB": 27,
+          "PNG/RGB": 373
+        },
+        "ir": {
+          "JPEG/RGB": 27,
+          "PNG/RGB": 373
+        },
+        "depth": {
+          "JPEG/RGB": 27,
+          "PNG/I;16": 373
+        }
+      },
+      "shape_combos": {
+        "(640, 360, 640, 360, 640, 360)": 27,
+        "(1920, 1080, 1920, 1080, 1920, 1080)": 373
+      }
+    }
+  },
+  "alignment": {
+    "n": 40,
+    "sobel_r00_median": 0.1105470622110913,
+    "sobel_rbest_median": 0.1658772573596698,
+    "best_shift_median": [
+      0,
+      -24
+    ],
+    "best_shift_std": [
+      12.496399481450647,
+      20.548479262466113
+    ],
+    "canny_jaccard_median": 0.023162437639938166
+  },
+  "depth_semantics": {
+    "threshold_mm": 300,
+    "saturation": 19999
+  },
+  "registration_metadata": "NOT_FOUND"
+}

@@ -971,6 +971,23 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
     max_channels = float("inf")
     nc, act, scales = (d.get(x) for x in ("nc", "activation", "scales"))
     depth, width, kpt_shape = (d.get(x, 1.0) for x in ("depth_multiple", "width_multiple", "kpt_shape"))
+
+    # ---- E1: L12-L17 region response gain (config -> graph, single explicit switch) ----
+    # Read strictly from the model yaml's TOP-LEVEL keys. No filename detection, no environment
+    # variable, no experiment-name matching, no magic default. When the key is absent the whole
+    # feature is off, so every pre-existing model yaml keeps its exact previous graph.
+    e1_enabled = bool(d.get("e1_enabled", False))
+    e1_layers = {int(x) for x in (d.get("e1_layers") or [])}
+    e1_kernel = int(d.get("e1_kernel", 3))
+    if e1_enabled and not e1_layers:
+        raise ValueError("e1_enabled=true but e1_layers is empty - refusing to build a model with no target")
+    if e1_kernel % 2 != 1:
+        raise ValueError(f"e1_kernel must be odd, got {e1_kernel}")
+    # NOTE: `e1_enabled: false` together with a populated `e1_layers` is LEGAL and is the intended
+    # baseline-identity state - it is how one file expresses both arms of the A/B (flip the single
+    # `e1_enabled` boolean, nothing else). The anti-pattern to defend against is the opposite one:
+    # enabled but silently not applied, which `e1_applied != e1_layers` below catches.
+    e1_applied = set()
     if scales:
         scale = d.get("scale")
         if not scale:
@@ -1253,7 +1270,20 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
         else:
             c2 = ch[f]
         # print(n)
-        m_ = torch.nn.Sequential(*(m(*args) for _ in range(n))) if n > 1 else m(*args)  # module
+        m_kwargs = {}
+        if e1_enabled and i in e1_layers:
+            if m not in (C3k2, C2PSA):
+                raise ValueError(
+                    f"e1_layers contains layer {i}, whose module is {m.__name__}; "
+                    f"E1 only supports C3k2 / C2PSA (got {m.__name__}:{args})"
+                )
+            if n != 1:
+                raise ValueError(f"E1 layer {i} has n={n}; a per-repeat gain is ambiguous - refusing to guess")
+            m_kwargs = {"e1": True, "e1_kernel": e1_kernel}
+            e1_applied.add(i)
+        m_ = (
+            torch.nn.Sequential(*(m(*args, **m_kwargs) for _ in range(n))) if n > 1 else m(*args, **m_kwargs)
+        )  # module
         t = str(m)[8:-2].replace("__main__.", "")  # module type
         m_.np = sum(x.numel() for x in m_.parameters())  # number params
         m_.i, m_.f, m_.type = i, f, t  # attach index, 'from' index, type
@@ -1264,6 +1294,12 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
         if i == 0:
             ch = []
         ch.append(c2)
+    # Anti-pattern guard: "config asked for E1 but the graph never got it" must be impossible.
+    if e1_enabled and e1_applied != e1_layers:
+        raise ValueError(
+            f"E1 requested for layers {sorted(e1_layers)} but actually applied to {sorted(e1_applied)}. "
+            f"Layer indices are 0-based over backbone+head; check configs/*.yaml e1_layers against the built graph."
+        )
     return torch.nn.Sequential(*layers), sorted(save)
 
 

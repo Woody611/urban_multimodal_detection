@@ -1,0 +1,16 @@
+==============================================================================
+P3 feature-space 抽取（只读）
+==============================================================================
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 661/661 items from pretrained weights
+  W shape=(12, 256, 1, 1)  b shape=(12,)  seed=20260928
+[34m[1mval: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\train\visible.cache... 1600 images, 0 backgrounds, 1 corrupt: 100%|██████████| 1600/1600 [00:00<?, ?it/s][34m[1mval: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\train\visible.cache... 1600 images, 0 backgrounds, 1 corrupt: 100%|██████████| 1600/1600 [00:00<?, ?it/s][34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\000013_046_00000202.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\003107.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0065]
+[34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\hehe_10_00000044.png: 1 duplicate labels removed
+
+  [T1] 2153 GT
+[34m[1mval: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\val\visible.cache... 400 images, 0 backgrounds, 2 corrupt: 100%|██████████| 400/400 [00:00<?, ?it/s][34m[1mval: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\val\visible.cache... 400 images, 0 backgrounds, 2 corrupt: 100%|██████████| 400/400 [00:00<?, ?it/s][34m[1mval: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\val\visible\000050.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0034       1.001]
+[34m[1mval: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\val\visible\003817.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0019]
+
+  [V1] 2807 GT
+[saved] D:\gyt\AIC\urban_multimodal_detection\diagnostic\p3_feature_space\_v7_vectors.json  (4960 GT)

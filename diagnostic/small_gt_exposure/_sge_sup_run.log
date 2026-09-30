@@ -1,0 +1,33 @@
+==============================================================================
+SGE SUPERVISION — native GT → 真实 assigner 监督（只读）
+==============================================================================
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 661/661 items from pretrained weights
+  ckpt=best.pt  nc=12 topk=10 alpha=0.5 beta=6.0  stride=[8.0, 16.0, 32.0]
+[34m[1mtrain: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\train\visible.cache... 1600 images, 0 backgrounds, 1 corrupt: 100%|██████████| 1600/1600 [00:00<?, ?it/s][34m[1mtrain: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\train\visible.cache... 1600 images, 0 backgrounds, 1 corrupt: 100%|██████████| 1600/1600 [00:00<?, ?it/s]
+[34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\000013_046_00000202.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\003107.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0065]
+[34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\hehe_10_00000044.png: 1 duplicate labels removed
+  数据集 n=1599；采样 250 图 × 3 epoch
+  --- epoch 1/3 ---
+    50/250  rows=434
+    100/250  rows=915
+    150/250  rows=1579
+    200/250  rows=2426
+    250/250  rows=3435
+  --- epoch 2/3 ---
+    50/250  rows=4035
+    100/250  rows=4564
+    150/250  rows=5249
+    200/250  rows=5995
+    250/250  rows=6968
+  --- epoch 3/3 ---
+    50/250  rows=7378
+    100/250  rows=7848
+    150/250  rows=8515
+    200/250  rows=9385
+    250/250  rows=10105
+
+  记录 10105 条最终 GT；失败/跳过 0
+[saved] D:\gyt\AIC\urban_multimodal_detection\diagnostic\small_gt_exposure\_sge_supervision.json
+EXIT=0

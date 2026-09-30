@@ -485,6 +485,26 @@ def _build_train_kwargs(train_cfg, data_path):
     if "modality_dropout" in train_cfg:
         kwargs["modality_dropout"] = dict(train_cfg["modality_dropout"])
 
+    # OASA（方案 A · Pre-Mosaic）：仅在配置中存在时转发，未配置时走 default.yaml 的 false。
+    if "object_scale_aug" in train_cfg:
+        kwargs["object_scale_aug"] = bool(train_cfg["object_scale_aug"])
+        for _k in ("object_scale_aug_prob", "object_scale_aug_scale",
+                   "object_scale_aug_small_area", "object_scale_aug_min_visible",
+                   "object_scale_aug_log_every"):
+            if _k in train_cfg:
+                kwargs[_k] = train_cfg[_k]
+
+    # F1 Native-small Replay（可选）：仅在配置中存在时转发；未配置时 `augment.py` 的
+    # getattr 默认 0.0 ⇒ 零 RNG 开销 passthrough ⇒ 既有实验行为逐位不变。
+    # 与 ultralytics 原生 copy_paste **不是同一变量**（后者由 aug.copy_paste 控制，F1 保持 0）。
+    if "native_small_replay" in train_cfg:
+        kwargs["native_small_replay"] = float(train_cfg["native_small_replay"])
+        for _k in ("native_small_replay_small_area", "native_small_replay_margin",
+                   "native_small_replay_max_dest_iou", "native_small_replay_max_src_dst_iou",
+                   "native_small_replay_max_attempts", "native_small_replay_max_new_instances"):
+            if _k in train_cfg:
+                kwargs[_k] = train_cfg[_k]
+
     # IR 对比度处理方式（可选）：仅在配置中存在时转发；未配置时走 default.yaml 的
     # percentile 默认值 -> 既有实验行为不变。
     if "ir_encoding" in train_cfg:

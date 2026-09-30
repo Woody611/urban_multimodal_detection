@@ -1,0 +1,27 @@
+{
+  "matrix": {
+    "D": 34,
+    "C": 24,
+    "A": 8,
+    "B": 4
+  },
+  "modality_missed": {
+    "RGB+IR": 11,
+    "RGB strong": 19,
+    "IR strong": 5,
+    "weak-all": 3
+  },
+  "modality_control": {
+    "RGB strong": 6,
+    "RGB+IR": 23,
+    "IR strong": 4,
+    "weak-all": 1
+  },
+  "coverage": {
+    "CLASS_CONFUSION": 10,
+    "LOW_DENSITY_ISOLATED": 25,
+    "LOCAL_COMPETITION(邻居亦漏)": 18,
+    "SCENE_COMPETITION / INSTANCE_SEPARATION": 12,
+    "BORDER_COMPOSITION": 5
+  }
+}

@@ -1,0 +1,3 @@
+D'  : ObjectScaleAug -> Compose(Mosaic->CopyPaste->RandomPerspective) -> MixUp -> Albumentations -> RandomHSV -> RandomFlip(v) -> RandomFlip(h) -> Format
+F1  : NativeSmallReplay -> ObjectScaleAug -> Compose -> MixUp -> Albumentations -> RandomHSV -> RandomFlip -> RandomFlip -> Format
+pre_transform: ['Mosaic', 'CopyPaste', 'RandomPerspective']

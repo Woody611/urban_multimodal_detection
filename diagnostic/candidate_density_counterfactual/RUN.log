@@ -1,0 +1,48 @@
+====================================================================================================
+CANDIDATE-DENSITY COUNTERFACTUAL — 逐候选抽取（只读）
+====================================================================================================
+
+[provenance]
+  aae7e8ac438f00cd  ultralytics/utils/tal.py
+  0f092cf22a372f6d  ultralytics/utils/loss.py
+  78a72d1f4354c29f  ultralytics/utils/instance.py
+  5cb9a407625921ce  ultralytics/data/augment.py
+  8bcf834930155bd5  ultralytics/data/base.py
+  f014263f2bfe5921  ultralytics/data/build.py
+  0aba2bc14793ab85  ultralytics/data/dataset.py
+  9b14f29460733384  configs/yolo11m_sepstem.yaml
+  a4e329cfc3d22020  configs/train_rgbid_sepstem_clahe.yaml
+  1cae45f75693f541  runs\urban_multimodal_det_yolo11_rgbid_sepstem_clahe\weights\best.pt
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 661/661 items from pretrained weights
+
+[real assigner] topk=10 alpha=0.5 beta=6.0 nc=12
+  __init__ (self, topk=13, num_classes=80, alpha=1.0, beta=6.0, eps=1e-09)
+[34m[1mtrain: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\train\visible.cache... 1600 images, 0 backgrounds, 1 corrupt: 100%|██████████| 1600/1600 [00:00<?, ?it/s][34m[1mtrain: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\train\visible.cache... 1600 images, 0 backgrounds, 1 corrupt: 100%|██████████| 1600/1600 [00:00<?, ?it/s]
+[34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\000013_046_00000202.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\003107.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0065]
+[34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\hehe_10_00000044.png: 1 duplicate labels removed
+  dataset n=1599；采样 250 图 × 3 epoch（与 E1/E2 同 seed 协议）
+  --- epoch 1/3 ---
+  [SELF-CHECK] ProbeAssigner vs 父类逐位一致: True
+    50/250  GTs=434  cands=78822
+    100/250  GTs=915  cands=156031
+    150/250  GTs=1579  cands=282966
+    200/250  GTs=2426  cands=427215
+    250/250  GTs=3435  cands=556847
+  --- epoch 2/3 ---
+    50/250  GTs=4035  cands=679950
+    100/250  GTs=4564  cands=793961
+    150/250  GTs=5249  cands=926861
+    200/250  GTs=5995  cands=1111529
+    250/250  GTs=6968  cands=1248941
+  --- epoch 3/3 ---
+    50/250  GTs=7378  cands=1366738
+    100/250  GTs=7848  cands=1456779
+    150/250  GTs=8515  cands=1567821
+    200/250  GTs=9385  cands=1746912
+    250/250  GTs=10105  cands=1905266
+
+  样本 742；GT 10105；候选 1905266
+[saved] D:\gyt\AIC\urban_multimodal_detection\diagnostic\candidate_density_counterfactual\_results.npz
+EXIT=0
