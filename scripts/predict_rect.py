@@ -90,8 +90,8 @@ from predict import _to_chw, _format_lines, _load_yaml, _parse_pairs  # noqa: E4
 # 权重与训练配置必须成对：train_config 携带 use_simotm/channels/ir_encoding，
 # 这三项决定 LoadImagesAndVideos 的通道拼接与 IR 预处理；用错配置会静默改变输入分布。
 # 历史默认值（F4 = RGBD 4ch @1280、D = RGBID 早期融合）已弃用，需要时用 --weights/--train_config 显式指定。
-DEFAULT_WEIGHTS = "runs/urban_multimodal_det_yolo11_rgbid_sepstem_clahe_e1/weights/best.pt"
-DEFAULT_TRAIN_CONFIG = "configs/train_rgbid_sepstem_clahe_e1.yaml"
+DEFAULT_WEIGHTS = "runs/urban_multimodal_det_yolo11_rgbid_sepstem_clahe_f1/weights/best.pt"
+DEFAULT_TRAIN_CONFIG = "configs/train_rgbid_sepstem_clahe_f1.yaml"
 
 
 def _compute_rect_shape(h0: int, w0: int, imgsz: int, stride: int, pad: float = 0.5):
