@@ -1,0 +1,199 @@
+{
+  "effect_size": {
+    "r1_zero_frac": {
+      "g1_med": 1.0,
+      "g2_med": 1.0,
+      "paired_delta_med": 0.0,
+      "wilcoxon_p": 0.9176315934670087,
+      "cliff": 0.368421052631579,
+      "mwu_p": 0.005720312248297277
+    },
+    "r2_zero_frac": {
+      "g1_med": 1.0,
+      "g2_med": 1.0,
+      "paired_delta_med": 0.0,
+      "wilcoxon_p": 0.8313102079794251,
+      "cliff": 0.30747922437673125,
+      "mwu_p": 0.02109421933561484
+    },
+    "r3_zero_frac": {
+      "g1_med": 1.0,
+      "g2_med": 1.0,
+      "paired_delta_med": 0.0,
+      "wilcoxon_p": 0.9353114289860184,
+      "cliff": 0.26869806094182835,
+      "mwu_p": 0.04386171496762592
+    },
+    "ring_zero_frac": {
+      "g1_med": 1.0,
+      "g2_med": 1.0,
+      "paired_delta_med": 0.0,
+      "wilcoxon_p": 0.9353114289860184,
+      "cliff": 0.27008310249307477,
+      "mwu_p": 0.042785423391170974
+    },
+    "valid_ratio": {
+      "g1_med": 0.0,
+      "g2_med": 0.0,
+      "paired_delta_med": 0.0,
+      "wilcoxon_p": 0.9176315934670087,
+      "cliff": 0.4349030470914128,
+      "mwu_p": 0.0011060758540690774
+    },
+    "raw_std": {
+      "g1_med": 649.6424469664245,
+      "g2_med": 566.7275159177723,
+      "paired_delta_med": 326.46753310542897,
+      "wilcoxon_p": NaN,
+      "cliff": -0.0888888888888889,
+      "mwu_p": 0.7439714780750569
+    },
+    "raw_iqr": {
+      "g1_med": 819.75,
+      "g2_med": 741.625,
+      "paired_delta_med": 478.0,
+      "wilcoxon_p": NaN,
+      "cliff": -0.15555555555555556,
+      "mwu_p": 0.5676284992633358
+    },
+    "grad_median": {
+      "g1_med": 0.0,
+      "g2_med": 0.0,
+      "paired_delta_med": 0.0,
+      "wilcoxon_p": 0.25529050519961516,
+      "cliff": 0.20360110803324094,
+      "mwu_p": 0.12672607469607478
+    },
+    "relative_depth_deficit": {
+      "g1_med": 0.6539347029320988,
+      "g2_med": 0.5947072723765432,
+      "paired_delta_med": 0.0,
+      "wilcoxon_p": 0.47613551179087066,
+      "cliff": 0.08864265927977844,
+      "mwu_p": 0.506128846472727
+    },
+    "encoded_zero_of_raw_nonzero": {
+      "g1_med": 0.0,
+      "g2_med": 0.0,
+      "paired_delta_med": 0.0,
+      "wilcoxon_p": NaN,
+      "cliff": 0.6000000000000001,
+      "mwu_p": 0.027486336111510412
+    }
+  },
+  "class_strata": {
+    "person": {
+      "n": 18,
+      "g1": 1.0,
+      "g2": 1.0,
+      "d": 0.0
+    },
+    "animal": {
+      "n": 13,
+      "g1": 1.0,
+      "g2": 0.940952380952381,
+      "d": 0.0
+    },
+    "light": {
+      "n": 3,
+      "g1": 0.005108556832694764,
+      "g2": 1.0,
+      "d": -0.9948914431673053
+    },
+    "sign": {
+      "n": 2,
+      "g1": 0.5017361111111112,
+      "g2": 0.9761904761904762,
+      "d": -0.4744543650793651
+    },
+    "garbage_can": {
+      "n": 1,
+      "g1": 1.0,
+      "g2": 1.0,
+      "d": 0.0
+    },
+    "ball": {
+      "n": 1,
+      "g1": 1.0,
+      "g2": 0.0,
+      "d": 1.0
+    }
+  },
+  "size_strata": [
+    {
+      "stratum": "S1 (<=p25)",
+      "n_g1": 10,
+      "g1": 1.0,
+      "n_succ": 50,
+      "succ": 1.0,
+      "delta": 0.0
+    },
+    {
+      "stratum": "S2 (25-50%)",
+      "n_g1": 9,
+      "g1": 1.0,
+      "n_succ": 19,
+      "succ": 1.0,
+      "delta": 0.0
+    },
+    {
+      "stratum": "S3 (50-75%)",
+      "n_g1": 9,
+      "g1": 1.0,
+      "n_succ": 26,
+      "succ": 1.0,
+      "delta": 0.0
+    },
+    {
+      "stratum": "S4 (>p75)",
+      "n_g1": 10,
+      "g1": 0.7984231592605977,
+      "n_succ": 87,
+      "succ": 1.0,
+      "delta": -0.2015768407394023
+    }
+  ],
+  "rgb_ir_strata": {
+    "RGB contrast 低(<中位)": {
+      "n_g1": 19,
+      "n_succ": 122,
+      "g1": 1.0,
+      "succ": 1.0,
+      "delta": 0.0
+    },
+    "RGB contrast 高(>=中位)": {
+      "n_g1": 19,
+      "n_succ": 72,
+      "g1": 1.0,
+      "succ": 1.0,
+      "delta": 0.0
+    },
+    "IR contrast 低(<中位)": {
+      "n_g1": 19,
+      "n_succ": 59,
+      "g1": 1.0,
+      "succ": 1.0,
+      "delta": 0.0
+    },
+    "IR contrast 高(>=中位)": {
+      "n_g1": 19,
+      "n_succ": 135,
+      "g1": 1.0,
+      "succ": 1.0,
+      "delta": 0.0
+    }
+  },
+  "groups": {
+    "small_success": 194,
+    "small_other_miss": 115,
+    "small_hard_miss": 38,
+    "G2_matched_control": 29
+  },
+  "replication": {
+    "n": 232,
+    "zero_median": 1.0,
+    "zero_p90": 1.0,
+    "fully_zero_frac": 0.8017241379310345,
+    "image_zero_median": 0.4880418113425926
+  }
+}

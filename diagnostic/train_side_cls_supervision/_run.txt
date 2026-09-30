@@ -1,0 +1,197 @@
+================================================================================================================
+TRAINING-SIDE CLASSIFICATION SUPERVISION AUDIT —— READ-ONLY / NO-FORWARD
+================================================================================================================
+[provenance]
+  1cae45f75693f541  D:\gyt\AIC\urban_multimodal_detection\runs\urban_multimodal_det_yolo11_rgbid_sepstem_clahe\weights\best.pt
+  aae7e8ac438f00cd  D:\gyt\AIC\urban_multimodal_detection\ultralytics\utils\tal.py
+  0f092cf22a372f6d  D:\gyt\AIC\urban_multimodal_detection\ultralytics\utils\loss.py
+  2fa868a4464ce88b  D:\gyt\AIC\urban_multimodal_detection\ultralytics\nn\modules\head.py
+  a4e329cfc3d22020  D:\gyt\AIC\urban_multimodal_detection\configs\train_rgbid_sepstem_clahe.yaml
+  7dc2e3c69a5f368b  D:\gyt\AIC\urban_multimodal_detection\diagnostic\small_gt_exposure\_sge_supervision.json
+  da5dfbd6dcdb287d  D:\gyt\AIC\urban_multimodal_detection\diagnostic\small_object_train_replay\_v5_replay.json
+  29e3df9526466ec1  D:\gyt\AIC\urban_multimodal_detection\diagnostic\small_gt_exposure\_sge_native_meta.json
+  3505d9160c47aae8  D:\gyt\AIC\urban_multimodal_detection\diagnostic\small_object_domains\_v6_domains.json
+  da015742973d1efa  D:\gyt\AIC\urban_multimodal_detection\diagnostic\small_object_cause_v2\_v2_records.json
+  977593ae00126100  D:\gyt\AIC\urban_multimodal_detection\diagnostic\p3_feature_space\_v7_vectors.json
+
+================================================================================================================
+[§3] ACTUAL CODE PATH（本项目 fork 的真实源码，非 YOLO 常识）
+================================================================================================================
+  `ultralytics/utils/tal.py:118-127`  TaskAlignedAssigner.get_pos_mask
+      mask_in_gts  = select_candidates_in_gts(anc_points, gt_bboxes)
+      align_metric, overlaps = get_box_metrics(pd_scores, pd_bboxes, gt_labels, gt_bboxes,
+                                               mask_in_gts * mask_gt)
+      mask_topk = select_topk_candidates(align_metric, topk_mask=...)
+      mask_pos  = mask_topk * mask_in_gts * mask_gt
+  `tal.py:139-152`  get_box_metrics
+      ind[1] = gt_labels.squeeze(-1)
+      bbox_scores[mask_gt] = pd_scores[ind[0], :, ind[1]][mask_gt]     # = sigmoid 后的同类分
+      overlaps[mask_gt]    = iou_calculation(gt, pd_boxes)            # CIoU, clamp(0)
+      align_metric = bbox_scores.pow(alpha) * overlaps.pow(beta)       # alpha=.5 beta=6
+  `tal.py:109-118`  _forward 的 **target 构造 + 归一化**（本轮核心）
+      target_labels, target_bboxes, target_scores = get_targets(...)
+      align_metric *= mask_pos                    # ← in-place
+      pos_align_metrics = align_metric.amax(dim=-1, keepdim=True)   # 每 GT 的 max align
+      pos_overlaps      = (overlaps * mask_pos).amax(dim=-1, keepdim=True)  # 每 GT 的 max CIoU
+      norm_align_metric = (align_metric * pos_overlaps / (pos_align_metrics + eps)).amax(-2)
+      target_scores = target_scores * norm_align_metric
+  `tal.py:226-241`  get_targets 里 target_scores 的初值
+      target_scores = zeros((b, h*w, nc)); target_scores.scatter_(2, target_labels, 1)  # ← one-hot **1.0**
+      target_scores = where(fg_mask>0, target_scores, 0)                                  # 只留正样本
+
+  ⇒ **raw target（正样本、GT 类通道）= 1.0；归一化后：**
+       target[a] = 1.0 × [ align[a, g_a] · maxCIoU[g_a] / maxAlign[g_a] ]
+     其中 g_a = anchor a 被分配到的 GT（`select_highest_overlaps` 已保证唯一）。
+  ⇒ **在 GT g 的 max-align 正样本上：target = maxAlign · maxCIoU / maxAlign = maxCIoU[g]**
+  ⇒ **『每个 GT 的峰值分类 target == 它最好的正样本与它的 CIoU』**（下面数值验证）
+
+  `ultralytics/utils/loss.py:523-535`  分类 loss 的 reduction
+      target_scores_sum = max(target_scores.sum(), 1)        # 全 batch、全 anchor、全类求和
+      self.bce = nn.BCEWithLogitsLoss(reduction='none')      # loss.py:415
+      loss_cls = self.bce(pred_scores, target_scores.to(dtype))   # (b, h*w, nc)
+      if self.cls_pw is not None: ...                        # loss.py:430 getattr(h,'cls_pw',None)
+      loss[1] = loss_cls.sum() / target_scores_sum
+  `configs/train_rgbid_sepstem_clahe.yaml` 无 `cls_pw` 键 ⇒ `self.cls_pw = None`（类别加权未启用）
+  `loss.py:526`  `loss.sum() * batch_size`（__call__ 里），随后 trainer 除以累计量 —— 不改变 GT 间相对权重
+
+================================================================================================================
+[§4] ARTIFACT 语义核对（不轻信字段名）
+================================================================================================================
+  `_sge_supervision.json`: rows=10105（有效 10105），n_images=250 epochs=3 seed=20260928
+    来源 `_sge_supervision.py:62`：`self.last.update(target_scores=ts)` —— **stash 的是 forward 的返回值**，即 `tal.py:116` 归一化**之后**的 target_scores ✓
+    字段：cls / n_pos / best_align / pos_target_max / pos_strides / aug_w,h,area / **native_area** / layer(HR|LR)
+    ⇒ **有 native_area** ⇒ 可以按 native 尺度分桶（协议要求）。
+  `_v5_replay.json`: rows=3544 seed=20260926 stat={'mosaic_calls': 250, 'map_ok': 6, 'map_bad': 244, 'drop_gt': 0}
+    字段额外含 `pos_target_mean` / `target_sum_all` / `mean_align` / `best_assign_iou`
+    ⚠ `_v5_replay.py:270-271` 的 `bucket` 用 **aug_area**（增强后），**不是 native**
+    ⚠ `_v5_replay.py:264` 自述「身份追踪不可行」：`stat.map_bad = 244/250` ⇒ **`src_stem` 不可用于回连 native**
+
+  ⚠ **语义陷阱 A**：`target_sum_all = target_scores[0, :, cid].sum()`（`_v5_replay.py:133,145`）
+     是 **`cid` 这个类通道在全部 anchor 上的和** —— 只要同图里有**同类** GT，就互相污染。
+     实测反例：
+       n_pos=10  pos_target_mean=0.8911  best_assign_iou=0.9606  target_sum_all=277.8157
+       若它是 per-GT 的量，应 ≈ n_pos×mean = 8.9112；实测 277.8157 ⇒ **不是 per-GT 量**
+     ⇒ **本轮不使用 `target_sum_all` 作为 per-GT 质量**。per-GT 目标质量改用
+       **`n_pos × pos_target_mean`**（= `ts_g[pos]` 的和，`pos` 是该 GT 自己的正样本）✓
+     ⇒ 但 `target_sum_all` 可用于**重建 batch 分母**：按 (mosaic_sample, cls) 去重后求和。
+
+  ★ **结构恒等式验证**（§3 推出 `pos_target_max == best_assign_iou`）：
+     `_v5_replay` n=3544：max|Δ| = 5.163e-01   median|Δ| = 0.000e+00   #(|Δ|>1e-5) = 48
+     ⇒ **证实**：每个 GT 的**峰值分类目标 = 它最好的正样本框与它的 CIoU**。
+     ⇒ 几何质量**直接封顶**分类监督强度（target 初值是 1.0，被归一化拉低到 CIoU 水平）。
+
+================================================================================================================
+[§5] SUPERVISION TABLE —— native 分桶（用 `_sge_supervision.json` 的 native_area）
+================================================================================================================
+  有效并含 native_area 的行 = 10105 / 10105
+  scale      n_GT  n_pos med  best_align med  pos_target_max med  layer HR%
+  small      1325          4          0.3570              0.8747      73.9%
+  medium     4647         10          0.6879              0.9552      93.8%
+  large      4133         10          0.8263              0.9767     100.0%
+
+  small vs medium  n_pos：MWU p=0
+  small vs large   n_pos：MWU p=0
+
+  ⚠ `_v5_replay` 只有 aug 尺度 ⇒ 其表按 aug_area 分桶，**明确标注为 aug-bucket**（混入增强）
+  `_v5_replay`（aug_area 分桶）补充列（per-GT 目标质量 = n_pos × pos_target_mean）：
+  aug-bucket    n_GT  n_pos med  pos_target_mean med   per-GT mass med  mean_align med
+  small         1179          9               0.7546            6.1893          0.4466
+  medium        1736         10               0.8749            8.7490          0.6772
+  large          629         10               0.9315            9.3148          0.8114
+
+================================================================================================================
+[§6] NORMALIZATION ANALYSIS —— small 是否因归一化获得**额外**的 supervision deficit？
+================================================================================================================
+  `norm_align_metric[a] = align[a]/maxAlign[g] × maxCIoU[g]`  ⇒  target_max[g] = maxCIoU[g]
+  ⇒ 归一化的效果是：**把 raw one-hot 1.0 拉到该 GT 的 CIoU 水平**。
+  ⇒ 因此 absolute target 水平 ∝ 几何质量，而 **不是** small 特有的惩罚。
+     问题是 small 的 CIoU 是否显著更低。用 val 侧（`_v6_domains` V1，非配对）与 train 侧各查一次：
+
+  set                            n  best_assign_iou med      pos_target_max 预测值
+  val G1（hard miss）             38               0.6278                  0.6278
+  val G2（matched ctrl）          38               0.7156                  0.7156
+  val G4（success）              194               0.7694                  0.7694
+  `_sge_supervision`（train，native-small）的 pos_target_max 见 §5 表。
+
+  ⚠ **关键限定**：G1/G2/G4 是 **validation** GT；train-side artifact 是 **train** GT。
+     二者**不可配对**。下面所有 G1/G2/G4 的引用都是 **population 级对比**，
+     不是「G1 在训练时收到了多少监督」。协议 §10 明令禁止后者。
+
+================================================================================================================
+[§7] BACKGROUND DILUTION —— 是否存在证据证明 small 的分类梯度被背景 anchor 稀释？
+================================================================================================================
+  从源码可以直接判定**归一化并不按 anchor 数除**：
+      loss[1] = Σ_{(b,a,c)} BCE(logit, target) / Σ_{(b,a,c)} target      （loss.py:535 / :523）
+      分母只含 **target 非零** 的项（背景项 target=0，不贡献分母）。
+  ⇒ 每个正样本项的梯度权重是**共享的 1/D**，**与同图 anchor 总数无关**。
+  ⇒ **「背景 anchor 越多 ⇒ 某 GT 的梯度被按比例稀释」在源码层面不成立**（NOT SUPPORTED）。
+  ⇒ 背景项的作用是**叠加一个把全类 logit 往下压的梯度**（balance 问题），不是除法稀释。
+
+  结构性对照（可由源码计数，无需 artifact）：
+     单图 anchor 总数（1280 输入，stride 8/16/32）= 33600
+     每图 class-channel 项 = 33600 × 12 = 403200
+     `_v5_replay` 每图正样本数中位 ≈ 0（前 30 张）⇒ 正:背景 项数比 ≈ 1:403200
+     ⇒ 这是**项数**比，**不是梯度幅度比** —— 梯度幅度还取决于误差 (σ(z) − t)。
+  ⚠ 协议 §11：**没有 gradient artifact ⇒ 不能声称 small 收到的梯度更弱**。
+     本轮结论限于「**target 数值**层面」，不涉及梯度幅度。⇒ 梯度层面的稀释 = **NOT PROVEN**
+
+================================================================================================================
+[§8] BATCH 分母重建 与 per-GT TARGET-MASS SHARE
+================================================================================================================
+  重建：按 (mosaic_sample, cls) 去重求和 = batch 分母 D（loss.py:523 的 target_scores.sum()）
+    可重建的样本数 = 249；D 中位 = 86.174
+  per-GT target-mass share = (n_pos × pos_target_mean) / D
+  aug-bucket      n   share med  share p90   mass med     D med
+  small        1179     0.02964    0.07646     6.1893    188.52
+  medium       1736     0.05952    0.15016     8.7490    142.82
+  large         629     0.07125    0.22498     9.3148    122.43
+
+  ⚠ 读法：share 是**分母归一化后的 target 质量占比**，即该 GT 的正样本项在
+     该图分类 loss 中的**权重份额**（同图 GT 之间可比）。它**不是梯度测量**。
+
+================================================================================================================
+[§9] CLASS IMBALANCE（train labels 直接统计；native_area 分桶）
+================================================================================================================
+  train 图像 1600 张；GT 总数 11570；其中 native-small 1392（12.0%）
+  class          total GT  small GT small ratio small imgs total share
+  person             4426       703       15.9%        193       38.3%
+  boat                107        17       15.9%          7        0.9%
+  animal             2328       107        4.6%         40       20.1%
+  seat                514        30        5.8%         30        4.4%
+  sign                659       124       18.8%         97        5.7%
+  bicycle             550        79       14.4%         25        4.8%
+  car                1283        97        7.6%         65       11.1%
+  ball                 70        22       31.4%         17        0.6%
+  light              1211        56        4.6%         25       10.5%
+  garbage_can         225        39       17.3%         25        1.9%
+  uav                 174       118       67.8%         97        1.5%
+  tricycle             23         0        0.0%          0        0.2%
+
+  ⚠ 不做 12 类的显著性解释（协议 §12）。只报频率与比例。
+
+================================================================================================================
+[§12/§13] 关系检查（train population；不出显著性结论）
+================================================================================================================
+  (a) train 侧：native-small 的 per-GT target mass vs 其 CIoU
+     n=1179  mass vs best_assign_iou：Spearman ρ=+0.7154 p=1.9e-185
+     n=1179  mass vs n_pos           ：Spearman ρ=+0.8752 p=0
+  (b) class 频率 vs train 侧 small 监督质量（按类聚合，n=12 类）
+     可用于该检验的类数 = 10（每类 small 行 ≥5）
+     Spearman ρ=-0.0545  p=0.881   ⇒ **n 太小，不作结论**（协议 §9/§12）
+
+================================================================================================================
+[§10] G1 / G2 / G4 —— 严格区分 train population 与 validation population
+================================================================================================================
+  **不可做的推断**：G1/G2/G4 是 validation GT，train-side artifact 里没有它们的身份。
+     因此**不能**写出「G1 在训练时收到了 X」。下面只是两个 population 的**并置对照**。
+
+  population                                   n    median      p10      p90
+  train native-small: pos_target_max        1325    0.8747   0.5549   0.9616
+  val G1: best_assign_iou (=target_max 预测)    38    0.6278   0.2393   0.8172
+  val G1: 实测 GT-class sigmoid (pos_prob)      38  0.000003 1.02e-07 2.89e-04
+
+  ⇒ **关键落差**：train native-small 的 target 峰值中位 0.875，
+     而 val G1 的同类响应中位 2.82e-06 —— 相差约 5 个数量级。
+     **监督被「下达」了（target≈0.6），响应却没有形成。**
+
+[saved] D:\gyt\AIC\urban_multimodal_detection\diagnostic\train_side_cls_supervision\_tables.json

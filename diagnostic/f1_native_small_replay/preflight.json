@@ -1,0 +1,116 @@
+{
+  "experiment": "F1",
+  "baseline": "D_prime",
+  "verdict": "EXPERIMENT READY",
+  "n_gates": 17,
+  "n_fail": 0,
+  "gates": {
+    "G8_transform_order": {
+      "pass_": true,
+      "detail": "order[0]=NativeSmallReplay; NativeSmallReplay 定位=OK"
+    },
+    "G9_config_equivalence": {
+      "pass_": true,
+      "detail": "only_f1={'native_small_replay': 1.0, 'native_small_replay_max_new_instances': 2} training_var_diff={} name_only_diff=True"
+    },
+    "G9b_inherited_args": {
+      "pass_": true,
+      "detail": "mismatch=[]"
+    },
+    "G10a_construction_rng_neutral": {
+      "pass_": true,
+      "detail": "构建 F1 的 transforms 前后 global RNG state 逐位相同"
+    },
+    "G10b_p0_no_rng_consumption": {
+      "pass_": true,
+      "detail": "p=0 时连续 10 次调用不消耗任何 RNG ⇒ D′ 数据流逐位不变"
+    },
+    "SMOKE_no_error": {
+      "pass_": true,
+      "detail": "异常 0"
+    },
+    "SMOKE_5ch": {
+      "pass_": true,
+      "detail": "Format 后为 CHW；shape[0] == 5（RGBID 5 通道）"
+    },
+    "SMOKE_no_nan": {
+      "pass_": true,
+      "detail": "无 NaN/Inf"
+    },
+    "G1_source_is_native_small": {
+      "pass_": true,
+      "detail": "n=200；越界条数=0"
+    },
+    "G2_scale_1p0": {
+      "pass_": true,
+      "detail": "max|Δw|,max|Δh| = 1.137e-13（阈值 1e-6）"
+    },
+    "G3_multimodal_5ch_sync": {
+      "pass_": true,
+      "detail": "n=200；5 通道逐通道和 paste前后不一致 = 0"
+    },
+    "G4_bbox_size_preserved": {
+      "pass_": true,
+      "detail": "max|Δ| = 1.137e-13"
+    },
+    "G5_class_preserved": {
+      "pass_": true,
+      "detail": "新标签类 ≠ source 类 的条数 = 0"
+    },
+    "G6_overlap_le_0.10": {
+      "pass_": true,
+      "detail": "n=200；最大 IoU = 0.0629（阈值 0.10）；越界对数 = 0"
+    },
+    "G7_label_integrity": {
+      "pass_": true,
+      "detail": "原标签被保留 + 恰好新增 1 条：违例 = 0"
+    },
+    "G7b_per_image_ceiling": {
+      "pass_": true,
+      "detail": "实测每个 sample 最多新增 2 个（上限 max_new_instances=2）；multi(>=2) 样本数=100"
+    },
+    "PARAM_model_config_identical": {
+      "pass_": true,
+      "detail": "F1 不接触任何模型代码；model config 与实际架构由同一 yaml 决定"
+    }
+  },
+  "provenance": {
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\configs\\train_rgbid_sepstem_clahe_f1.yaml": "534ae8c4500b33dd",
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\configs\\train_rgbid_sepstem_clahe.yaml": "a4e329cfc3d22020",
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\configs\\yolo11m_sepstem.yaml": "9b14f29460733384",
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\data\\processed\\rgbid_split_train\\dataset.yaml": "3bc36c31e913072f",
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\runs\\urban_multimodal_det_yolo11_rgbid_sepstem_clahe\\args.yaml": "8b56d5aaf6e241e7",
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\ultralytics\\data\\augment.py": "53c75148fc168a53",
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\scripts\\train.py": "db4371e360ae0e38"
+  },
+  "frozen": {
+    "native_small_area_threshold": 1024,
+    "replay_probability": 1.0,
+    "max_new_instances_per_image": 2,
+    "instance_scale": 1.0,
+    "rotation": 0.0,
+    "shear": 0.0,
+    "perspective": 0.0,
+    "context_margin": 0.1,
+    "max_destination_iou": 0.1,
+    "max_attempts": 20,
+    "seed": 42,
+    "imgsz": 1280,
+    "epochs": 300
+  },
+  "replay_stats": {
+    "seen": 169,
+    "eligible": 100,
+    "replayed": 100,
+    "instances_added": 200,
+    "multi": 100,
+    "max_per_call": 2,
+    "skip_prob": 0,
+    "skip_nosmall": 69,
+    "skip_attempts": 0
+  },
+  "n_records": 200,
+  "actual_replay_rate": 1.0,
+  "per_sample_replay_rate": 0.591715976331361,
+  "instances_added_per_sample": 1.183431952662722
+}

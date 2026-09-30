@@ -1,0 +1,78 @@
+==========================================================================
+PREFLIGHT — train config 自检（云上 · 训练前 · 不看注释只看解析结果）
+==========================================================================
+  model_config = configs/yolo11m_sepstem_e1.yaml
+  train_config = configs/train_rgbid_sepstem_clahe_e1.yaml
+  [PASS] train_config 存在  — D:\gyt\AIC\urban_multimodal_detection\configs\train_rgbid_sepstem_clahe_e1.yaml
+  [PASS] model_config 存在  — D:\gyt\AIC\urban_multimodal_detection\configs\yolo11m_sepstem_e1.yaml
+
+--- 解析后的关键 kwargs（即将传给 YOLO.train）---
+    data             = data/processed/<placeholder>/dataset.yaml
+    epochs           = 300
+    patience         = 0
+    batch            = 8
+    imgsz            = 1280
+    optimizer        = SGD
+    lr0              = 0.005
+    weight_decay     = 0.0005
+    warmup_epochs    = 3.0
+    cos_lr           = True
+    seed             = 42
+    close_mosaic     = <ABSENT>
+    use_simotm       = RGBID
+    channels         = 5
+    ir_encoding      = clahe
+    pairs_rgb_ir     = ['visible', 'infrared']
+    pairs_rgb_depth  = ['visible', 'depth']
+    project          = runs
+    name             = urban_multimodal_det_yolo11_rgbid_sepstem_clahe_e1
+
+--- 断言 ---
+  [PASS] use_simotm == RGBID  — 'RGBID'
+  [PASS] channels == 5  — 5
+  [PASS] ir_encoding 已显式声明（未静默回落 percentile）  — 'clahe'
+  [PASS] ir_encoding == 'clahe'  — 'clahe'
+  [PASS] 模型 scale == 'm'  — 'm'
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+    （模型参数 20,077,332，31 层，ch=5，nc=12）
+
+--- ultralytics 参数校验（复刻 trainer 的 get_cfg）---
+  [PASS] ultralytics/cfg/default.yaml 含 ir_encoding  — 'percentile'
+  [PASS] check_dict_alignment 接受本次全部 kwargs
+
+--- fork 完整性（data/ 被 gitignore，git 同步不到）---
+  [PASS] ultralytics/cfg/default.yaml 含 'ir_encoding'（自定义配置键）
+  [PASS] ultralytics/data/base.py 含 '_merge_channels_rgbid'（RGBID 5ch 合并）
+  [PASS] ultralytics/data/base.py 含 'createCLAHE'（训练侧 IR-CLAHE）
+  [PASS] ultralytics/data/loaders.py 含 'createCLAHE'（评测侧 IR-CLAHE）
+  [PASS] ultralytics/data/base.py 含 'ir_encoding'（base.py 读取 ir_encoding）
+  [PASS] ultralytics/models/yolo/detect/train.py 含 '_transfer_rgb_pretrained'（预训练迁移）
+  [PASS] ultralytics/models/yolo/detect/train.py 含 '_remap_separate_stem'（三-stem remap）
+  [PASS] ultralytics/nn/modules/conv.py 含 'class SilenceChannel'（SilenceChannel 模块）
+
+--- E1 硬性断言（--expect-e1 true）---
+  [PASS] E1 模型 yaml 存在顶层键 e1_enabled（未缺失）  — True
+  [PASS] e1_enabled 严格为 True（bool，非字符串/非真值）  — True (bool)
+  [PASS] e1_layers 严格等于预注册集合 [13, 15, 17]  — [13, 15, 17]
+  [PASS] e1_kernel == 3  — 3
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+    （E1 模型：参数 20,077,332（可训练 20,077,316），31 层，E1 模块 3 个 @ [13, 15, 17]，E1 张量 6 个）
+  [PASS] 实际参数量 == 20,077,332  — 20,077,332
+  [PASS] E1 module 数量 == 3  — 3
+  [PASS] E1 module 位于层 [13, 15, 17]  — [13, 15, 17]
+  [PASS] E1 新增张量 == 6  — 6
+  [PASS] 模型 graph 含 RegionResponseGain  — 实测 RegionResponseGain 实例数 = 3
+  [PASS] detect/train.py 含日志标记 'E1 region response gain'
+sepstem remap: rgb stem (layer 2, out=48) initialised
+sepstem remap: ir stem (layer 4, out=8) initialised
+sepstem remap: depth stem (layer 6, out=8) initialised
+Separate-stem pretrained remap: 550 tensors transferred (3 stems + layers 8..30 <- stock 1..23); E1 region response gain (layers [13, 15, 17]): 6 new tensors; Detect cv3 class branch re-initialised for nc=12: 6 tensors not transferred
+  [PASS] 真实 remap 日志出现 'E1 region response gain' 且报 6 new tensors  — e gain (layers [13, 15, 17]): 6 new tensors; Detect cv3 class branch re-initialised for nc=12: 6 tensors not transferred
+    （全模型参数总数 20,077,332）
+  >>> E1 PRE-FLIGHT PASS
+    输出目录 runs/urban_multimodal_det_yolo11_rgbid_sepstem_clahe_e1 不存在
+
+==========================================================================
+RESULT: ALL CHECKS PASSED
+PREFLIGHT_READY  → 可以开训；开训后请立刻确认 args.yaml 里 ir_encoding 的值
+==========================================================================

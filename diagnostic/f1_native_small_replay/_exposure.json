@@ -1,0 +1,14 @@
+{
+ "n_img": 1600,
+ "n_gt": 11567,
+ "n_small": 1392,
+ "n_elig": 401,
+ "eligible_frac": 0.250625,
+ "chosen_p": 1.0,
+ "chosen_max_new": 2,
+ "instances_added_per_epoch": 802.0,
+ "multiplier": 1.5761494252873562,
+ "delta_pct": 57.61494252873563,
+ "alt_p030_max1_multiplier": 1.0864224137931033,
+ "note": "p 是 eligible 条件下的概率；每个 eligible 样本在上限内恒达 max_new_instances（preflight 实测 skip_attempts=0）"
+}

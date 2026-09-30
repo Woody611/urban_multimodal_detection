@@ -1,0 +1,143 @@
+{
+  "provenance": {
+    "configs/yolo11m_sepstem.yaml": "9b14f2946073338414b4441784b6df87a868b982be32ac8d50b6d1c4a17f3dd8",
+    "configs/yolo11m_sepstem_e1.yaml": "b2cf656027e2235696d6a1247503dc7e0348529b7fc27987de1e6371b151f217",
+    "configs/train_rgbid_sepstem_clahe.yaml": "a4e329cfc3d220206448cdd3377c1b3f5126c50f13c907ada522d98725486e12",
+    "configs/train_rgbid_sepstem_clahe_e1.yaml": "99cfc5793b2df348a41ad5b4176425911fd3109f4254473f11fa7f0a34653840",
+    "ultralytics/nn/modules/block.py": "28b47f10079a0fc0454fcd91b252608855054a55de2d1469ed16d55743b13f27",
+    "ultralytics/nn/tasks.py": "79c8dbab9cd810d2609e7ff162d856beea8ab8e19b7ee6a933fb83ec1a617efd",
+    "ultralytics/models/yolo/detect/train.py": "f46198001a4b741ec4238e3a062081eeef427db1df8165dacdbb239a153238cb",
+    "yolo11m.pt": "d5ffc1a674953a08e11a8d21e022781b1b23a19b730afc309290bd9fb5305b95",
+    "runs/urban_multimodal_det_yolo11_rgbid_sepstem_clahe/weights/best.pt": "1cae45f75693f54146e35c5fa076c0a6f78ca1cfa95595de74d959f40fae4fda"
+  },
+  "gates": [
+    {
+      "gate": "G0",
+      "name": "baseline checkpoint 未被触碰",
+      "pass": true,
+      "detail": "sha256=1cae45f75693f541..."
+    },
+    {
+      "gate": "G1",
+      "name": "模型 yaml diff 仅 e1_* 键（排除 loader 注入）",
+      "pass": true,
+      "detail": "diff keys = ['e1_enabled', 'e1_kernel', 'e1_layers']; scale=m/m"
+    },
+    {
+      "gate": "G2",
+      "name": "state_dict key diff 为空",
+      "pass": true,
+      "detail": "diff = []"
+    },
+    {
+      "gate": "G3",
+      "name": "参数量 / 可训练参数量 / 冻结参数集 == D′",
+      "pass": true,
+      "detail": "total D'=20061972 E1off=20061972；trainable 20061956/20061956；frozen=['model.30.dfl.conv.weight']"
+    },
+    {
+      "gate": "G4",
+      "name": "module graph 全同（类名序列 + save list）",
+      "pass": true,
+      "detail": "n=31 save_equal=True"
+    },
+    {
+      "gate": "G5",
+      "name": "forward 输出逐位相同",
+      "pass": true,
+      "detail": "shape=(2, 16, 8400) max|d|=0.000e+00"
+    },
+    {
+      "gate": "G6",
+      "name": "loss 逐位相同",
+      "pass": true,
+      "detail": "D'=23.078777313232422 E1off=23.078777313232422"
+    },
+    {
+      "gate": "G7",
+      "name": "gradient 逐位相同",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "gate": "G8",
+      "name": "E1 模块定位（层号 / 类 / 参数量）",
+      "pass": true,
+      "detail": "located=[13, 15, 17] expected=[13, 15, 17] params={13: 5120, 15: 5120, 17: 5120} host={13: 'C3k2', 15: 'C3k2', 17: 'C2PSA'}"
+    },
+    {
+      "gate": "G8b",
+      "name": "E1=true 参数量 == D′ + 15,360",
+      "pass": true,
+      "detail": "20077332 (delta=15360)"
+    },
+    {
+      "gate": "G16",
+      "name": "E1=true 未扰动共享权重初始化（RNG 流未变）",
+      "pass": true,
+      "detail": "661 个共享 key 逐位相同；新增 e1 key = 6"
+    },
+    {
+      "gate": "G9",
+      "name": "forward 时 E1 每模块恰好执行 1 次",
+      "pass": true,
+      "detail": "counts={13: 1, 15: 1, 17: 1}"
+    },
+    {
+      "gate": "SL2",
+      "name": "E1=true 在 t=0 逐位等于 baseline（恒等初始化）",
+      "pass": true,
+      "detail": "max|d|=0.000e+00"
+    },
+    {
+      "gate": "G6b",
+      "name": "loss(E1=true) 在 t=0 逐位等于 baseline",
+      "pass": true,
+      "detail": "23.078777313232422 vs 23.078777313232422"
+    },
+    {
+      "gate": "G10",
+      "name": "grad_norm(E1 params) > 0",
+      "pass": true,
+      "detail": "6/6 positive; norm={'13.weight': 2.669926, '13.bias': 1.025498, '15.weight': 1.829482, '15.bias': 0.668736, '17.weight': 0.892028, '17.bias': 0.266027}"
+    },
+    {
+      "gate": "SL1",
+      "name": "扰动活性：级联增益逐点 == (1+tanh(0.1))^k-1，且 target/下游/pred/loss 全部差异",
+      "pass": true,
+      "detail": "measured={13: 0.099668, 15: 0.20927, 17: 0.329795} expected={13: 0.099668, 15: 0.20927, 17: 0.329795}；|d| target={13: 1.0530256986385211e-06, 15: 6.276417252593092e-08, 17: 8.45907788260547e-10} down={20: 6.024072263244307e-08, 23: 2.5165718398056924e-09} pred=1.526e-05 loss 23.078777->23.077982"
+    },
+    {
+      "gate": "SL3",
+      "name": "局部性：增益只依赖 k//2 邻域（非全局池化）",
+      "pass": true,
+      "detail": "support rows 3..5 cols 3..5 (期望 3..5)"
+    },
+    {
+      "gate": "G11",
+      "name": "E1 参数 ∈ optimizer.param_groups（且全模型参数都在）",
+      "pass": true,
+      "detail": "e1 6/6；groups=[117, 118, 108]"
+    },
+    {
+      "gate": "G12",
+      "name": "checkpoint 存取一致 + D′ 旧 ckpt 兼容",
+      "pass": true,
+      "detail": "reload e1=[13, 15, 17] keys_equal=True | D′ ckpt forward OK；legacy 含 e1 = False"
+    },
+    {
+      "gate": "G12b",
+      "name": "冻结推理路径 YOLO(ckpt).predict 结构与训练一致",
+      "pass": true,
+      "detail": "YAML->predict E1@[13, 15, 17] params=20077332；ckpt->predict E1@[13, 15, 17]；predict 输出 162 框"
+    },
+    {
+      "gate": "G17",
+      "name": "预训练迁移后共享 key 逐位一致 + E1 key 走新例外（未 raise）",
+      "pass": true,
+      "detail": "transferred D'=550 E1=550（E1 新增 6 个张量单独放行）；divergent=[]"
+    }
+  ],
+  "n_fail": 0,
+  "verdict": "READY"
+}

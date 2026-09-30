@@ -1,0 +1,568 @@
+{
+  "provenance": {
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\data\\processed\\rgbid_split_train\\dataset.yaml": "3bc36c31e913072f",
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\configs\\yolo11m_sepstem.yaml": "9b14f29460733384",
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\configs\\train_rgbid_sepstem_clahe.yaml": "a4e329cfc3d22020",
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\runs\\urban_multimodal_det_yolo11_rgbid_sepstem_clahe\\weights\\best.pt": "1cae45f75693f541",
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\ultralytics\\nn\\modules\\head.py": "2fa868a4464ce88b",
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\ultralytics\\nn\\tasks.py": "79c8dbab9cd810d2",
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\ultralytics\\utils\\tal.py": "aae7e8ac438f00cd",
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\ultralytics\\utils\\loss.py": "0f092cf22a372f6d",
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\ultralytics\\models\\yolo\\detect\\train.py": "f46198001a4b741e",
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\scripts\\official_eval.py": "e82128abc082ed05",
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\scripts\\predict_rect.py": "36858acb59058e89",
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\diagnostic\\small_object_domains\\_v6_domains.json": "3505d9160c47aae8",
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\diagnostic\\small_object_internal_audit\\_v4_internal.json": "0da6877405d241e3",
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\diagnostic\\p3_feature_space\\_v7_vectors.json": "977593ae00126100",
+    "D:\\gyt\\AIC\\urban_multimodal_detection\\diagnostic\\candidate_density_counterfactual\\_results.npz": "7b28dc555c3fffb6"
+  },
+  "checks": {
+    "C_dataset_names_complete": {
+      "pass_": true,
+      "detail": "keys=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]"
+    },
+    "C_dataset_nc_matches_names": {
+      "pass_": true,
+      "detail": "nc=12 len(names)=12"
+    },
+    "C_label_integer_to_name": {
+      "pass_": true,
+      "detail": "不一致条数=0 []"
+    },
+    "C_model_nc": {
+      "pass_": true,
+      "detail": "model.nc=12 dataset.nc=12"
+    },
+    "C_model_names_ID_order_identical": {
+      "pass_": true,
+      "detail": "ID-by-ID 全等=True（非 set 比较）"
+    },
+    "C_objectness_absent": {
+      "pass_": true,
+      "detail": "命中=['ultralytics\\\\utils\\\\metrics.py']"
+    },
+    "C_head_box_channels_64": {
+      "pass_": true,
+      "detail": "cv2 末层 out=64"
+    },
+    "C_head_class_channels_eq_nc": {
+      "pass_": true,
+      "detail": "cv3 末层 out=12 == nc"
+    },
+    "C_no_eq_64plus_nc": {
+      "pass_": true,
+      "detail": "no=76"
+    },
+    "C_head_weight_row_equals_class_id": {
+      "pass_": true,
+      "detail": "max|Δ|=2.334e-06（用 row=cls 复现 logit；换行会失败）"
+    },
+    "C_channel_offset_would_fail": {
+      "pass_": true,
+      "detail": "错位行 median|Δ|=7.4240 ⇒ 检查有分辨力"
+    },
+    "C_two_impl_same_statistic_agree": {
+      "pass_": true,
+      "detail": "max|Δ|=0.000e+00 n=429（同定义、两实现）"
+    },
+    "C_two_impl_iou_agree": {
+      "pass_": true,
+      "detail": "max|Δ|=0.000e+00"
+    },
+    "C_pred_class_not_permuted": {
+      "pass_": true,
+      "detail": "同行率=74.46%(>25%) 映射非单射=True；报告 n_gt≥10 行 argmax 自洽=9/10（唯一例外 seat，margin 6:5）"
+    },
+    "C_sigmoid_identity": {
+      "pass_": true,
+      "detail": "max|Δ|=8.350e-08"
+    },
+    "C_v4_best_in_gts_align_is_best_align": {
+      "pass_": true,
+      "detail": "逐条相等 429/429，max|Δ|=0.0"
+    },
+    "C_tal_uses_gt_class_index_directly": {
+      "pass_": true,
+      "detail": "source-verified: pd_scores[b, gt_class, anchor]，无 remap"
+    },
+    "C_tal_alpha_beta_topk": {
+      "pass_": true,
+      "detail": "源码字面量 alpha=0.5 beta=6.0 topk=10"
+    },
+    "C_v6_assigner_input_matches_loss": {
+      "pass_": true,
+      "detail": "6 个实参一一对应（源码对照）"
+    },
+    "C_alignment_reproduced": {
+      "pass_": true,
+      "detail": "align>0 子集 max=8.372e-08 median=1.526e-08 （全体 max=0.831 由 mask_pos 置零所致）"
+    },
+    "C_pred_cls_in_range": {
+      "pass_": true,
+      "detail": "非法行数 = 0"
+    },
+    "C_pred_cls_names_consistent": {
+      "pass_": true,
+      "detail": "全部 ∈ [0,11]"
+    },
+    "C_evaluator_class_space": {
+      "pass_": true,
+      "detail": "预测与 GT 均 0-based，逐类直接比较"
+    },
+    "C_no_name_based_class_remap": {
+      "pass_": true,
+      "detail": "train.py 全文 0 处 'names' 引用；sort-by-shape copy + 唯一 cv3 nc 例外"
+    },
+    "C_key_stem_gt_consistent": {
+      "pass_": true,
+      "detail": "(domain,key) dup=0 bad=0"
+    },
+    "C_sq_matches_label_row_index": {
+      "pass_": true,
+      "detail": "input-space max|Δ|=1.403e-04 ⇒ gt 索引确实指向同一 label 行"
+    },
+    "C_groups_same_extraction_path": {
+      "pass_": true,
+      "detail": "命中={'G1': 38, 'G2': 38, 'G4': 194}"
+    }
+  },
+  "verdict": "PASS",
+  "n_fail": 0,
+  "dataset_names": {
+    "0": "person",
+    "1": "boat",
+    "2": "animal",
+    "3": "seat",
+    "4": "sign",
+    "5": "bicycle",
+    "6": "car",
+    "7": "ball",
+    "8": "light",
+    "9": "garbage_can",
+    "10": "uav",
+    "11": "tricycle"
+  },
+  "dataset_nc": 12,
+  "model_nc": 12,
+  "model_names": {
+    "0": "person",
+    "1": "boat",
+    "2": "animal",
+    "3": "seat",
+    "4": "sign",
+    "5": "bicycle",
+    "6": "car",
+    "7": "ball",
+    "8": "light",
+    "9": "garbage_can",
+    "10": "uav",
+    "11": "tricycle"
+  },
+  "head_shapes": {
+    "model.30.cv2.0.2.weight": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "model.30.cv2.0.2.bias": [
+      64
+    ],
+    "model.30.cv3.0.2.weight": [
+      12,
+      256,
+      1,
+      1
+    ],
+    "model.30.cv3.0.2.bias": [
+      12
+    ]
+  },
+  "head_no": 76,
+  "head_reg_max": 16,
+  "label_vs_record": {
+    "G1": {
+      "n": 38,
+      "match": 38,
+      "classes": {
+        "person": 18,
+        "animal": 13,
+        "sign": 2,
+        "ball": 1,
+        "light": 3,
+        "garbage_can": 1
+      }
+    },
+    "G2": {
+      "n": 38,
+      "match": 38,
+      "classes": {
+        "person": 15,
+        "boat": 3,
+        "animal": 14,
+        "sign": 2,
+        "ball": 1,
+        "light": 3
+      }
+    },
+    "G4": {
+      "n": 194,
+      "match": 194,
+      "classes": {
+        "person": 110,
+        "boat": 1,
+        "animal": 20,
+        "seat": 4,
+        "sign": 17,
+        "bicycle": 5,
+        "car": 12,
+        "ball": 2,
+        "light": 1,
+        "garbage_can": 4,
+        "uav": 18
+      }
+    }
+  },
+  "pred_txt_samples": [
+    {
+      "group": "G1",
+      "key": "000004_011_00000001#0",
+      "gt_cls": 4,
+      "gt_name": "sign",
+      "n_pred": 2,
+      "n_bad": 0,
+      "pred_classes": [
+        2,
+        8
+      ],
+      "pred_names": [
+        "animal",
+        "light"
+      ],
+      "gt_in_pred": false
+    },
+    {
+      "group": "G1",
+      "key": "000006_011_00000307#5",
+      "gt_cls": 0,
+      "gt_name": "person",
+      "n_pred": 10,
+      "n_bad": 0,
+      "pred_classes": [
+        0,
+        1,
+        2,
+        6
+      ],
+      "pred_names": [
+        "person",
+        "boat",
+        "animal",
+        "car"
+      ],
+      "gt_in_pred": true
+    },
+    {
+      "group": "G1",
+      "key": "000006_011_00000307#6",
+      "gt_cls": 0,
+      "gt_name": "person",
+      "n_pred": 10,
+      "n_bad": 0,
+      "pred_classes": [
+        0,
+        1,
+        2,
+        6
+      ],
+      "pred_names": [
+        "person",
+        "boat",
+        "animal",
+        "car"
+      ],
+      "gt_in_pred": true
+    },
+    {
+      "group": "G1",
+      "key": "000006_011_00000409#0",
+      "gt_cls": 0,
+      "gt_name": "person",
+      "n_pred": 7,
+      "n_bad": 0,
+      "pred_classes": [
+        0,
+        1,
+        2
+      ],
+      "pred_names": [
+        "person",
+        "boat",
+        "animal"
+      ],
+      "gt_in_pred": true
+    },
+    {
+      "group": "G1",
+      "key": "000006_011_00000409#1",
+      "gt_cls": 0,
+      "gt_name": "person",
+      "n_pred": 7,
+      "n_bad": 0,
+      "pred_classes": [
+        0,
+        1,
+        2
+      ],
+      "pred_names": [
+        "person",
+        "boat",
+        "animal"
+      ],
+      "gt_in_pred": true
+    },
+    {
+      "group": "G2",
+      "key": "003288#17",
+      "gt_cls": 4,
+      "gt_name": "sign",
+      "n_pred": 45,
+      "n_bad": 0,
+      "pred_classes": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "pred_names": [
+        "person",
+        "boat",
+        "animal",
+        "seat",
+        "sign"
+      ],
+      "gt_in_pred": true
+    },
+    {
+      "group": "G2",
+      "key": "000415#12",
+      "gt_cls": 0,
+      "gt_name": "person",
+      "n_pred": 34,
+      "n_bad": 0,
+      "pred_classes": [
+        0,
+        2,
+        4
+      ],
+      "pred_names": [
+        "person",
+        "animal",
+        "sign"
+      ],
+      "gt_in_pred": true
+    },
+    {
+      "group": "G2",
+      "key": "003987#32",
+      "gt_cls": 0,
+      "gt_name": "person",
+      "n_pred": 145,
+      "n_bad": 0,
+      "pred_classes": [
+        0,
+        3,
+        7
+      ],
+      "pred_names": [
+        "person",
+        "seat",
+        "ball"
+      ],
+      "gt_in_pred": true
+    },
+    {
+      "group": "G2",
+      "key": "000006_011_00000409#3",
+      "gt_cls": 0,
+      "gt_name": "person",
+      "n_pred": 7,
+      "n_bad": 0,
+      "pred_classes": [
+        0,
+        1,
+        2
+      ],
+      "pred_names": [
+        "person",
+        "boat",
+        "animal"
+      ],
+      "gt_in_pred": true
+    },
+    {
+      "group": "G2",
+      "key": "000006_011_00000409#3",
+      "gt_cls": 0,
+      "gt_name": "person",
+      "n_pred": 7,
+      "n_bad": 0,
+      "pred_classes": [
+        0,
+        1,
+        2
+      ],
+      "pred_names": [
+        "person",
+        "boat",
+        "animal"
+      ],
+      "gt_in_pred": true
+    },
+    {
+      "group": "G4",
+      "key": "00000045#0",
+      "gt_cls": 4,
+      "gt_name": "sign",
+      "n_pred": 14,
+      "n_bad": 0,
+      "pred_classes": [
+        0,
+        4,
+        6,
+        8,
+        10
+      ],
+      "pred_names": [
+        "person",
+        "sign",
+        "car",
+        "light",
+        "uav"
+      ],
+      "gt_in_pred": true
+    },
+    {
+      "group": "G4",
+      "key": "00000045#4",
+      "gt_cls": 6,
+      "gt_name": "car",
+      "n_pred": 14,
+      "n_bad": 0,
+      "pred_classes": [
+        0,
+        4,
+        6,
+        8,
+        10
+      ],
+      "pred_names": [
+        "person",
+        "sign",
+        "car",
+        "light",
+        "uav"
+      ],
+      "gt_in_pred": true
+    },
+    {
+      "group": "G4",
+      "key": "00000045#5",
+      "gt_cls": 10,
+      "gt_name": "uav",
+      "n_pred": 14,
+      "n_bad": 0,
+      "pred_classes": [
+        0,
+        4,
+        6,
+        8,
+        10
+      ],
+      "pred_names": [
+        "person",
+        "sign",
+        "car",
+        "light",
+        "uav"
+      ],
+      "gt_in_pred": true
+    },
+    {
+      "group": "G4",
+      "key": "00000057#0",
+      "gt_cls": 4,
+      "gt_name": "sign",
+      "n_pred": 7,
+      "n_bad": 0,
+      "pred_classes": [
+        4,
+        6,
+        8,
+        10
+      ],
+      "pred_names": [
+        "sign",
+        "car",
+        "light",
+        "uav"
+      ],
+      "gt_in_pred": true
+    },
+    {
+      "group": "G4",
+      "key": "00000057#4",
+      "gt_cls": 6,
+      "gt_name": "car",
+      "n_pred": 7,
+      "n_bad": 0,
+      "pred_classes": [
+        4,
+        6,
+        8,
+        10
+      ],
+      "pred_names": [
+        "sign",
+        "car",
+        "light",
+        "uav"
+      ],
+      "gt_in_pred": true
+    }
+  ],
+  "alignment_check": {
+    "n": 1905266,
+    "max_abs_error": 8.37163838252053e-08,
+    "median_abs_error": 1.5258748486957074e-08
+  },
+  "sigmoid_check": {
+    "n": 7926,
+    "max_abs_err": 8.350017099978402e-08
+  },
+  "logit_recompute": {
+    "n": 2807,
+    "max_abs": 2.334323564667784e-06,
+    "median_abs": 3.336902629769156e-07
+  },
+  "key_consistency": {
+    "dup": 0,
+    "bad": 0
+  },
+  "sq_check": {
+    "n": 400,
+    "max_abs_input_space": 0.0001402621393857828,
+    "max_abs_native_wrong_scale": 420.60892154217265,
+    "note": "v6 `sq` is in letterbox input space (long side 1280), not native"
+  },
+  "alignment_note": "stored cand_align == (cls^0.5 * ciou^6) * mask_pos; mask_pos not dumped (in-place `align_metric *= mask_pos` at tal.py:112)",
+  "group_extraction": {
+    "hits": {
+      "G1": 38,
+      "G2": 38,
+      "G4": 194
+    },
+    "same_path": true
+  }
+}

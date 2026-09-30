@@ -1,0 +1,70 @@
+==========================================================================
+PREFLIGHT — train config 自检（云上 · 训练前 · 不看注释只看解析结果）
+==========================================================================
+  model_config = configs/yolo11m_sepstem.yaml
+  train_config = configs/train_rgbid_sepstem_clahe.yaml
+  [PASS] train_config 存在  — D:\gyt\AIC\urban_multimodal_detection\configs\train_rgbid_sepstem_clahe.yaml
+  [PASS] model_config 存在  — D:\gyt\AIC\urban_multimodal_detection\configs\yolo11m_sepstem.yaml
+
+--- 解析后的关键 kwargs（即将传给 YOLO.train）---
+    data             = data/processed/<placeholder>/dataset.yaml
+    epochs           = 300
+    patience         = 0
+    batch            = 8
+    imgsz            = 1280
+    optimizer        = SGD
+    lr0              = 0.005
+    weight_decay     = 0.0005
+    warmup_epochs    = 3.0
+    cos_lr           = True
+    seed             = 42
+    close_mosaic     = <ABSENT>
+    use_simotm       = RGBID
+    channels         = 5
+    ir_encoding      = clahe
+    pairs_rgb_ir     = ['visible', 'infrared']
+    pairs_rgb_depth  = ['visible', 'depth']
+    project          = runs
+    name             = urban_multimodal_det_yolo11_rgbid_sepstem_clahe
+
+--- 断言 ---
+  [PASS] use_simotm == RGBID  — 'RGBID'
+  [PASS] channels == 5  — 5
+  [PASS] ir_encoding 已显式声明（未静默回落 percentile）  — 'clahe'
+  [PASS] ir_encoding == 'clahe'  — 'clahe'
+  [PASS] 模型 scale == 'm'  — 'm'
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+    （模型参数 20,061,972，31 层，ch=5，nc=12）
+
+--- ultralytics 参数校验（复刻 trainer 的 get_cfg）---
+  [PASS] ultralytics/cfg/default.yaml 含 ir_encoding  — 'percentile'
+  [PASS] check_dict_alignment 接受本次全部 kwargs
+
+--- fork 完整性（data/ 被 gitignore，git 同步不到）---
+  [PASS] ultralytics/cfg/default.yaml 含 'ir_encoding'（自定义配置键）
+  [PASS] ultralytics/data/base.py 含 '_merge_channels_rgbid'（RGBID 5ch 合并）
+  [PASS] ultralytics/data/base.py 含 'createCLAHE'（训练侧 IR-CLAHE）
+  [PASS] ultralytics/data/loaders.py 含 'createCLAHE'（评测侧 IR-CLAHE）
+  [PASS] ultralytics/data/base.py 含 'ir_encoding'（base.py 读取 ir_encoding）
+  [PASS] ultralytics/models/yolo/detect/train.py 含 '_transfer_rgb_pretrained'（预训练迁移）
+  [PASS] ultralytics/models/yolo/detect/train.py 含 '_remap_separate_stem'（三-stem remap）
+  [PASS] ultralytics/nn/modules/conv.py 含 'class SilenceChannel'（SilenceChannel 模块）
+
+--- E1 硬性断言（--expect-e1 false）---
+  [PASS] e1_enabled 不是 True（缺失或显式 false）  — None
+  [PASS] e1_layers 未声明或严格等于 [13, 15, 17]  — None
+  [PASS] e1_kernel 未声明或 == 3  — None
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+    （E1 模型：参数 20,061,972（可训练 20,061,956），31 层，E1 模块 0 个 @ []，E1 张量 0 个）
+  [PASS] 实际参数量 == 20,061,972（D′ 等价）  — 20,061,972
+  [PASS] E1 module 数量 == 0  — 0
+  [PASS] E1 新增张量 == 0  — 0
+    （全模型参数总数 20,061,972）
+  >>> E1 PRE-FLIGHT PASS
+    输出目录 runs/urban_multimodal_det_yolo11_rgbid_sepstem_clahe 已存在
+  [WARN] 目录已存在（5 个文件）—— exist_ok=false 时产物会落到 runs/urban_multimodal_det_yolo11_rgbid_sepstem_clahe2，请确认是否要覆盖/改名
+
+==========================================================================
+RESULT: ALL CHECKS PASSED
+PREFLIGHT_READY  → 可以开训；开训后请立刻确认 args.yaml 里 ir_encoding 的值
+==========================================================================

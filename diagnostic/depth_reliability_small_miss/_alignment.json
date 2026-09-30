@@ -1,0 +1,12 @@
+{
+  "T1_grad_corr_median": 0.10652349595348531,
+  "T2_best_shift_corr_median": 0.14484994133531856,
+  "T2_best_shift_median": [
+    0,
+    16
+  ],
+  "T3_rowprofile_corr": 0.8836871954756464,
+  "T4_sky_lift_median": 1.1840531240123564,
+  "cross_image_zero_freq_over_075": 0.014171971450617283,
+  "verdict": "STOP_B_TRIGGERED: pixel-level depth<->visible correspondence NOT certifiable"
+}

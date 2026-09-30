@@ -1,0 +1,1 @@
+1cae45f75693f54146e35c5fa076c0a6f78ca1cfa95595de74d959f40fae4fda *runs/urban_multimodal_det_yolo11_rgbid_sepstem_clahe/weights/best.pt

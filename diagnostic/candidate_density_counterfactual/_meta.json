@@ -1,0 +1,29 @@
+{
+  "provenance": {
+    "ultralytics/utils/tal.py": "aae7e8ac438f00cda88d7e151795b3f78270ec4ed56b883f413fd16233b7e527",
+    "ultralytics/utils/loss.py": "0f092cf22a372f6d5c5e7197d7adde51cbb23c02ac4522978f42df5b23a6543b",
+    "ultralytics/utils/instance.py": "78a72d1f4354c29fe11ca24cbdcd3faa44e4e1adb3ecae0f4df2f228283e4931",
+    "ultralytics/data/augment.py": "5cb9a407625921ce3f12ffc13df2d703f0a49d9ce1ba067edaf025bced96c518",
+    "ultralytics/data/base.py": "8bcf834930155bd58a99ccfc5e87113398f740aeb720b5827ff05ba45c5871d9",
+    "ultralytics/data/build.py": "f014263f2bfe5921acaf5396b1663b60849f7952210b0b563f55e0bfe07c2013",
+    "ultralytics/data/dataset.py": "0aba2bc14793ab85ac477d0eab0cf4083adcd585569a9f99021e8ae03278c938",
+    "configs/yolo11m_sepstem.yaml": "9b14f2946073338414b4441784b6df87a868b982be32ac8d50b6d1c4a17f3dd8",
+    "configs/train_rgbid_sepstem_clahe.yaml": "a4e329cfc3d220206448cdd3377c1b3f5126c50f13c907ada522d98725486e12",
+    "runs\\urban_multimodal_det_yolo11_rgbid_sepstem_clahe\\weights\\best.pt": "1cae45f75693f54146e35c5fa076c0a6f78ca1cfa95595de74d959f40fae4fda"
+  },
+  "real_assigner": {
+    "topk": 10,
+    "alpha": 0.5,
+    "beta": 6.0,
+    "nc": 12
+  },
+  "probe_selfcheck_pass": true,
+  "n_images": 250,
+  "epochs": 3,
+  "base_seed": 20260928,
+  "n_samples": 742,
+  "n_gt": 10105,
+  "n_cand": 1905266,
+  "io": "真实 pipeline：D′ ckpt + 真实 dataset + 真实 TaskAlignedAssigner + 真实 CIoU；candidate = anchor 中心严格落在 GT 框内（mask_in_gts）",
+  "note": "逐候选保存 CIoU/cls/align/stride/归一化偏移，使任何反事实可离线复核；未修改任何既有文件。"
+}

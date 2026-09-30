@@ -1,0 +1,71 @@
+==============================================================================
+E1 生效审计 — CONFIG -> CODE PATH -> GRAPH -> FORWARD -> LOSS -> OPTIMIZER
+==============================================================================
+
+[provenance]
+  9b14f29460733384  configs/yolo11m_sepstem.yaml
+  b2cf656027e22356  configs/yolo11m_sepstem_e1.yaml
+  a4e329cfc3d22020  configs/train_rgbid_sepstem_clahe.yaml
+  99cfc5793b2df348  configs/train_rgbid_sepstem_clahe_e1.yaml
+  28b47f10079a0fc0  ultralytics/nn/modules/block.py
+  79c8dbab9cd810d2  ultralytics/nn/tasks.py
+  f46198001a4b741e  ultralytics/models/yolo/detect/train.py
+  d5ffc1a674953a08  yolo11m.pt
+  1cae45f75693f541  runs/urban_multimodal_det_yolo11_rgbid_sepstem_clahe/weights/best.pt
+
+  baseline ckpt sha == 1cae45f7… : True
+  [PASS] G0   baseline checkpoint 未被触碰  -- sha256=1cae45f75693f541...
+
+[arm control] 文件出厂 e1_enabled=True；本审计两臂强制为 False / True（与出厂值无关）
+
+[A 组] E1=false baseline identity gate
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+  [PASS] G1   模型 yaml diff 仅 e1_* 键（排除 loader 注入）  -- diff keys = ['e1_enabled', 'e1_kernel', 'e1_layers']; scale=m/m
+  [PASS] G2   state_dict key diff 为空  -- diff = []
+  [PASS] G3   参数量 / 可训练参数量 / 冻结参数集 == D′  -- total D'=20061972 E1off=20061972；trainable 20061956/20061956；frozen=['model.30.dfl.conv.weight']
+  [PASS] G4   module graph 全同（类名序列 + save list）  -- n=31 save_equal=True
+  [PASS] G5   forward 输出逐位相同  -- shape=(2, 16, 8400) max|d|=0.000e+00
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+  [PASS] G6   loss 逐位相同  -- D'=23.078777313232422 E1off=23.078777313232422
+  [PASS] G7   gradient 逐位相同
+
+[B 组] E1=true 生效 gate
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+  [PASS] G8   E1 模块定位（层号 / 类 / 参数量）  -- located=[13, 15, 17] expected=[13, 15, 17] params={13: 5120, 15: 5120, 17: 5120} host={13: 'C3k2', 15: 'C3k2', 17: 'C2PSA'}
+  [PASS] G8b  E1=true 参数量 == D′ + 15,360  -- 20077332 (delta=15360)
+  [PASS] G16  E1=true 未扰动共享权重初始化（RNG 流未变）  -- 661 个共享 key 逐位相同；新增 e1 key = 6
+  [PASS] G9   forward 时 E1 每模块恰好执行 1 次  -- counts={13: 1, 15: 1, 17: 1}
+  [PASS] SL2  E1=true 在 t=0 逐位等于 baseline（恒等初始化）  -- max|d|=0.000e+00
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+  [PASS] G6b  loss(E1=true) 在 t=0 逐位等于 baseline  -- 23.078777313232422 vs 23.078777313232422
+  [PASS] G10  grad_norm(E1 params) > 0  -- 6/6 positive; norm={'13.weight': 2.669926, '13.bias': 1.025498, '15.weight': 1.829482, '15.bias': 0.668736, '17.weight': 0.892028, '17.bias': 0.266027}
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+  [PASS] SL1  扰动活性：级联增益逐点 == (1+tanh(0.1))^k-1，且 target/下游/pred/loss 全部差异  -- measured={13: 0.099668, 15: 0.20927, 17: 0.329795} expected={13: 0.099668, 15: 0.20927, 17: 0.329795}；|d| target={13: 1.0530256986385211e-06, 15: 6.276417252593092e-08, 17: 8.45907788260547e-10} down={20: 6.024072263244307e-08, 23: 2.5165718398056924e-09} pred=1.526e-05 loss 23.078777->23.077982
+  [PASS] SL3  局部性：增益只依赖 k//2 邻域（非全局池化）  -- support rows 3..5 cols 3..5 (期望 3..5)
+[34m[1moptimizer:[0m SGD(lr=0.005, momentum=0.937) with parameter groups 108 weight(decay=0.0), 118 weight(decay=0.0005), 117 bias(decay=0.0)
+  [PASS] G11  E1 参数 ∈ optimizer.param_groups（且全模型参数都在）  -- e1 6/6；groups=[117, 118, 108]
+  [PASS] G12  checkpoint 存取一致 + D′ 旧 ckpt 兼容  -- reload e1=[13, 15, 17] keys_equal=True | D′ ckpt forward OK；legacy 含 e1 = False
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+  [PASS] G12b 冻结推理路径 YOLO(ckpt).predict 结构与训练一致  -- YAML->predict E1@[13, 15, 17] params=20077332；ckpt->predict E1@[13, 15, 17]；predict 输出 162 框
+
+[B 组附加] G17 预训练迁移（真实 _transfer_rgb_pretrained）
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+sepstem remap: rgb stem (layer 2, out=48) initialised
+sepstem remap: ir stem (layer 4, out=8) initialised
+sepstem remap: depth stem (layer 6, out=8) initialised
+Separate-stem pretrained remap: 550 tensors transferred (3 stems + layers 8..30 <- stock 1..23); E1 region response gain (layers none): 0 new tensors; Detect cv3 class branch re-initialised for nc=12: 6 tensors not transferred
+sepstem remap: rgb stem (layer 2, out=48) initialised
+sepstem remap: ir stem (layer 4, out=8) initialised
+sepstem remap: depth stem (layer 6, out=8) initialised
+Separate-stem pretrained remap: 550 tensors transferred (3 stems + layers 8..30 <- stock 1..23); E1 region response gain (layers [13, 15, 17]): 6 new tensors; Detect cv3 class branch re-initialised for nc=12: 6 tensors not transferred
+  [PASS] G17  预训练迁移后共享 key 逐位一致 + E1 key 走新例外（未 raise）  -- transferred D'=550 E1=550（E1 新增 6 个张量单独放行）；divergent=[]
+
+==============================================================================
+总计 21 门，FAIL 0
+EXPERIMENT READY
+==============================================================================
+[written] diagnostic\e1_region_gain\_e1_gates.json
+PYTHON_EXIT=0

@@ -1,0 +1,41 @@
+# OASA-2.0 OFFICIAL EVALUATION (local frozen pipeline)
+# 2026-09-23 · 只读：0 训练 / 0 修改 checkpoint / 0 修改 evaluator / 0 线上提交
+
+checkpoint:              runs/urban_multimodal_det_yolo11_rgbid_sepstem_clahe_oasa/weights/best.pt
+checkpoint_sha256:       922a9043c6b4c7ce5622071c7bf71b79ad1cd643c0f3763cf6b482596da37991
+checkpoint_unmodified:   YES  (推理前后 SHA256 逐字相同)
+prediction_path:         diagnostic/oasa_scale14/oasa20_best/results   (400 个 TXT)
+inference_log:           diagnostic/oasa_scale14/_oasa20_best.infer.log
+train_config:            configs/oasa_pre_mosaic.yaml  (use_simotm=RGBID channels=5 ir_encoding=clahe)
+inference_preprocessing: LoadImagesAndVideos + LetterBox —— 无训练增强
+                         v8_transforms / ObjectScaleAug 不在推理路径中  =>  OASA = OFF
+predict_rect flags:      --mode rect --imgsz 1280 --conf 0.001 --iou 0.7 --max_det 300 --max_boxes 300 --batch 16
+evaluator:               scripts/official_map.py   (未修改)
+evaluator_regression:    scripts/test_official_eval.py -> ALL PASS
+predict_rect --max_boxes:   300   (仅 prediction dump 上限)
+evaluator max_boxes:        100   (official_eval.MAX_BOXES_PER_IMAGE, 赛题 §九(二) 硬上限)
+                            实测 clamped images = 5 / 400
+
+official_map50:          0.78756
+official_map75:          0.55208
+official_map50_95:       0.51122
+fork_map50_95:           0.54761   (仅诊断，不作判据)
+
+comparison_anchor_Dprime: 0.51528   (cap=100 冻结口径；
+                          reports/OFFICIAL_EVAL_FREEZE_AND_HISTORICAL_RETEST.md:122)
+                          ⚠ 0.51657 是【旧口径·无 100 框 cap】，不可用于本比较表
+delta_2.0_minus_Dprime:  -0.00406
+
+--- raw evaluator output (scripts/official_map.py), 原始字节 ---
+====================================================================
+�ٷ��ھ� vs fork �ھ� mAP@50-95
+====================================================================
+images=400  corrupt�޳�=2  GT=2807  pred=5357  min_conf=0.0
+metric=A  max_boxes_per_image=100  ���ض�ͼ��=5
+--------------------------------------------------------------------
+�ھ�                                      mAP50      mAP75    mAP50-95
+�ٷ� (mean + tail0 + confƥ��)            0.78756    0.55208     0.51122
+fork (trapz + ramp + IoUƥ��)           0.80616    0.60455     0.54761
+�ٷ�ͬ�ھ� metric=B                        0.78756    0.55208     0.51122
+��ֵ (�ٷ� - fork)                       -0.01861   -0.05246    -0.03638
+====================================================================

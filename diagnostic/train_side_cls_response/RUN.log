@@ -1,0 +1,36 @@
+========================================================================================================
+TRAIN-SIDE NATIVE-SMALL GT-CLASS RESPONSE —— 单次冻结只读 forward
+========================================================================================================
+  checkpoint      = D:\gyt\AIC\urban_multimodal_detection\runs\urban_multimodal_det_yolo11_rgbid_sepstem_clahe\weights\best.pt
+  checkpoint SHA  = 1cae45f75693f54146e35c5fa076c0a6f78ca1cfa95595de74d959f40fae4fda
+  model yaml      = D:\gyt\AIC\urban_multimodal_detection\configs\yolo11m_sepstem.yaml  sha=9b14f29460733384
+  dataset yaml    = D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\dataset.yaml  sha=3bc36c31e913072f
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 661/661 items from pretrained weights
+  nc=12 reg_max=16 no=76 stride=[8.0, 16.0, 32.0]
+  cv3 末层形状: L0=(12, 256, 1, 1), L1=(12, 256, 1, 1), L2=(12, 256, 1, 1)
+[34m[1mval: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\train\visible.cache... 1600 images, 0 backgrounds, 1 corrupt: 100%|██████████| 1600/1600 [00:00<?, ?it/s][34m[1mval: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\train\visible.cache... 1600 images, 0 backgrounds, 1 corrupt: 100%|██████████| 1600/1600 [00:00<?, ?it/s]
+[34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\000013_046_00000202.png: 1 duplicate labels removed
+[34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\003107.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0065]
+[34m[1mtrain: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\train\visible\hehe_10_00000044.png: 1 duplicate labels removed
+  dataset n=1599（mode=val, augment=False, mosaic=0）  本次处理 1599 张
+  训练图像 native 尺寸表 n=1600
+    100/1599  images  GTs=444  drops=0
+    200/1599  images  GTs=834  drops=0
+    300/1599  images  GTs=1353  drops=0
+    400/1599  images  GTs=1788  drops=0
+    500/1599  images  GTs=2369  drops=0
+    600/1599  images  GTs=3181  drops=0
+    700/1599  images  GTs=3794  drops=0
+    800/1599  images  GTs=4755  drops=0
+    900/1599  images  GTs=5646  drops=0
+    1000/1599  images  GTs=6429  drops=0
+    1100/1599  images  GTs=7706  drops=0
+    1200/1599  images  GTs=8545  drops=0
+    1300/1599  images  GTs=9784  drops=0
+    1400/1599  images  GTs=10205  drops=0
+    1500/1599  images  GTs=10912  drops=0
+
+  成功处理图像 = 1599 / 1599；GT 行 = 11560；丢弃 = 0
+[saved] D:\gyt\AIC\urban_multimodal_detection\diagnostic\train_side_cls_response\_rows.json
+  checkpoint SHA after = 1cae45f75693f54146e35c5fa076c0a6f78ca1cfa95595de74d959f40fae4fda   OK 未变

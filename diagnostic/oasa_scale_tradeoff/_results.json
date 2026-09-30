@@ -1,0 +1,664 @@
+{
+  "dataset": {
+    "train_images": 1599,
+    "total_GT": 11560,
+    "native_small_GT": 1392,
+    "small_frac_of_GT": 0.12041522491349481,
+    "small_containing_images": 401,
+    "small_containing_frac": 0.2507817385866166,
+    "native_shapes_by_resol": {
+      "360p": {
+        "360x640": 122
+      },
+      "1080p": {
+        "1080x1920": 1477
+      }
+    }
+  },
+  "operator_params": {
+    "prob": 0.5,
+    "small_area": 1024.0,
+    "min_visible": 0.8,
+    "seed0": 12345,
+    "mosaic_factor": 0.5
+  },
+  "conditions": {
+    "scale1.4": {
+      "scale": 1.4,
+      "roi": {
+        "width_ratio": 0.7142857142857143,
+        "height_ratio": 0.7142857142857143,
+        "area_ratio": 0.5102040816326532,
+        "cropped_area_ratio": 0.4897959183673468
+      },
+      "gating": {
+        "seen": 1599,
+        "eligible": 401,
+        "applied": 209,
+        "eligible_rate": 0.2507817385866166,
+        "applied_rate": 0.13070669168230145,
+        "skip_nomosaic": 0,
+        "skip_prob": 192,
+        "skip_nosmall": 1198,
+        "skip_visibility": 0
+      },
+      "anchor": {
+        "n": 209,
+        "sqrt_area_before_input": 19.49320411682129,
+        "sqrt_area_after_input": 27.30232810974121,
+        "multiplier_input": 1.4006075115266037,
+        "sqrt_area_before_final": 9.746602058410645,
+        "sqrt_area_after_final": 13.651164054870605,
+        "multiplier_final": 1.4006075115266037,
+        "visibility_median": 1.0,
+        "visibility_ge_0.8": 1.0,
+        "anchor_kept": 209,
+        "anchor_kept_rate": 1.0
+      },
+      "retention": {
+        "all": {
+          "before": 11560,
+          "after": 11117,
+          "retention": 0.9616782006920416,
+          "loss": 0.038321799307958426
+        },
+        "small": {
+          "before": 1392,
+          "after": 1291,
+          "retention": 0.9274425287356322,
+          "loss": 0.07255747126436785
+        },
+        "medium": {
+          "before": 5535,
+          "after": 5320,
+          "retention": 0.9611562782294489,
+          "loss": 0.038843721770551065
+        },
+        "large": {
+          "before": 4633,
+          "after": 4506,
+          "retention": 0.9725879559680553,
+          "loss": 0.02741204403194475
+        },
+        "small_of_dataset": 0.9274425287356322
+      },
+      "image_level": {
+        "images_total": 1599,
+        "images_with_small_GT": 401,
+        "images_affected": 209,
+        "images_affected_frac": 0.13070669168230145,
+        "images_with_any_GT_lost": 131,
+        "images_with_any_GT_lost_frac": 0.08192620387742339,
+        "mean_GT_lost_per_affected": 2.1196172248803826,
+        "median_GT_lost_per_affected": 1.0
+      },
+      "within_affected_image": {
+        "n_images": 209,
+        "GT_before": 2530,
+        "GT_after": 2087,
+        "retention": 0.824901185770751,
+        "drop": 0.175098814229249,
+        "buckets": {
+          "small": {
+            "before": 789,
+            "after": 688,
+            "retention": 0.8719898605830165,
+            "drop": 0.12801013941698347
+          },
+          "medium": {
+            "before": 1256,
+            "after": 1041,
+            "retention": 0.8288216560509554,
+            "drop": 0.17117834394904463
+          },
+          "large": {
+            "before": 485,
+            "after": 358,
+            "retention": 0.7381443298969073,
+            "drop": 0.26185567010309274
+          }
+        },
+        "by_resol": {
+          "1080p": {
+            "before": 2283,
+            "after": 1889,
+            "drop": 0.17257993867717913
+          },
+          "360p": {
+            "before": 247,
+            "after": 198,
+            "drop": 0.19838056680161942
+          }
+        },
+        "anchor_before_input": 19.49320411682129,
+        "anchor_after_input": 27.30232810974121,
+        "anchor_multiplier": 1.4006075115266037,
+        "anchor_vis_median": 1.0,
+        "anchor_vis_ge_0.8": 1.0
+      },
+      "small_density_strata": {
+        "1": {
+          "images": 84,
+          "small_before": 84,
+          "small_after": 84,
+          "small_drop": 0.0
+        },
+        "2": {
+          "images": 43,
+          "small_before": 86,
+          "small_after": 77,
+          "small_drop": 0.10465116279069764
+        },
+        "3": {
+          "images": 27,
+          "small_before": 81,
+          "small_after": 69,
+          "small_drop": 0.14814814814814814
+        },
+        "4-5": {
+          "images": 30,
+          "small_before": 131,
+          "small_after": 107,
+          "small_drop": 0.18320610687022898
+        },
+        "6+": {
+          "images": 25,
+          "small_before": 407,
+          "small_after": 351,
+          "small_drop": 0.13759213759213762
+        }
+      },
+      "anchor_by_resol": {
+        "1080p": {
+          "n": 144,
+          "sqrt_area_before_input": 17.34601879119873,
+          "sqrt_area_after_input": 24.294963836669922,
+          "multiplier": 1.4006074897714884
+        },
+        "360p": {
+          "n": 65,
+          "sqrt_area_before_input": 46.475799560546875,
+          "sqrt_area_after_input": 65.09436798095703,
+          "multiplier": 1.400607813022229
+        }
+      },
+      "by_resol": {
+        "1080p": {
+          "before": 11139,
+          "after": 10745,
+          "retention": 0.964628781757788,
+          "loss": 0.03537121824221201
+        },
+        "360p": {
+          "before": 421,
+          "after": 372,
+          "retention": 0.8836104513064132,
+          "loss": 0.11638954869358675
+        }
+      },
+      "classes": {
+        "0": {
+          "name": "person",
+          "before": 4420,
+          "after": 4146,
+          "retention": 0.9380090497737557,
+          "loss": 0.061990950226244346,
+          "affected_before": 1404,
+          "affected_after": 1130,
+          "affected_retention": 0.8048433048433048,
+          "affected_loss": 0.1951566951566952
+        },
+        "1": {
+          "name": "boat",
+          "before": 107,
+          "after": 102,
+          "retention": 0.9532710280373832,
+          "loss": 0.04672897196261683,
+          "affected_before": 26,
+          "affected_after": 21,
+          "affected_retention": 0.8076923076923077,
+          "affected_loss": 0.1923076923076923
+        },
+        "2": {
+          "name": "animal",
+          "before": 2327,
+          "after": 2305,
+          "retention": 0.99054576708208,
+          "loss": 0.009454232917920025,
+          "affected_before": 156,
+          "affected_after": 134,
+          "affected_retention": 0.8589743589743589,
+          "affected_loss": 0.14102564102564108
+        },
+        "3": {
+          "name": "seat",
+          "before": 511,
+          "after": 501,
+          "retention": 0.9804305283757339,
+          "loss": 0.019569471624266144,
+          "affected_before": 34,
+          "affected_after": 24,
+          "affected_retention": 0.7058823529411765,
+          "affected_loss": 0.2941176470588235
+        },
+        "4": {
+          "name": "sign",
+          "before": 659,
+          "after": 628,
+          "retention": 0.952959028831563,
+          "loss": 0.047040971168436974,
+          "affected_before": 180,
+          "affected_after": 149,
+          "affected_retention": 0.8277777777777777,
+          "affected_loss": 0.17222222222222228
+        },
+        "5": {
+          "name": "bicycle",
+          "before": 550,
+          "after": 523,
+          "retention": 0.9509090909090909,
+          "loss": 0.049090909090909074,
+          "affected_before": 175,
+          "affected_after": 148,
+          "affected_retention": 0.8457142857142858,
+          "affected_loss": 0.15428571428571425
+        },
+        "6": {
+          "name": "car",
+          "before": 1283,
+          "after": 1254,
+          "retention": 0.9773967264224473,
+          "loss": 0.02260327357755265,
+          "affected_before": 194,
+          "affected_after": 165,
+          "affected_retention": 0.8505154639175257,
+          "affected_loss": 0.14948453608247425
+        },
+        "7": {
+          "name": "ball",
+          "before": 70,
+          "after": 68,
+          "retention": 0.9714285714285714,
+          "loss": 0.02857142857142858,
+          "affected_before": 15,
+          "affected_after": 13,
+          "affected_retention": 0.8666666666666667,
+          "affected_loss": 0.1333333333333333
+        },
+        "8": {
+          "name": "light",
+          "before": 1211,
+          "after": 1191,
+          "retention": 0.9834847233691164,
+          "loss": 0.01651527663088359,
+          "affected_before": 206,
+          "affected_after": 186,
+          "affected_retention": 0.9029126213592233,
+          "affected_loss": 0.09708737864077666
+        },
+        "9": {
+          "name": "garbage_can",
+          "before": 225,
+          "after": 215,
+          "retention": 0.9555555555555556,
+          "loss": 0.0444444444444444,
+          "affected_before": 44,
+          "affected_after": 34,
+          "affected_retention": 0.7727272727272727,
+          "affected_loss": 0.2272727272727273
+        },
+        "10": {
+          "name": "uav",
+          "before": 174,
+          "after": 162,
+          "retention": 0.9310344827586207,
+          "loss": 0.06896551724137934,
+          "affected_before": 94,
+          "affected_after": 82,
+          "affected_retention": 0.8723404255319149,
+          "affected_loss": 0.12765957446808507
+        },
+        "11": {
+          "name": "tricycle",
+          "before": 23,
+          "after": 22,
+          "retention": 0.9565217391304348,
+          "loss": 0.04347826086956519,
+          "affected_before": 2,
+          "affected_after": 1,
+          "affected_retention": 0.5,
+          "affected_loss": 0.5
+        }
+      },
+      "affected_share_of_bucket": {
+        "small": 0.5668103448275862,
+        "medium": 0.22691960252935864,
+        "large": 0.10468379020073386
+      },
+      "dataset_level_loss": {
+        "small": 0.008737024221453291,
+        "medium": 0.018598615916955028,
+        "large": 0.010986159169550175
+      }
+    },
+    "scale2.0": {
+      "scale": 2.0,
+      "roi": {
+        "width_ratio": 0.5,
+        "height_ratio": 0.5,
+        "area_ratio": 0.25,
+        "cropped_area_ratio": 0.75
+      },
+      "gating": {
+        "seen": 1599,
+        "eligible": 401,
+        "applied": 209,
+        "eligible_rate": 0.2507817385866166,
+        "applied_rate": 0.13070669168230145,
+        "skip_nomosaic": 0,
+        "skip_prob": 192,
+        "skip_nosmall": 1198,
+        "skip_visibility": 0
+      },
+      "anchor": {
+        "n": 209,
+        "sqrt_area_before_input": 19.49320411682129,
+        "sqrt_area_after_input": 38.98640823364258,
+        "multiplier_input": 2.0,
+        "sqrt_area_before_final": 9.746602058410645,
+        "sqrt_area_after_final": 19.49320411682129,
+        "multiplier_final": 2.0,
+        "visibility_median": 1.0,
+        "visibility_ge_0.8": 1.0,
+        "anchor_kept": 209,
+        "anchor_kept_rate": 1.0
+      },
+      "retention": {
+        "all": {
+          "before": 11560,
+          "after": 10672,
+          "retention": 0.9231833910034603,
+          "loss": 0.07681660899653975
+        },
+        "small": {
+          "before": 1392,
+          "after": 1184,
+          "retention": 0.8505747126436781,
+          "loss": 0.14942528735632188
+        },
+        "medium": {
+          "before": 5535,
+          "after": 5083,
+          "retention": 0.9183378500451671,
+          "loss": 0.0816621499548329
+        },
+        "large": {
+          "before": 4633,
+          "after": 4405,
+          "retention": 0.9507878264623354,
+          "loss": 0.049212173537664605
+        },
+        "small_of_dataset": 0.8505747126436781
+      },
+      "image_level": {
+        "images_total": 1599,
+        "images_with_small_GT": 401,
+        "images_affected": 209,
+        "images_affected_frac": 0.13070669168230145,
+        "images_with_any_GT_lost": 174,
+        "images_with_any_GT_lost_frac": 0.10881801125703565,
+        "mean_GT_lost_per_affected": 4.248803827751196,
+        "median_GT_lost_per_affected": 2.0
+      },
+      "within_affected_image": {
+        "n_images": 209,
+        "GT_before": 2530,
+        "GT_after": 1642,
+        "retention": 0.6490118577075099,
+        "drop": 0.3509881422924901,
+        "buckets": {
+          "small": {
+            "before": 789,
+            "after": 581,
+            "retention": 0.7363751584283904,
+            "drop": 0.2636248415716096
+          },
+          "medium": {
+            "before": 1256,
+            "after": 804,
+            "retention": 0.6401273885350318,
+            "drop": 0.3598726114649682
+          },
+          "large": {
+            "before": 485,
+            "after": 257,
+            "retention": 0.5298969072164949,
+            "drop": 0.47010309278350515
+          }
+        },
+        "by_resol": {
+          "1080p": {
+            "before": 2283,
+            "after": 1496,
+            "drop": 0.34472185720543147
+          },
+          "360p": {
+            "before": 247,
+            "after": 146,
+            "drop": 0.4089068825910931
+          }
+        },
+        "anchor_before_input": 19.49320411682129,
+        "anchor_after_input": 38.98640823364258,
+        "anchor_multiplier": 2.0,
+        "anchor_vis_median": 1.0,
+        "anchor_vis_ge_0.8": 1.0
+      },
+      "small_density_strata": {
+        "1": {
+          "images": 84,
+          "small_before": 84,
+          "small_after": 84,
+          "small_drop": 0.0
+        },
+        "2": {
+          "images": 43,
+          "small_before": 86,
+          "small_after": 70,
+          "small_drop": 0.18604651162790697
+        },
+        "3": {
+          "images": 27,
+          "small_before": 81,
+          "small_after": 54,
+          "small_drop": 0.33333333333333337
+        },
+        "4-5": {
+          "images": 30,
+          "small_before": 131,
+          "small_after": 93,
+          "small_drop": 0.29007633587786263
+        }
+      },
+      "anchor_by_resol": {
+        "1080p": {
+          "n": 144,
+          "sqrt_area_before_input": 17.34601879119873,
+          "sqrt_area_after_input": 34.69203758239746,
+          "multiplier": 2.0
+        },
+        "360p": {
+          "n": 65,
+          "sqrt_area_before_input": 46.475799560546875,
+          "sqrt_area_after_input": 92.95159912109375,
+          "multiplier": 2.0
+        }
+      },
+      "by_resol": {
+        "1080p": {
+          "before": 11139,
+          "after": 10352,
+          "retention": 0.9293473381811653,
+          "loss": 0.07065266181883467
+        },
+        "360p": {
+          "before": 421,
+          "after": 320,
+          "retention": 0.7600950118764845,
+          "loss": 0.23990498812351546
+        }
+      },
+      "classes": {
+        "0": {
+          "name": "person",
+          "before": 4420,
+          "after": 3895,
+          "retention": 0.8812217194570136,
+          "loss": 0.11877828054298645,
+          "affected_before": 1404,
+          "affected_after": 879,
+          "affected_retention": 0.6260683760683761,
+          "affected_loss": 0.37393162393162394
+        },
+        "1": {
+          "name": "boat",
+          "before": 107,
+          "after": 98,
+          "retention": 0.9158878504672897,
+          "loss": 0.08411214953271029,
+          "affected_before": 26,
+          "affected_after": 17,
+          "affected_retention": 0.6538461538461539,
+          "affected_loss": 0.34615384615384615
+        },
+        "2": {
+          "name": "animal",
+          "before": 2327,
+          "after": 2264,
+          "retention": 0.9729265148259562,
+          "loss": 0.027073485174043843,
+          "affected_before": 156,
+          "affected_after": 93,
+          "affected_retention": 0.5961538461538461,
+          "affected_loss": 0.40384615384615385
+        },
+        "3": {
+          "name": "seat",
+          "before": 511,
+          "after": 496,
+          "retention": 0.9706457925636007,
+          "loss": 0.02935420743639927,
+          "affected_before": 34,
+          "affected_after": 19,
+          "affected_retention": 0.5588235294117647,
+          "affected_loss": 0.4411764705882353
+        },
+        "4": {
+          "name": "sign",
+          "before": 659,
+          "after": 596,
+          "retention": 0.9044006069802731,
+          "loss": 0.09559939301972686,
+          "affected_before": 180,
+          "affected_after": 117,
+          "affected_retention": 0.65,
+          "affected_loss": 0.35
+        },
+        "5": {
+          "name": "bicycle",
+          "before": 550,
+          "after": 499,
+          "retention": 0.9072727272727272,
+          "loss": 0.09272727272727277,
+          "affected_before": 175,
+          "affected_after": 124,
+          "affected_retention": 0.7085714285714285,
+          "affected_loss": 0.2914285714285715
+        },
+        "6": {
+          "name": "car",
+          "before": 1283,
+          "after": 1230,
+          "retention": 0.9586905689789555,
+          "loss": 0.04130943102104445,
+          "affected_before": 194,
+          "affected_after": 141,
+          "affected_retention": 0.7268041237113402,
+          "affected_loss": 0.2731958762886598
+        },
+        "7": {
+          "name": "ball",
+          "before": 70,
+          "after": 65,
+          "retention": 0.9285714285714286,
+          "loss": 0.0714285714285714,
+          "affected_before": 15,
+          "affected_after": 10,
+          "affected_retention": 0.6666666666666666,
+          "affected_loss": 0.33333333333333337
+        },
+        "8": {
+          "name": "light",
+          "before": 1211,
+          "after": 1160,
+          "retention": 0.9578860445912469,
+          "loss": 0.04211395540875307,
+          "affected_before": 206,
+          "affected_after": 155,
+          "affected_retention": 0.7524271844660194,
+          "affected_loss": 0.24757281553398058
+        },
+        "9": {
+          "name": "garbage_can",
+          "before": 225,
+          "after": 207,
+          "retention": 0.92,
+          "loss": 0.07999999999999996,
+          "affected_before": 44,
+          "affected_after": 26,
+          "affected_retention": 0.5909090909090909,
+          "affected_loss": 0.40909090909090906
+        },
+        "10": {
+          "name": "uav",
+          "before": 174,
+          "after": 140,
+          "retention": 0.8045977011494253,
+          "loss": 0.1954022988505747,
+          "affected_before": 94,
+          "affected_after": 60,
+          "affected_retention": 0.6382978723404256,
+          "affected_loss": 0.36170212765957444
+        },
+        "11": {
+          "name": "tricycle",
+          "before": 23,
+          "after": 22,
+          "retention": 0.9565217391304348,
+          "loss": 0.04347826086956519,
+          "affected_before": 2,
+          "affected_after": 1,
+          "affected_retention": 0.5,
+          "affected_loss": 0.5
+        }
+      },
+      "affected_share_of_bucket": {
+        "small": 0.5668103448275862,
+        "medium": 0.22691960252935864,
+        "large": 0.10468379020073386
+      },
+      "dataset_level_loss": {
+        "small": 0.01799307958477509,
+        "medium": 0.03910034602076125,
+        "large": 0.01972318339100347
+      }
+    }
+  },
+  "tradeoff": {
+    "all_GT_retention_gain_1.4_over_2.0": 0.03849480968858132,
+    "small_retention_gain_1.4_over_2.0": 0.07686781609195403,
+    "medium_retention_gain_1.4_over_2.0": 0.04281842818428183,
+    "large_retention_gain_1.4_over_2.0": 0.021800129505719856,
+    "affected_images_gain_1.4_over_2.0": 0
+  }
+}

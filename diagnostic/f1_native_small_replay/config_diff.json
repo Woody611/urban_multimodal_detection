@@ -1,0 +1,128 @@
+{
+  "only_dprime": {},
+  "only_f1": {
+    "native_small_replay": 1.0,
+    "native_small_replay_max_new_instances": 2
+  },
+  "value_diff": {
+    "name": [
+      "urban_multimodal_det_yolo11_rgbid_sepstem_clahe",
+      "urban_multimodal_det_yolo11_rgbid_sepstem_clahe_f1"
+    ]
+  },
+  "inherited": {
+    "ir_encoding": [
+      "clahe",
+      "clahe"
+    ],
+    "use_simotm": [
+      "RGBID",
+      "RGBID"
+    ],
+    "channels": [
+      "5",
+      "5"
+    ],
+    "imgsz": [
+      "1280",
+      "1280"
+    ],
+    "epochs": [
+      "300",
+      "300"
+    ],
+    "batch": [
+      "8",
+      "8"
+    ],
+    "optimizer": [
+      "SGD",
+      "SGD"
+    ],
+    "lr0": [
+      "0.005",
+      "0.005"
+    ],
+    "lrf": [
+      "0.01",
+      "0.01"
+    ],
+    "momentum": [
+      "0.937",
+      "0.937"
+    ],
+    "weight_decay": [
+      "0.0005",
+      "0.0005"
+    ],
+    "warmup_epochs": [
+      "3.0",
+      "3.0"
+    ],
+    "seed": [
+      "42",
+      "42"
+    ],
+    "mosaic": [
+      "1.0",
+      "1.0"
+    ],
+    "close_mosaic": [
+      "10",
+      "10"
+    ],
+    "translate": [
+      "0.1",
+      "0.1"
+    ],
+    "scale": [
+      "0.5",
+      "0.5"
+    ],
+    "degrees": [
+      "0.0",
+      "0.0"
+    ],
+    "shear": [
+      "0.0",
+      "0.0"
+    ],
+    "perspective": [
+      "0.0",
+      "0.0"
+    ],
+    "fliplr": [
+      "0.5",
+      "0.5"
+    ],
+    "flipud": [
+      "0.0",
+      "0.0"
+    ],
+    "mixup": [
+      "0.0",
+      "0.0"
+    ],
+    "copy_paste": [
+      "0.0",
+      "0.0"
+    ],
+    "rect": [
+      "False",
+      "False"
+    ],
+    "pretrained": [
+      "yolo11m.pt",
+      "yolo11m.pt"
+    ],
+    "patience": [
+      "0",
+      "0"
+    ],
+    "amp": [
+      "True",
+      "True"
+    ]
+  },
+  "mismatch": []
+}

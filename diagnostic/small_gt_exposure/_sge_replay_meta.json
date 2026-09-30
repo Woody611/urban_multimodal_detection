@@ -1,0 +1,39 @@
+{
+  "base_seed": 20260928,
+  "hyp": {
+    "imgsz": 1280,
+    "task": "detect",
+    "rect": false,
+    "cache": false,
+    "single_cls": false,
+    "classes": null,
+    "fraction": 1.0,
+    "channels": 5,
+    "use_simotm": "RGBID",
+    "object_scale_aug": false,
+    "mixup": 0.0,
+    "copy_paste": 0.0,
+    "degrees": 0.0,
+    "translate": 0.1,
+    "scale": 0.5,
+    "shear": 0.0,
+    "perspective": 0.0,
+    "flipud": 0.0,
+    "fliplr": 0.5
+  },
+  "summary": {
+    "mosaic_ON": {
+      "n_images": 1599,
+      "n_replays": 100,
+      "n_native_gt": 11560,
+      "mosaic_p": 1.0
+    },
+    "mosaic_OFF": {
+      "n_images": 1599,
+      "n_replays": 100,
+      "n_native_gt": 11560,
+      "mosaic_p": 0.0
+    }
+  },
+  "note": "Monte-Carlo distribution estimate; training RNG stream is not reproducible."
+}

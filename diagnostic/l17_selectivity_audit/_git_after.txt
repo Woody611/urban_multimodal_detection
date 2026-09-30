@@ -1,0 +1,70 @@
+ M .gitignore
+ M scripts/check_submission.py
+ M scripts/official_map.py
+ M scripts/predict_rect.py
+ M scripts/preflight_check_train_config.py
+ M scripts/train.py
+ M ultralytics/cfg/default.yaml
+AM ultralytics/data/augment.py
+ M ultralytics/models/yolo/detect/train.py
+ M ultralytics/nn/modules/block.py
+ M ultralytics/nn/tasks.py
+?? _before_snapshot/
+?? configs/oasa_pre_mosaic.yaml
+?? configs/oasa_pre_mosaic_scale14.yaml
+?? configs/oasa_pre_mosaic_scale14_resume.yaml
+?? configs/oasa_smoke_1ep.yaml
+?? configs/train_rgbid_sepstem_clahe_e1.yaml
+?? configs/train_rgbid_sepstem_clahe_e1_resume.yaml
+?? configs/yolo11m_sepstem_e1.yaml
+?? diagnostic/candidate_density_counterfactual/
+?? diagnostic/depth_alignment_audit/
+?? diagnostic/depth_reliability_small_miss/
+?? diagnostic/e1_region_gain/
+?? diagnostic/e2_assigner_geometry/
+?? diagnostic/l17_selectivity_audit/
+?? diagnostic/oasa_scale14/
+?? diagnostic/oasa_scale_tradeoff/
+?? diagnostic/oasa_smoke/
+?? diagnostic/p2_feasibility/
+?? diagnostic/p3_feature_space/
+?? diagnostic/small_candidate_rank_audit/
+?? diagnostic/small_gt_exposure/
+?? diagnostic/small_object_cause_v2/
+?? diagnostic/small_object_domains/
+?? diagnostic/small_object_internal_audit/
+?? diagnostic/small_object_train_replay/
+?? diagnostic/test_domain_audit/
+?? reports/AP75_ANOMALY_ROOTCAUSE.md
+?? reports/D_PRIME_GAIN_DECOMPOSITION_AND_TRANSFER_DIAGNOSTIC.md
+?? reports/D_PRIME_GAIN_STABILITY_AUDIT.md
+?? reports/E1_EXPERIMENT_CONTRACT.md
+?? reports/E1_REGION_GAIN_RESULT.md
+?? reports/LOCAL_ONLINE_GAP_ROOTCAUSE_AUDIT.md
+?? reports/OASA_PHASE1_AUDIT.md
+?? reports/OASA_PHASE2_GATE_STATUS.md
+?? reports/OASA_STEP25_PRE_MOSAIC_BENCHMARK.md
+?? reports/OASA_STEP2_GEOMETRY_FACTS.md
+?? reports/OASA_STEP3_IMPLEMENTATION_AUDIT.md
+?? reports/OASA_STEP4B_NATIVE_AREA_FIX.md
+?? reports/OASA_STEP4_A100_SMOKE.md
+?? reports/OFFICIAL_EVAL_FREEZE_AND_HISTORICAL_RETEST.md
+?? reports/OFFICIAL_METRIC_REEVAL_AND_SMALL_OBJECT_DIAGNOSTIC.md
+?? reports/RGBID_SEPSTEM_CLAHE_FINAL_REPORT.md
+?? reports/RGBID_SEPSTEM_CLAHE_RESULT.md
+?? reports/TEST_SET_DOMAIN_AUDIT.md
+?? scripts/official_eval.py
+?? scripts/test_official_eval.py
+?? scripts/verify_oasa_sync.py
+?? submissions/rgbid_d_ir_clahe_rerun/
+?? submissions/rgbid_d_ir_clahe_rerun_infer.log
+?? submissions/rgbid_oasa_s14_candidate/
+?? submissions/rgbid_oasa_s14_candidate_infer.log
+?? submissions/rgbid_sepstem_clahe_candidate/
+?? submissions/rgbid_sepstem_clahe_candidate_infer.log
+?? submissions/rgbid_sepstem_clahe_e1_candidate/
+?? submissions/rgbid_sepstem_clahe_e1_candidate_infer.log
+?? submissions/rgbid_sepstem_clahe_oasa_candidate/
+?? submissions/rgbid_sepstem_clahe_oasa_candidate_infer.log
+?? "\351\235\242\345\220\221\345\237\216\345\270\202\345\234\272\346\231\257\347\232\204\350\247\206\350\247\211\345\244\232\346\250\241\346\200\201\347\233\256\346\240\207\346\243\200\346\265\213-1.pdf"
+f659609c28f6b4f500212197d5229550a36d12d8

@@ -758,27 +758,85 @@ class P3IdentityAttn(nn.Module):
         return x * (1.0 + torch.tanh(self.fc(self.pool(x))))
 
 
+class RegionResponseGain(nn.Module):
+    """Identity-initialised, spatially-local response gain for the backbone L12-L17 region (E1).
+
+    ``out = x * (1 + tanh(dw(x)))`` with the depthwise conv zero-initialized gives ``out == x``
+    **bit-exactly** at t=0 (``dw(x) == 0`` -> ``tanh(0) == 0`` -> ``gain == 1.0``), while the
+    gradient w.r.t. ``dw.weight`` stays non-zero:
+    ``d(out)/d(w) = x * (1 - tanh^2(0)) * d(dw(x))/d(w) = x (x) patch(x)``.
+
+    This is deliberate — same argument as :class:`P3IdentityAttn`. An identity start means the
+    only thing E1 adds at t=0 is capacity, not a perturbation of the pretrained function. It also
+    makes ``E1_ENABLED=false`` and ``E1_ENABLED=true`` share an identical initialization for every
+    pre-existing tensor (this module draws no RNG, so the construction-time random stream is
+    unchanged for the layers built after it).
+
+    Why depthwise-3x3 rather than a per-channel affine or a global-pooled channel gate:
+
+    - a per-channel affine is **mathematically redundant with the BatchNorm affine** immediately
+      preceding it in ``C3k2``/``C2PSA``, so it adds no expressive power;
+    - global average pooling hands the gate to the background, which is the wrong direction for a
+      target occupying 1-2 cells (see ``reports/next_optimization_review.md`` §5.4/§5.5);
+    - a 3x3 depthwise gain reads **local** context only (at stride 16/32 that is 48/96 px at
+      img 1280), so it can raise the response where a weak-but-structured local pattern sits
+      without inflating strong responses globally — matching V13's finding that the causal rescue
+      at this region is ~70% *magnitude*, and is spatially specific (a displaced patch has no
+      effect: -0.0038 vs +5.869).
+
+    Parameters: ``c * k^2 + c`` (5120 per site at c=512, k=3).
+
+    RNG neutrality (critical, and verified by gate G16): ``nn.Conv2d.__init__`` calls
+    ``reset_parameters()``, which draws from the **global** RNG stream. Left alone, building this
+    module would advance that stream and silently change the random initialisation of every layer
+    constructed after it — turning "D' vs D'+E1" into "D' vs D'+E1 with a different random init for
+    half the network". The state is therefore saved and restored around construction so that this
+    module consumes **no** entropy, and the shared tensors stay bit-identical to the baseline.
+    """
+
+    def __init__(self, c, k=3):
+        """Initializes the module with a zero-initialized depthwise gain conv (RNG-neutral)."""
+        super().__init__()
+        assert k % 2 == 1, f"RegionResponseGain kernel must be odd, got {k}"
+        # nn.Conv2d() draws from the global RNG; save/restore so this module consumes no entropy.
+        # parse_model builds on CPU, so the CPU stream is the one that matters here.
+        _rng = torch.random.get_rng_state()
+        try:
+            self.dw = nn.Conv2d(c, c, k, 1, k // 2, groups=c, bias=True)
+        finally:
+            torch.random.set_rng_state(_rng)
+        nn.init.zeros_(self.dw.weight)
+        nn.init.zeros_(self.dw.bias)
+
+    def forward(self, x):
+        """Applies the identity-initialized local response gain."""
+        return x * (1.0 + torch.tanh(self.dw(x)))
+
+
 class C3k2(C2f):
     """Faster Implementation of CSP Bottleneck with 2 convolutions."""
 
-    def __init__(self, c1, c2, n=1, c3k=False, e=0.5, g=1, shortcut=True, attn=False):
+    def __init__(self, c1, c2, n=1, c3k=False, e=0.5, g=1, shortcut=True, attn=False, e1=False, e1_kernel=3):
         """Initializes the C3k2 module, a faster CSP Bottleneck with 2 convolutions and optional C3k blocks."""
         super().__init__(c1, c2, n, shortcut, g, e)
         self.m = nn.ModuleList(
             C3k(self.c, self.c, 2, shortcut, g) if c3k else Bottleneck(self.c, self.c, shortcut, g) for _ in range(n)
         )
         self.attn = P3IdentityAttn(c2) if attn else None  # optional P3 identity-init channel gate
+        self.e1 = RegionResponseGain(c2, e1_kernel) if e1 else None  # optional E1 region response gain
 
     def forward(self, x):
-        """Forward pass through C3k2, optionally applying the P3 identity-initialized attention.
+        """Forward pass through C3k2, optionally applying the P3 attention and the E1 response gain.
 
         ``getattr`` is required for backward compatibility: checkpoints pickled before
-        ``attn`` existed restore ``C3k2`` objects that have no ``attn`` attribute, so a
+        ``attn``/``e1`` existed restore ``C3k2`` objects that have no such attribute, so a
         direct ``self.attn`` would raise AttributeError on every legacy checkpoint.
         """
         x = super().forward(x)
         attn = getattr(self, "attn", None)
-        return attn(x) if attn is not None else x
+        x = attn(x) if attn is not None else x
+        e1 = getattr(self, "e1", None)
+        return e1(x) if e1 is not None else x
 
 
 class C3k(C3):
@@ -1131,7 +1189,7 @@ class C2PSA(nn.Module):
         >>> output_tensor = c2psa(input_tensor)
     """
 
-    def __init__(self, c1, c2, n=1, e=0.5):
+    def __init__(self, c1, c2, n=1, e=0.5, e1=False, e1_kernel=3):
         """Initializes the C2PSA module with specified input/output channels, number of layers, and expansion ratio."""
         super().__init__()
         assert c1 == c2
@@ -1140,12 +1198,15 @@ class C2PSA(nn.Module):
         self.cv2 = Conv(2 * self.c, c1, 1)
 
         self.m = nn.Sequential(*(PSABlock(self.c, attn_ratio=0.5, num_heads=self.c // 64) for _ in range(n)))
+        self.e1 = RegionResponseGain(c1, e1_kernel) if e1 else None  # optional E1 region response gain
 
     def forward(self, x):
         """Processes the input tensor 'x' through a series of PSA blocks and returns the transformed tensor."""
         a, b = self.cv1(x).split((self.c, self.c), dim=1)
         b = self.m(b)
-        return self.cv2(torch.cat((a, b), 1))
+        out = self.cv2(torch.cat((a, b), 1))
+        e1 = getattr(self, "e1", None)  # getattr: legacy C2PSA checkpoints have no `e1` attribute
+        return e1(out) if e1 is not None else out
 
 
 class C2fPSA(C2f):

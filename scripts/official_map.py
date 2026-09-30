@@ -43,6 +43,8 @@ import cv2
 import numpy as np
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from official_eval import MAX_BOXES_PER_IMAGE, apply_max_boxes  # noqa: E402  冻结协议单一真源
 
 NC = 12
 IOUV_OFFICIAL = np.arange(0.5, 0.95 + 1e-9, 0.05)  # 官方 T，10 个阈值
@@ -201,11 +203,11 @@ def curve_for_class(preds_c, gt_by_img, iou_thr: float, match: str = "conf"):
 # ============================================================
 
 def collect(images_dir: Path, labels_dir: Path, results_dir: Path,
-            min_conf: float, drop_corrupt: bool):
+            min_conf: float, drop_corrupt: bool, max_boxes: int = MAX_BOXES_PER_IMAGE):
     """返回 (gt_by_cls, preds_by_cls, stats)。坐标一律 native 像素 xyxy。"""
     gt_by_cls = {c: {} for c in range(NC)}
     preds_by_cls = {c: [] for c in range(NC)}
-    stats = dict(images=0, corrupt=0, gt=0, pred=0, no_pred=0)
+    stats = dict(images=0, corrupt=0, gt=0, pred=0, no_pred=0, truncated_imgs=0)
 
     img_files = sorted(p for p in images_dir.iterdir() if p.suffix.lower() in IMG_EXTS)
     for img_id, img_path in enumerate(img_files):
@@ -229,6 +231,11 @@ def collect(images_dir: Path, labels_dir: Path, results_dir: Path,
                 stats["gt"] += int(m.sum())
 
         pred = read_txt(results_dir / f"{stem}.txt", with_conf=True)
+        if len(pred) > max_boxes:
+            stats["truncated_imgs"] = stats.get("truncated_imgs", 0) + 1
+            # 按 conf 降序截断；**不做 dtype 往返**（那会把坐标降到 float32 精度，
+            # 与 official_eval 产生 ~1e-8 的 AP 偏差）。tie-break 与 apply_max_boxes 保持一致。
+            pred = pred[np.lexsort((pred[:, 0], -pred[:, 5]))][:max_boxes]
         if min_conf > 0 and len(pred):
             pred = pred[pred[:, 5] >= min_conf]     # 离线 conf 扫描
         if len(pred) == 0:
@@ -243,17 +250,23 @@ def collect(images_dir: Path, labels_dir: Path, results_dir: Path,
     return gt_by_cls, preds_by_cls, stats
 
 
-def evaluate(gt_by_cls, preds_by_cls, avg: str, tail: str, match: str):
-    """返回 dict: {'mAP50':.., 'mAP50-95':.., 'per_iou':[...]}"""
+def evaluate(gt_by_cls, preds_by_cls, avg: str, tail: str, match: str, metric: str = "B"):
+    """返回 dict: {'mAP50':.., 'mAP50-95':.., 'per_iou':[...]}
+
+    metric='A' 固定 NC 类分母（无 GT 的类 AP 记 0 后计入）
+    metric='B' 仅计入存在 GT 的类别（COCO 惯例；本文件历史默认）
+    """
     per_iou = []
     for t in IOUV_OFFICIAL:
         aps = []
         for c in range(NC):
             rec, prec = curve_for_class(preds_by_cls[c], gt_by_cls[c], float(t), match=match)
             ap = ap_from_curve(rec, prec, avg=avg, tail=tail)
-            if len(gt_by_cls[c]) == 0:
-                continue          # 官方: 无 GT 的类别忽略
-            aps.append(ap)
+            has_gt = len(gt_by_cls[c]) > 0
+            if metric == "A":
+                aps.append(ap if has_gt else 0.0)
+            elif has_gt:
+                aps.append(ap)
         per_iou.append(float(np.mean(aps)) if aps else 0.0)
     per_iou = np.array(per_iou)
     return {"mAP50": float(per_iou[0]), "mAP75": float(per_iou[5]),
@@ -267,6 +280,10 @@ def main():
     ap.add_argument("--min_conf", type=float, default=0.0, help="离线 conf 过滤（等价更高 conf_thres）")
     ap.add_argument("--keep_corrupt", action="store_true", help="不剔除越界标签图（默认剔除）")
     ap.add_argument("--sensitivity", action="store_true", help="额外打印口径敏感性")
+    ap.add_argument("--metric", choices=["A", "B"], default="A",
+                    help="A=固定 12 类分母(冻结默认) | B=仅计有 GT 的类(历史默认)")
+    ap.add_argument("--max-boxes-per-image", type=int, default=MAX_BOXES_PER_IMAGE,
+                    help="赛题 §九(二) 硬上限，默认 100；诊断对照才传更大值")
     args = ap.parse_args()
 
     split_root = (PROJECT_ROOT / args.split_root).resolve()
@@ -278,9 +295,12 @@ def main():
             raise FileNotFoundError(f"{nm} 目录不存在: {p}")
 
     gt, preds, st = collect(images_dir, labels_dir, results_dir,
-                            args.min_conf, drop_corrupt=not args.keep_corrupt)
+                            args.min_conf, drop_corrupt=not args.keep_corrupt,
+                            max_boxes=args.max_boxes_per_image)
 
-    official = evaluate(gt, preds, avg="mean", tail="zero", match="conf")
+    official = evaluate(gt, preds, avg="mean", tail="zero", match="conf", metric=args.metric)
+    official_other = evaluate(gt, preds, avg="mean", tail="zero", match="conf",
+                              metric="B" if args.metric == "A" else "A")
     fork = evaluate(gt, preds, avg="trapz", tail="ramp", match="iou")
 
     print("=" * 68)
@@ -288,12 +308,17 @@ def main():
     print("=" * 68)
     print(f"images={st['images']}  corrupt剔除={st['corrupt']}  GT={st['gt']}  "
           f"pred={st['pred']}  min_conf={args.min_conf}")
+    print(f"metric={args.metric}  max_boxes_per_image={args.max_boxes_per_image}  "
+          f"被截断图数={st.get('truncated_imgs', 0)}")
     print("-" * 68)
     print(f"{'口径':<34}{'mAP50':>11}{'mAP75':>11}{'mAP50-95':>12}")
     print(f"{'官方 (mean + tail0 + conf匹配)':<34}{official['mAP50']:>11.5f}"
           f"{official['mAP75']:>11.5f}{official['mAP50-95']:>12.5f}")
     print(f"{'fork (trapz + ramp + IoU匹配)':<34}{fork['mAP50']:>11.5f}"
           f"{fork['mAP75']:>11.5f}{fork['mAP50-95']:>12.5f}")
+    _oth = "B" if args.metric == "A" else "A"
+    print(f"{'官方同口径 metric=' + _oth:<34}{official_other['mAP50']:>11.5f}"
+          f"{official_other['mAP75']:>11.5f}{official_other['mAP50-95']:>12.5f}")
     print(f"{'差值 (官方 - fork)':<34}{official['mAP50']-fork['mAP50']:>+11.5f}"
           f"{official['mAP75']-fork['mAP75']:>+11.5f}"
           f"{official['mAP50-95']-fork['mAP50-95']:>+12.5f}")
