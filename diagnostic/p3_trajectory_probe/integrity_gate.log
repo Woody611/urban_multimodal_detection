@@ -1,0 +1,18 @@
+================================================================================================
+PROBE INTEGRITY GATE（合成输入 1x5x256x256，CPU，无数据集）
+================================================================================================
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 661/661 items from pretrained weights
+  [PASS] G1 forward 逐位相同（挂 hook 前/后）  len=3
+  [PASS] G6 loss(box,cls,dfl) 逐位相同  [4.113913059234619, 10.460493087768555, 3.5564956665039062]
+  [PASS] G2 RawTAL 与父类 TaskAlignedAssigner 输出逐位相同
+        mask_pos.sum()=20  mask_topk.sum()=20
+  [PASS] G3 raw_align 在 mask_pos==0 处仍 >0 的位置数 = 11（若为 0 则说明取到的是被掩码后的值）
+        掩码后 >0 的位置数 = 10  ⇒ 二者必须不同
+  [PASS] G4 probe 风格 forward 后 random / numpy / torch RNG 状态不变
+  [PASS] G5 无梯度（0）+ 参数逐位未变（337 张量 = True）
+  [PASS] G8 BN buffer：head.train() forward 后 54 个 buffer 被改；快照+还原后 0 个 ⇒ 副作用已消除
+  [PASS] G7 特征语义：P3=(1, 256, 32, 32)  H=(1, 256, 32, 32)  logit(W_3·h+b_3)=-18.6156  （与 _v7_extract.py 同口径）
+
+PROBE_INTEGRITY = PASS
+  不可变性：forward 逐位不变 / loss 逐位不变 / TAL 读取不改行为 / raw_align 未被掩码 / RNG 不变 / 无梯度 / 参数未变

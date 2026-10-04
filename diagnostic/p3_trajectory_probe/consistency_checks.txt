@@ -1,0 +1,17 @@
+[PASS] PROVENANCE：6 项 SHA 与 provenance 记录一致（best.pt 1cae45f7… / tal aae7e8ac… / loss 0f092cf2… / base 8bcf8349… / train cfg a4e329cf… / model yaml 9b14f294…）
+[PASS] G-86 = 86，key 唯一，分布 54 张 val 图；来源 per_gt_attribution.csv 的 certified_prefinal_loss==1（未重筛）
+[PASS] medium_cells = 1320（G86 86 / CONTROL 1070 / MISSED_NON86 164），角色标签复用上一轮 audit 的 per_gt_representation_audit.csv（逐位一致）
+[PASS] PROBE_INTEGRITY = PASS（integrity_gate.log）：G1/G2/G3/G4/G5/G6/G7/G8 全过
+[PASS] 规格冲突已消解：epochs=300 不变 + ep30 早停，保证 SCHEDULER/AUGMENTATION 与 D′ 一致（epochs=30 会把 cosine 拉紧，违反 §2）
+[PASS] 未修改任何源码/YAML/config/checkpoint；未覆盖任何既有 diagnostic 文件（仅新增本目录）
+[PASS] 未跑正式 validation inference；唯一 forward 是 integrity gate 的 1x5x256x256 合成输入
+[NOT RUN] 训练（本机无 GPU）⇒ decision.md = NOT_RUN / CASE = INCONCLUSIVE
+
+唯一与 D′ 不同的项：name（输出目录名，非训练变量）；训练长度配置不变、由回调早停。
+
+[PASS] LOCAL DRY-RUN（无 GPU/无训练/无 forward）12/12：D1 构造+D1b 角色分布 / D2 build 选图 281 / D3 质心指标 / D3b / D4 CASE A,B,C,D 四情形均判对 / D5 _render / D6 dump_epoch+finalize 全产物
+[PASS] dry-run 脚本 sha256 = 8438913fcca6a8e4f72fc97a7d5faa9b6e15170336043cb9166aae52ff323c38
+
+[PASS] LOCAL DRY-RUN 复跑（修复后）12/12：D1/D1b/D2/D3/D3b/D4(A,B,C,D)/D5/D6
+[PASS] _redecide.py 合成轨迹端到端自测 exit=0，写出 recomputed_epoch_summary.csv / recomputed_decision.json / .md
+[INFO] _probe.py sha=43f0426baea86a524610af9c  _redecide.py sha=6c402d53dfeb311fb3817cb5

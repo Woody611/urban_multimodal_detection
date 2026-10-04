@@ -1,0 +1,97 @@
+{
+  "size_matched": [
+    {
+      "group": "G-86",
+      "n": 86,
+      "logit_median": -16.7186,
+      "feature_term_median": -6.9653,
+      "h_norm_median": 40.383,
+      "p3_norm_median": 6.151
+    },
+    {
+      "group": "control_full",
+      "n": 1070,
+      "logit_median": 0.8828,
+      "feature_term_median": 10.6345,
+      "h_norm_median": 51.51,
+      "p3_norm_median": 7.681
+    },
+    {
+      "group": "control_size_matched",
+      "n": 899,
+      "logit_median": 1.2239,
+      "feature_term_median": 10.9498,
+      "h_norm_median": 51.723,
+      "p3_norm_median": 7.747
+    },
+    {
+      "group": "medium_missed_non86",
+      "n": 164,
+      "logit_median": -11.0097,
+      "feature_term_median": -1.2519,
+      "h_norm_median": 43.954,
+      "p3_norm_median": 6.531
+    }
+  ],
+  "feature_term_gap_unmatched": -17.5998,
+  "feature_term_gap_matched": -17.9151,
+  "h_norm_ratio_matched": 0.7807500381843948,
+  "class_separation": [
+    {
+      "cls": 0,
+      "cls_name": "person",
+      "n": 482,
+      "cos_86": 0.6275,
+      "cos_control": 0.9404,
+      "delta": -0.3129
+    },
+    {
+      "cls": 2,
+      "cls_name": "animal",
+      "n": 359,
+      "cos_86": 0.6249,
+      "cos_control": 0.9541,
+      "delta": -0.3292
+    },
+    {
+      "cls": 4,
+      "cls_name": "sign",
+      "n": 84,
+      "cos_86": 0.6207,
+      "cos_control": 0.9577,
+      "delta": -0.3371
+    },
+    {
+      "cls": 5,
+      "cls_name": "bicycle",
+      "n": 50,
+      "cos_86": 0.6336,
+      "cos_control": 0.9244,
+      "delta": -0.2908
+    },
+    {
+      "cls": 6,
+      "cls_name": "car",
+      "n": 167,
+      "cos_86": 0.6589,
+      "cos_control": 0.9709,
+      "delta": -0.312
+    },
+    {
+      "cls": 8,
+      "cls_name": "light",
+      "n": 102,
+      "cos_86": 0.6722,
+      "cos_control": 0.8266,
+      "delta": -0.1544
+    },
+    {
+      "cls": 9,
+      "cls_name": "garbage_can",
+      "n": 24,
+      "cos_86": 0.6999,
+      "cos_control": 0.9348,
+      "delta": -0.2349
+    }
+  ]
+}

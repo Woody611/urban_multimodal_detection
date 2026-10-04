@@ -1,0 +1,64 @@
+# ============================================================
+# ★ REPAIR STATUS (2026-10-03, Infrastructure Repair)
+#   STATUS = READY
+#   推理侧 image 路径**新增了 Depth 分支**（此前缺失 ⇒ 会 fallthrough 读 visible 原图）。
+# ============================================================
+
+# ============================================================
+# M3 — Depth-only
+# ============================================================
+# 输入 [D,D,D]：16-bit PNG(mm) → <300mm 置 0 → /19999×255 → uint8，
+# 再复制成 3 通道。**与 D′ 的 depth 通道是逐位相同的预处理**
+# （base.py 'Depth' 分支 269-279 vs RGBID 分支 341-348，同一公式）。
+#
+# 唯一差异：D′ 的 depth 分支是 1ch stem，初值 = mean(W_R,W_G,W_B)（灰度化 stock stem）；
+#   本例是**完整 3ch RGB stem 吸收三份相同深度**。这是单模态基线唯一自然的选择，
+#   但必须声明它不是 D′ aux-stem 初始化方式的复刻。
+# ============================================================
+
+experiment_name: "urban_multimodal_det_modality_m3_depth"
+seed: 42
+pretrained: "yolo11m.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 300
+patience: 0              # 与 D′ 一致：禁用早停，跑满预算
+batch_size: 8
+image_size: [1280, 1280]
+num_workers: 4
+
+learning_rate: 5.0e-3
+warmup_epochs: 3
+
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2           # 各 split 均已存在且**逐位同划分**（1600/400），幂等复用
+
+use_simotm: "Depth"        # ⇒ [D,D,D]，16bit mm -> uint8
+pairs_rgb_ir: ["visible", "depth"]      # 路径替换 visible -> depth
+pairs_rgb_depth: ["visible", "depth"]   # 同上
+channels: 3
+
+aug:                     # 对齐 D′ 的"光度增强惰性"（D′ 为 5ch ⇒ RandomHSV 直接 return）
+  hsv_h: 0.0
+  hsv_s: 0.0
+  hsv_v: 0.0
+  albumentations_p: 0.0  # D′ 是 5ch ⇒ Albumentations(p=0)；3ch/4ch 默认 p=1.0，
+                         # 这里显式覆盖为 0 才能与 D′ 在 augmentation 层面对齐
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: false
+  resume_path: ""

@@ -1,0 +1,377 @@
+========================================================================================================
+§1  BASELINE
+========================================================================================================
+  71096a9e044652a5  ultralytics/models/yolo/detect/train.py
+  79c8dbab9cd810d2  ultralytics/nn/tasks.py
+  bf380a22d2491f73  ultralytics/data/base.py
+  56c07c8520cf5b25  ultralytics/data/loaders.py
+  abfc90f53f75f7ad  ultralytics/data/augment.py
+  cf06d3a61a5cc9a9  ultralytics/cfg/default.yaml
+  67cb9fe02757fd59  scripts/train.py
+  9d704300143a5786  scripts/predict_rect.py
+  e82128abc082ed05  scripts/official_eval.py
+  283c28f006bbe834  scripts/validate_modality_contract.py
+  3178dae235f1384f  scripts/pretrained_coverage.py
+  9b14f29460733384  configs/yolo11m_sepstem.yaml
+  edc95f4665ead847  configs/yolo11m_earlyfusion.yaml
+  871d9d0da0122453  configs/yolo11m_modality4ch.yaml
+  58906628b858274c  configs/yolo11m_modality3ch.yaml
+  6e7bfb1555a3c68d  configs/yolo11m_modality2ch.yaml
+  d5ffc1a674953a08  yolo11m.pt
+  HEAD=5f1a8d5802aa49adf35e8fa6fb112a1030b3e6d3
+  GITIGNORED (invisible to git status): ['ultralytics/data/base.py', 'ultralytics/data/loaders.py', 'yolo11m.pt']
+
+  prototypes written to C:\Users\45548\AppData\Local\Temp\f3m_audit  (NOT promoted into configs/)
+  pre-P1 reference module built: C:\Users\45548\AppData\Local\Temp\f3m_audit\train_pre_p1.py
+
+========================================================================================================
+§4  MAPPING COVERAGE  (exact_match_ratio over expected pretrained tensors)
+========================================================================================================
+  model  family                     expected  exact cov_tensor  cov_param  gate
+Transferred 642/649 items from pretrained weights
+multi-ch stem init: in=5 out=64 | ch[0:3]=pretrained RGB ((64, 3, 3, 3)) | ch[3:5]=mean(R,G,B) | mean=-0.000858 std=0.090434 finite=True | newly_init_tensors=1 transferred_tensors=4
+  D      single_stem                     532    532     1.0000     1.0000  PASS
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 61/661 items from pretrained weights
+sepstem remap: rgb stem (layer 2, out=48) initialised
+sepstem remap: ir stem (layer 4, out=8) initialised
+sepstem remap: depth stem (layer 6, out=8) initialised
+Separate-stem pretrained remap: 550 tensors transferred (3 stems + layers 8..30 <- stock 1..23); E1 region response gain (layers none): 0 new tensors; Detect cv3 class branch re-initialised for nc=12: 6 tensors not transferred
+  D'     separate_stem                   532    532     1.0000     1.0000  PASS
+Transferred 642/649 items from pretrained weights
+multi-ch stem init: in=4 out=64 | ch[0:3]=pretrained RGB ((64, 3, 3, 3)) | ch[3:4]=mean(R,G,B) | mean=-0.000858 std=0.094826 finite=True | newly_init_tensors=1 transferred_tensors=4
+  M4     single_stem                     532    532     1.0000     1.0000  PASS
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 63/651 items from pretrained weights
+residual-depth adapter layout: 5ch root -> SilenceChannel[0,4]@1 -> M4 stem@2; SilenceChannel[4,5]@3 -> ZeroConv2d@4; ADD@5
+residual-depth remap: M4 stem at layer 2 <- stock model.0 (ch[0:3]=RGB, ch[3]=mean(RGB)); ZeroConv2d at layer 4 left at exact zero (2 tensors)
+Residual-depth adapter remap: 538 tensors transferred (M4 stem layer 2 + layers 6..28 <- stock 1..23); ZeroConv2d (layer 4) = exact zero; Detect cv3 re-initialised for nc=12: 6 tensors
+  candC  residual_depth_adapter          532    532     1.0000     1.0000  PASS
+
+========================================================================================================
+§5/§6  MANIFEST + CRITICAL LAYER AUDIT  (candC)
+========================================================================================================
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 63/651 items from pretrained weights
+residual-depth adapter layout: 5ch root -> SilenceChannel[0,4]@1 -> M4 stem@2; SilenceChannel[4,5]@3 -> ZeroConv2d@4; ADD@5
+residual-depth remap: M4 stem at layer 2 <- stock model.0 (ch[0:3]=RGB, ch[3]=mean(RGB)); ZeroConv2d at layer 4 left at exact zero (2 tensors)
+Residual-depth adapter remap: 538 tensors transferred (M4 stem layer 2 + layers 6..28 <- stock 1..23); ZeroConv2d (layer 4) = exact zero; Detect cv3 re-initialised for nc=12: 6 tensors
+  manifest rows = 545  -> D:\gyt\AIC\urban_multimodal_detection\diagnostic\p1_remap_audit\mapping_manifest_candC.json
+  group                   kind            tensors      params
+  Depth ZeroConv          ZERO_INIT             2         640
+  backbone/neck/head      PRETRAINED          532  20,096,976
+  new (Detect classifier) NEW_RANDOM            6       9,252
+  stem                    DERIVED               5       2,560
+  TOTAL                                       545  20,109,428
+
+  critical layers:
+    · L2 (derived, in=4, out=64): OK [ch[0:3] == stock RGB, ch[3:] == mean(R,G,B)]
+    · L2 (derived): OK
+    · Depth ZeroConv2d: tensors=2 max|W|=0.0e+00 max|b|=0.0e+00 status=['ZERO_OK', 'ZERO_OK']
+    · ADD: type=ADD learnable_params=0 alpha=1.0
+
+========================================================================================================
+§7  IDENTITY-AT-INITIALIZATION PROBE  (CPU, 64x64 dummy input, no CUDA)
+========================================================================================================
+Transferred 642/649 items from pretrained weights
+multi-ch stem init: in=4 out=64 | ch[0:3]=pretrained RGB ((64, 3, 3, 3)) | ch[3:4]=mean(R,G,B) | mean=-0.000858 std=0.094826 finite=True | newly_init_tensors=1 transferred_tensors=4
+  depth adapter output: max|z| = 0.000e+00  (depth input max|d| = 3.880)
+  candC M4 stem vs M4 model.0            max=0.000e+00 mean=0.000e+00 rel=0.000e+00 EXACT
+  candC fused(ADD) vs M4 stem            max=0.000e+00 mean=0.000e+00 rel=0.000e+00 EXACT
+  ZeroConv2d(Depth) vs 0                 max=0.000e+00 mean=0.000e+00 rel=0.000e+00 EXACT
+  IDENTITY_AT_INIT = PASS
+
+========================================================================================================
+§8  NEGATIVE / FAIL-CLOSED TESTS
+========================================================================================================
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 80/651 items from pretrained weights
+residual-depth adapter layout: 5ch root -> SilenceChannel[0,4]@1 -> M4 stem@2; SilenceChannel[4,5]@3 -> ZeroConv2d@4; ADD@5
+residual-depth remap: M4 stem at layer 2 <- stock model.0 (ch[0:3]=RGB, ch[3]=mean(RGB)); ZeroConv2d at layer 4 left at exact zero (2 tensors)
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 63/651 items from pretrained weights
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 63/651 items from pretrained weights
+residual-depth adapter layout: 5ch root -> SilenceChannel[0,4]@1 -> M4 stem@2; SilenceChannel[4,5]@3 -> ZeroConv2d@4; ADD@5
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 63/651 items from pretrained weights
+residual-depth adapter layout: 5ch root -> SilenceChannel[0,4]@1 -> M4 stem@2; SilenceChannel[4,5]@3 -> ZeroConv2d@4; ADD@5
+residual-depth remap: M4 stem at layer 2 <- stock model.0 (ch[0:3]=RGB, ch[3]=mean(RGB)); ZeroConv2d at layer 4 left at exact zero (2 tensors)
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 63/651 items from pretrained weights
+multi-ch stem init: in=4 out=64 | ch[0:3]=pretrained RGB ((64, 3, 3, 3)) | ch[3:4]=mean(R,G,B) | mean=-0.000858 std=0.094826 finite=True | newly_init_tensors=1 transferred_tensors=4
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 63/651 items from pretrained weights
+  ✅ A1 extra layer after ADD               expect=RAISE                                got=RAISE:RuntimeError: [residual-depth remap] no pretrained counterpart for 'model.7.conv.weight' (
+  ✅ A2 depth fed by IR slice               expect=RAISE                                got=RAISE:RuntimeError: [residual-depth remap] ZeroConv2d at layer 4 is not fed by a SilenceChannel[
+  ✅ B1 delete stock stem                   expect=RAISE                                got=RAISE: RuntimeError: [residual-depth remap] stock stem 'model.0.conv.weight' not present in pretraine
+  ✅ B2 delete mid-body tensor              expect=RAISE                                got=RAISE: RuntimeError: [residual-depth remap] no pretrained counterpart for 'model.15.cv1.conv.weight' 
+  ✅ C pre-P1 dispatcher on candC           expect=silent (no raise) but GATE FAIL      got=no raise, n_ret=5, coverage_t=0.0019, gate=FAIL
+  ✅ C2 new code, branch disabled           expect=RAISE (multi-ch fail-closed guard)   got=RAISE: RuntimeError: [multi-ch stem remap] the 4ch stem is at layer 2, not 0: the Silen
+
+========================================================================================================
+§9  REGRESSION SCAN — every model config in configs/, pre-P1 vs post-P1
+========================================================================================================
+  config                                         before n_ret after n_ret  before cov  after cov  Δ
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 115/499 items from pretrained weights
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 115/499 items from pretrained weights
+  yolo11_earlyfusion.yaml                                None        None         n/a        n/a  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 36/1273 items from pretrained weights
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 36/1273 items from pretrained weights
+  yolo11_latefusion.yaml                                 None        None         n/a        n/a  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 27/889 items from pretrained weights
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 27/889 items from pretrained weights
+  yolo11_midfusion.yaml                                  None        None         n/a        n/a  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 32/703 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 4 tensors
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 32/703 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 4 tensors
+  yolo11_midfusion_rgbd.yaml                                4           4         n/a        n/a  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 21/685 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 44 tensors
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 21/685 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 44 tensors
+  yolo11_midfusion_rgbd_add.yaml                           44          44         n/a        n/a  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 21/685 items from pretrained weights
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 21/685 items from pretrained weights
+  yolo11_midfusion_rgbd_add6ch.yaml                         0           0         n/a        n/a  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 21/685 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 44 tensors
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 21/685 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 44 tensors
+  yolo11_midfusion_rgbd_add_dw.yaml                        44          44         n/a        n/a  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 21/712 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 34 tensors
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 21/712 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 34 tensors
+  yolo11_midfusion_rgbd_cbam.yaml                          34          34         n/a        n/a  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 32/703 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 4 tensors
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 32/703 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 4 tensors
+  yolo11_midfusion_rgbd_concat.yaml                         4           4         n/a        n/a  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 21/703 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 34 tensors
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 21/703 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 34 tensors
+  yolo11_midfusion_rgbd_concat_res.yaml                    34          34         n/a        n/a  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 21/697 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 44 tensors
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 21/697 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 44 tensors
+  yolo11_midfusion_rgbd_gated.yaml                         44          44         n/a        n/a  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 21/709 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 34 tensors
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 21/709 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 34 tensors
+  yolo11_midfusion_rgbd_se.yaml                            34          34         n/a        n/a  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 21/691 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 44 tensors
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 21/691 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 44 tensors
+  yolo11_midfusion_rgbd_wf.yaml                            44          44         n/a        n/a  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 13/727 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 34 tensors
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 13/727 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 34 tensors
+  yolo11_rgbt.yaml                                         34          34         n/a        n/a  =
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 115/499 items from pretrained weights
+WARNING ⚠️ no model scale passed. Assuming scale='n'.
+Transferred 115/499 items from pretrained weights
+  yolo11_visible.yaml                                       0           0      0.0829     0.0829  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 78/1447 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 529 tensors
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 78/1447 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 529 tensors
+  yolo11l_midfusion_rgbd_concat_res.yaml                  529         529         n/a        n/a  =
+Transferred 642/649 items from pretrained weights
+multi-ch stem init: in=5 out=64 | ch[0:3]=pretrained RGB ((64, 3, 3, 3)) | ch[3:5]=mean(R,G,B) | mean=-0.000858 std=0.090434 finite=True | newly_init_tensors=1 transferred_tensors=4
+Transferred 642/649 items from pretrained weights
+multi-ch stem init: in=5 out=64 | ch[0:3]=pretrained RGB ((64, 3, 3, 3)) | ch[3:5]=mean(R,G,B) | mean=-0.000858 std=0.090434 finite=True | newly_init_tensors=1 transferred_tensors=4
+  yolo11m_earlyfusion.yaml                                  5           5      1.0000     1.0000  =
+Transferred 642/651 items from pretrained weights
+multi-ch stem init: in=5 out=64 | ch[0:3]=pretrained RGB ((64, 3, 3, 3)) | ch[3:5]=mean(R,G,B) | mean=-0.000858 std=0.090434 finite=True | newly_init_tensors=1 transferred_tensors=4
+Transferred 642/651 items from pretrained weights
+multi-ch stem init: in=5 out=64 | ch[0:3]=pretrained RGB ((64, 3, 3, 3)) | ch[3:5]=mean(R,G,B) | mean=-0.000858 std=0.090434 finite=True | newly_init_tensors=1 transferred_tensors=4
+  yolo11m_earlyfusion_p3attn.yaml                           5           5      0.9963     0.9963  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 79/913 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 537 tensors
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 79/913 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 537 tensors
+  yolo11m_midfusion_rgbd_concat_res.yaml                  537         537         n/a        n/a  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 80/1013 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 480 tensors
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 80/1013 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 480 tensors
+  yolo11m_midfusion_rgbd_concat_res_p2.yaml               480         480         n/a        n/a  =
+Transferred 642/649 items from pretrained weights
+narrow-ch stem init (no RGB in input): in=2 out=64 | all ch = mean(W_R,W_G,W_B) | mean=-0.000858 std=0.070213 finite=True | newly_init_tensors=1 transferred_tensors=4
+Transferred 642/649 items from pretrained weights
+narrow-ch stem init (no RGB in input): in=2 out=64 | all ch = mean(W_R,W_G,W_B) | mean=-0.000858 std=0.070213 finite=True | newly_init_tensors=1 transferred_tensors=4
+  yolo11m_modality2ch.yaml                                  5           5      1.0000     1.0000  =
+Transferred 643/649 items from pretrained weights
+Transferred 643/649 items from pretrained weights
+  yolo11m_modality3ch.yaml                                  0           0      1.0000     1.0000  =
+Transferred 642/649 items from pretrained weights
+multi-ch stem init: in=4 out=64 | ch[0:3]=pretrained RGB ((64, 3, 3, 3)) | ch[3:4]=mean(R,G,B) | mean=-0.000858 std=0.094826 finite=True | newly_init_tensors=1 transferred_tensors=4
+Transferred 642/649 items from pretrained weights
+multi-ch stem init: in=4 out=64 | ch[0:3]=pretrained RGB ((64, 3, 3, 3)) | ch[3:4]=mean(R,G,B) | mean=-0.000858 std=0.094826 finite=True | newly_init_tensors=1 transferred_tensors=4
+  yolo11m_modality4ch.yaml                                  5           5      1.0000     1.0000  =
+Transferred 527/743 items from pretrained weights
+multi-ch stem init: in=5 out=64 | ch[0:3]=pretrained RGB ((64, 3, 3, 3)) | ch[3:5]=mean(R,G,B) | mean=-0.000858 std=0.090434 finite=True | newly_init_tensors=1 transferred_tensors=4
+Transferred 527/743 items from pretrained weights
+multi-ch stem init: in=5 out=64 | ch[0:3]=pretrained RGB ((64, 3, 3, 3)) | ch[3:5]=mean(R,G,B) | mean=-0.000858 std=0.090434 finite=True | newly_init_tensors=1 transferred_tensors=4
+  yolo11m_rgbid_p2_probe.yaml                               5           5      0.7050     0.7050  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 61/661 items from pretrained weights
+sepstem remap: rgb stem (layer 2, out=48) initialised
+sepstem remap: ir stem (layer 4, out=8) initialised
+sepstem remap: depth stem (layer 6, out=8) initialised
+Separate-stem pretrained remap: 550 tensors transferred (3 stems + layers 8..30 <- stock 1..23); E1 region response gain (layers none): 0 new tensors; Detect cv3 class branch re-initialised for nc=12: 6 tensors not transferred
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 61/661 items from pretrained weights
+sepstem remap: rgb stem (layer 2, out=48) initialised
+sepstem remap: ir stem (layer 4, out=8) initialised
+sepstem remap: depth stem (layer 6, out=8) initialised
+Separate-stem pretrained remap: 550 tensors transferred (3 stems + layers 8..30 <- stock 1..23); E1 region response gain (layers none): 0 new tensors; Detect cv3 class branch re-initialised for nc=12: 6 tensors not transferred
+  yolo11m_sepstem.yaml                                    550         550      1.0000     1.0000  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 61/661 items from pretrained weights
+sepstem remap: rgb stem (layer 2, out=40) initialised
+sepstem remap: ir stem (layer 4, out=16) initialised
+sepstem remap: depth stem (layer 6, out=8) initialised
+Separate-stem pretrained remap: 550 tensors transferred (3 stems + layers 8..30 <- stock 1..23); E1 region response gain (layers none): 0 new tensors; Detect cv3 class branch re-initialised for nc=12: 6 tensors not transferred
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 61/661 items from pretrained weights
+sepstem remap: rgb stem (layer 2, out=40) initialised
+sepstem remap: ir stem (layer 4, out=16) initialised
+sepstem remap: depth stem (layer 6, out=8) initialised
+Separate-stem pretrained remap: 550 tensors transferred (3 stems + layers 8..30 <- stock 1..23); E1 region response gain (layers none): 0 new tensors; Detect cv3 class branch re-initialised for nc=12: 6 tensors not transferred
+  yolo11m_sepstem_40_16_8.yaml                            550         550      1.0000     1.0000  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 61/667 items from pretrained weights
+sepstem remap: rgb stem (layer 2, out=48) initialised
+sepstem remap: ir stem (layer 4, out=8) initialised
+sepstem remap: depth stem (layer 6, out=8) initialised
+Separate-stem pretrained remap: 550 tensors transferred (3 stems + layers 8..30 <- stock 1..23); E1 region response gain (layers [13, 15, 17]): 6 new tensors; Detect cv3 class branch re-initialised for nc=12: 6 tensors not transferred
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 61/667 items from pretrained weights
+sepstem remap: rgb stem (layer 2, out=48) initialised
+sepstem remap: ir stem (layer 4, out=8) initialised
+sepstem remap: depth stem (layer 6, out=8) initialised
+Separate-stem pretrained remap: 550 tensors transferred (3 stems + layers 8..30 <- stock 1..23); E1 region response gain (layers [13, 15, 17]): 6 new tensors; Detect cv3 class branch re-initialised for nc=12: 6 tensors not transferred
+  yolo11m_sepstem_e1.yaml                                 550         550      0.9888     0.9888  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 21/703 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 198 tensors
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 21/703 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 198 tensors
+  yolo11s_midfusion_rgbd_concat_res.yaml                  198         198         n/a        n/a  =
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 26/773 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 192 tensors
+WARNING ⚠️ YOLOv9 `Silence` module is deprecated in favor of torch.nn.Identity. Please delete local *.pt file and re-download the latest model checkpoint.
+Transferred 26/773 items from pretrained weights
+RGBD depth-stem init: W_depth = mean(W_R,W_G,W_B) (rgb in=3 -> depth in=1)
+RGBD pretrained remap: transferred 192 tensors
+  yolo11s_midfusion_rgbd_concat_res_p2.yaml               192         192         n/a        n/a  =
+Transferred 279/499 items from pretrained weights
+Transferred 279/499 items from pretrained weights
+  yolo11s_visible.yaml                                      0           0      0.4829     0.4829  =
+
+  scanned=30  regressions=0
+
+========================================================================================================
+P1_STATUS = PASS   3M_READY = YES   CUDA_USED = NO
+[json] D:\gyt\AIC\urban_multimodal_detection\diagnostic\p1_remap_audit\p1_audit.json

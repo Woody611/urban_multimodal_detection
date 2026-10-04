@@ -1,0 +1,75 @@
+====================================================================================================
+PRE-FLIGHT / D-prime input freeze
+====================================================================================================
+  上一轮 86 逐 GT             diagnostic\medium_head_to_final_audit\per_gt_causal_audit.csv    38199B  7041256d270bf433d206d43fe8c38877bcc2b52d67a7abbd384b6aa9304d100e
+  上一轮 110 attribution     diagnostic\medium_93_47_attribution\per_gt_attribution.csv    20746B  62dbc551f4703bb3162baed16266f793b6e9cba4f21509236afee186bfc0c605
+  head 侧 V1               diagnostic\small_object_domains\_v6_domains.json            4631435B  3505d9160c47aae813bef8774ea81cdcd3be51df8f5705c4f8058e17e232f355
+  D′ train config         configs\train_rgbid_sepstem_clahe.yaml                         3187B  a4e329cfc3d220206448cdd3377c1b3f5126c50f13c907ada522d98725486e12
+  TAL 实现                  ultralytics\utils\tal.py                                      18883B  aae7e8ac438f00cda88d7e151795b3f78270ec4ed56b883f413fd16233b7e527
+  loss 实现                 ultralytics\utils\loss.py                                     62492B  0f092cf22a372f6d5c5e7197d7adde51cbb23c02ac4522978f42df5b23a6543b
+  D′ args.yaml            runs\urban_multimodal_det_yolo11_rgbid_sepstem_clahe\args.yaml     2010B  8b56d5aaf6e241e74ac07e6ed4fc5c7fdec96baf39a06bec34c68c499696a1d2
+  train labels            data\processed\rgbid_split_train\labels\train\visible            dir  
+  D′ best.pt              runs\urban_multimodal_det_yolo11_rgbid_sepstem_clahe\weights\best.pt  40641641B  1cae45f75693f54146e35c5fa076c0a6f78ca1cfa95595de74d959f40fae4fda
+  CHECK B: D′ config sha=a4e329cfc3d220206448cdd3  与 provenance 记录 a4e329cfc3d22020… 一致
+           args.yaml: box=7.5 cls=0.5 dfl=1.5 cls_pw=[] ir_encoding=clahe seed=42
+
+====================================================================================================
+FREEZE 86
+====================================================================================================
+N = 86   (期望 86)
+
+====================================================================================================
+PER-GT: GT-class positive x target x loss
+====================================================================================================
+per_gt_supervision.csv: 86 rows x 20 cols
+
+--- §9 GT-class positive assignment（86 条）---
+  状态                                    n        %
+  GT-class positive confirmed (n_pos>=1)   86   100.0%
+  GT-class positive absent (n_pos==0)    0     0.0%
+  target exists but zero                0     0.0%
+  target > 0  (= maxCIoU > 0)          86   100.0%
+  target unavailable                    0     0.0%
+
+  TARGET_PEAK (= maxCIoU): min=0.5113 p25=0.6530 median=0.7227 p75=0.8152 max=0.9480
+  head_n_pos              : min=6 median=10 max=10
+  |grad| at peak          : median=0.7227  max=0.9479   (上限 1.0)
+  BCE at peak (nats)      : median=9.662  min=4.460  max=16.055
+  ⇒ target 幅度【不小】（中位 0.723），且 ∂BCE/∂logit 中位 |0.723| 接近其上限 1.0
+
+====================================================================================================
+§12 CLASS DISTRIBUTION (train GT vs 86 失败 GT)
+====================================================================================================
+  train: 1599 张有效图 / 11562 GT（口径同 official load_split 的越界剔除）
+
+  class         train_GT train_share pos_imgs   86  110  86_rate_per_1k
+  person            4421      0.3824     4421   25   30            5.65
+  boat               107      0.0093      107    0    0            0.00
+  animal            2328      0.2013     2328   16   19            6.87
+  seat               511      0.0442      511    1    5            1.96
+  sign               659      0.0570      659   13   18           19.73
+  bicycle            550      0.0476      550   10   12           18.18
+  car               1283      0.1110     1283    3    5            2.34
+  ball                70      0.0061       70    2    3           28.57
+  light             1211      0.1047     1211   13   15           10.73
+  garbage_can        225      0.0195      225    3    3           13.33
+  uav                174      0.0150      174    0    0            0.00
+  tricycle            23      0.0020       23    0    0            0.00
+
+--- §13 sign / person 事实核对 ---
+  sign     在 86 中 13 条；n_pos median=10；TARGET_PEAK median=0.8151；train_GT=659（份额 5.700%）；86 中出现率 19.73/1k trainGT
+           → 这 13 条的 GT-class positive 与 target>0 均成立，**不存在 assignment 缺失**
+  person   在 86 中 25 条；n_pos median=10；TARGET_PEAK median=0.7221；train_GT=4421（份额 38.237%）；86 中出现率 5.65/1k trainGT
+           → 这 25 条的 GT-class positive 与 target>0 均成立，**不存在 assignment 缺失**
+
+====================================================================================================
+CONSISTENCY CHECKS
+====================================================================================================
+  [PASS] CHECK A: 86 条与上一轮完全一致  
+  [PASS] CHECK B: D′ 配置唯一  
+  [PASS] CHECK C: 实际 TAL 实现已确认  tal.py:95-158,215-240；topk10 alpha0.5 beta6.0；CIoU
+  [PASS] CHECK D: 实际 cls loss 实现已确认  loss.py:415,527,533；BCEWithLogits reduction=none；分母=Σtarget_scores
+  [PASS] CHECK E: 报告的 target 数值来源 = 代码恒等式 + 冻结 best_assign_iou（非估算）  
+  [PASS] CHECK F: 逐 GT training-candidate identity（条件检查：仅当报告逐 GT assignment 时才要求）  PASS-by-vacuity：本审计**未**报告逐 GT training assignment，已明确标为 TRAINING_CANDIDATE_IDENTITY = NOT_OBSERVABLE（86 是 val GT；无 anchor/grid/candidate index dump）
+  [PASS] CHECK G: numeric 已强制转换  num() 统一 float；non-numeric=0
+  [PASS] CHECK H: summary 可由逐条 records 重新聚合  

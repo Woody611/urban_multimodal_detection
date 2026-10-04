@@ -1,0 +1,12 @@
+MEDIUM 93+47 ATTRIBUTION - INPUT MANIFEST
+==============================================================================
+D-prime frozen prediction identified by CONTENT, not filename:
+  medium(1320) zero-same-class=145 / zero-any-class=98 == frozen reference in _medium_pair.log
+  (controls: box2 gave 148/99, D-prime last gave 146/100, each matching its own reference)
+
+GT labels dir                 data\processed\rgbid_split_train\labels\val\visible 400 txt   (dir)
+GT label cache                data\processed\rgbid_split_train\labels\val\visible.cache-         2fb020240b2841d2bf574ff0754b831789acfc217a8b90c758e7818b80e1738e
+images dir                    data\processed\rgbid_split_train\images\val\visible 400 files (dir)
+D-prime frozen predictions    diagnostic\sepstem_clahe\best_full\results          400 txt   1919f7cc430436c16369a3bb75a0d5698f1956c05b0f39823e7ec67c1c4a7849
+pos_prob source (V1)          diagnostic\small_object_domains\_v6_domains.json    7926 recs 3505d9160c47aae813bef8774ea81cdcd3be51df8f5705c4f8058e17e232f355
+frozen 145/98/47 reference    diagnostic\box2_infer_val\_medium_pair.log          -         a9a36cace44793892c17c058cd1f1658dff3f7dbd49e084924f30fbbeec45a65

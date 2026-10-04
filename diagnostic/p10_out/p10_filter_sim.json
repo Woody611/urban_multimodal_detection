@@ -1,0 +1,176 @@
+[
+  {
+    "epoch": 0,
+    "frac_raw": 0.0,
+    "frac_ema_of_linear": 0.0,
+    "frac_observed": 0.0
+  },
+  {
+    "epoch": 10,
+    "frac_raw": 0.03780068728522336,
+    "frac_ema_of_linear": 0.037978549534731613,
+    "frac_observed": 0.37407269908745455
+  },
+  {
+    "epoch": 20,
+    "frac_raw": 0.07216494845360824,
+    "frac_ema_of_linear": 0.07250177054524705,
+    "frac_observed": 0.5080384405847883
+  },
+  {
+    "epoch": 30,
+    "frac_raw": 0.10652920962199311,
+    "frac_ema_of_linear": 0.107022031271328,
+    "frac_observed": 0.597989683609704
+  },
+  {
+    "epoch": 40,
+    "frac_raw": 0.14089347079037798,
+    "frac_ema_of_linear": 0.14153893902852668,
+    "frac_observed": 0.6645203554135333
+  },
+  {
+    "epoch": 50,
+    "frac_raw": 0.17525773195876285,
+    "frac_ema_of_linear": 0.1760520492635661,
+    "frac_observed": 0.7176780284183011
+  },
+  {
+    "epoch": 60,
+    "frac_raw": 0.20962199312714772,
+    "frac_ema_of_linear": 0.21056085876555505,
+    "frac_observed": 0.7578462881298633
+  },
+  {
+    "epoch": 70,
+    "frac_raw": 0.24398625429553264,
+    "frac_ema_of_linear": 0.24506479800627684,
+    "frac_observed": 0.7985196668375698
+  },
+  {
+    "epoch": 80,
+    "frac_raw": 0.27835051546391754,
+    "frac_ema_of_linear": 0.279563222502794,
+    "frac_observed": 0.8299498674552164
+  },
+  {
+    "epoch": 90,
+    "frac_raw": 0.3127147766323024,
+    "frac_ema_of_linear": 0.3140554030839304,
+    "frac_observed": 0.8549805367644665
+  },
+  {
+    "epoch": 100,
+    "frac_raw": 0.3470790378006873,
+    "frac_ema_of_linear": 0.34854051492965354,
+    "frac_observed": 0.8769009129584289
+  },
+  {
+    "epoch": 110,
+    "frac_raw": 0.38144329896907214,
+    "frac_ema_of_linear": 0.3830176252390301,
+    "frac_observed": 0.8960168922413555
+  },
+  {
+    "epoch": 120,
+    "frac_raw": 0.415807560137457,
+    "frac_ema_of_linear": 0.4174856793684031,
+    "frac_observed": 0.9130598307321607
+  },
+  {
+    "epoch": 130,
+    "frac_raw": 0.4501718213058419,
+    "frac_ema_of_linear": 0.45194348526691613,
+    "frac_observed": 0.9294381278110406
+  },
+  {
+    "epoch": 140,
+    "frac_raw": 0.48453608247422675,
+    "frac_ema_of_linear": 0.48638969602177523,
+    "frac_observed": 0.9432822588464216
+  },
+  {
+    "epoch": 150,
+    "frac_raw": 0.5189003436426117,
+    "frac_ema_of_linear": 0.5208227903110981,
+    "frac_observed": 0.9533369979761466
+  },
+  {
+    "epoch": 160,
+    "frac_raw": 0.5532646048109965,
+    "frac_ema_of_linear": 0.5552410505483858,
+    "frac_observed": 0.9620852069029607
+  },
+  {
+    "epoch": 170,
+    "frac_raw": 0.5876288659793815,
+    "frac_ema_of_linear": 0.5896425384903194,
+    "frac_observed": 0.9698881233700379
+  },
+  {
+    "epoch": 180,
+    "frac_raw": 0.6219931271477663,
+    "frac_ema_of_linear": 0.6240250680696805,
+    "frac_observed": 0.9771646413915157
+  },
+  {
+    "epoch": 190,
+    "frac_raw": 0.6563573883161512,
+    "frac_ema_of_linear": 0.658386175208962,
+    "frac_observed": 0.982582168491766
+  },
+  {
+    "epoch": 200,
+    "frac_raw": 0.6907216494845361,
+    "frac_ema_of_linear": 0.6927230843692499,
+    "frac_observed": 0.9867255371790585
+  },
+  {
+    "epoch": 220,
+    "frac_raw": 0.7594501718213058,
+    "frac_ema_of_linear": 0.7613114238322912,
+    "frac_observed": 0.9925278873835429
+  },
+  {
+    "epoch": 230,
+    "frac_raw": 0.7938144329896907,
+    "frac_ema_of_linear": 0.7955553943222389,
+    "frac_observed": 0.9952831329414334
+  },
+  {
+    "epoch": 240,
+    "frac_raw": 0.8281786941580755,
+    "frac_ema_of_linear": 0.8297601539234587,
+    "frac_observed": 0.9965954216489924
+  },
+  {
+    "epoch": 250,
+    "frac_raw": 0.8625429553264605,
+    "frac_ema_of_linear": 0.86392073827096,
+    "frac_observed": 0.9979923099080699
+  },
+  {
+    "epoch": 260,
+    "frac_raw": 0.8969072164948454,
+    "frac_ema_of_linear": 0.8980315907747822,
+    "frac_observed": 0.9988366089940995
+  },
+  {
+    "epoch": 270,
+    "frac_raw": 0.9312714776632302,
+    "frac_ema_of_linear": 0.9320865015741117,
+    "frac_observed": 0.9993998040694606
+  },
+  {
+    "epoch": 280,
+    "frac_raw": 0.965635738831615,
+    "frac_ema_of_linear": 0.9660785427139686,
+    "frac_observed": 0.9998118982747214
+  },
+  {
+    "epoch": 290,
+    "frac_raw": 1.0,
+    "frac_ema_of_linear": 1.0,
+    "frac_observed": 1.0
+  }
+]

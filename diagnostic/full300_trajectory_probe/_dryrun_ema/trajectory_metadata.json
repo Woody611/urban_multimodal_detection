@@ -1,0 +1,74 @@
+{
+  "probe_target": "trainer.ema.ema",
+  "probe_mode": "eval",
+  "coordinate_source": "dataset_lab_bboxes_canvas_normalized",
+  "cells_file": "medium_cells_canvas.json",
+  "epochs": 300,
+  "observation_epochs": [
+    0,
+    1
+  ],
+  "indexing": "0-based（csv = 0-based + 1，trainer.py:666）",
+  "sample_definition": "G86 (86) / CONTROL (1070 medium detected) / MISSED_NON86 (164)；共 1320",
+  "close_mosaic": 10,
+  "observation_timing": "after_normal_ema_update",
+  "observation_timing_evidence": {
+    "code_path": "trainer.py:344 self.epoch=epoch → ~380 batch loop optimizer_step() →587-595 ema.update() →454 on_fit_epoch_end",
+    "runtime": [
+      {
+        "epoch": 1,
+        "ema_updates_total": 7609,
+        "ema_updates_this_epoch": 7609,
+        "batches": 7,
+        "after_normal_ema_update": true
+      }
+    ]
+  },
+  "early_stop": "NONE",
+  "state_restoration": [
+    {
+      "epoch": 0,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": true,
+      "rng_restored": true
+    },
+    {
+      "epoch": 1,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": true,
+      "rng_restored": true
+    },
+    {
+      "epoch": 1,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": true,
+      "rng_restored": true
+    }
+  ],
+  "logit_identity": [
+    {
+      "epoch": 0,
+      "n": 27,
+      "max_abs_resid": 7.3119603030136204e-06,
+      "max_rel_resid": 7.353725735776883e-07,
+      "tol_rel": 0.01
+    },
+    {
+      "epoch": 1,
+      "n": 27,
+      "max_abs_resid": 6.107216201201027e-06,
+      "max_rel_resid": 2.156252780431696e-06,
+      "tol_rel": 0.01
+    },
+    {
+      "epoch": 1,
+      "n": 27,
+      "max_abs_resid": 6.107216201201027e-06,
+      "max_rel_resid": 2.156252780431696e-06,
+      "tol_rel": 0.01
+    }
+  ]
+}

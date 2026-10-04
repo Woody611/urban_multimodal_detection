@@ -1,0 +1,3 @@
+cutoff,rank_by,hit_rate,median_rank
+10,CIoU(geometry only),0.11094113581384633,29.0
+10,align(geometry x cls),0.001405368045156088,30.0

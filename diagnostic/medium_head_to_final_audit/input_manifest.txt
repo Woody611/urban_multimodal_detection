@@ -1,0 +1,40 @@
+MEDIUM 86 — HEAD→FINAL CANDIDATE DISAPPEARANCE AUDIT — INPUT MANIFEST
+================================================================================
+身份识别方式（不按文件名猜测）：
+  - 86 条 = 上一轮 diagnostic/medium_93_47_attribution/per_gt_attribution.csv 中
+    certified_prefinal_loss==1（等价于 head_best_assign_iou>=0.50 AND final best_any_iou<0.50）
+    计数 = 86，与上一轮记录一致；逐条 (image_stem, gt_id) 与上一轮来源集合相同。
+  - D′ 冻结 final 预测 = diagnostic/sepstem_clahe/best_full/results
+    该目录在上一轮已由内容级证据唯一确定（medium 零同类=145 / 零任意类=98，与冻结参照吻合）。
+
+文件                                                        SHA256
+--------------------------------------------------------------------------------
+diagnostic/medium_93_47_attribution/per_gt_attribution.csv  62dbc551f4703bb3162baed16266f793b6e9cba4f21509236afee186bfc0c605
+diagnostic/small_object_domains/_v6_domains.json            3505d9160c47aae813bef8774ea81cdcd3be51df8f5705c4f8058e17e232f355
+diagnostic/sepstem_clahe/best_full/results                  400 txt（逐文件内容即冻结预测；aggregate 已于上一轮登记）
+diagnostic/box2_infer_val/_medium_pair.log                  a9a36cace44793892c17c058cd1f1658dff3f7dbd49e084924f30fbbeec45a65  (145/98/47 冻结参照)
+
+冻结代码（阈值 / 构成 / 界的来源，全部只读）
+--------------------------------------------------------------------------------
+ultralytics/utils/metrics.py   sha256 前16 = d2c8e4bf04e729b8   → :305  CIoU = iou - (rho2/c2 + v*alpha)
+ultralytics/utils/ops.py       sha256 前16 = 1c674a27055bcc55   → :250  xc = prediction[:, 4:mi].amax(1) > conf_thres
+ultralytics/utils/tal.py       sha256 前16 = aae7e8ac438f00cd   → :155  iou_calculation = bbox_iou(..., CIoU=True).clamp_(0)
+scripts/predict_rect.py        sha256     0f247f541be90a0fae04cb65ef34571962ecbcbc4610c5c0609d9f9c0048a6fd
+                               → :186 --conf 0.001   :187 --iou 0.7   :190 --max_det 300   :191 --max_boxes 100   :262 multi_label=True
+
+数据集
+--------------------------------------------------------------------------------
+GT      data/processed/rgbid_split_train/labels/val/visible        400 txt
+images  data/processed/rgbid_split_train/images/val/visible        400 files
+label cache  data/processed/rgbid_split_train/labels/val/visible.cache
+             sha256 2fb020240b2841d2bf574ff0754b831789acfc217a8b90c758e7818b80e1738e
+
+异模型对照（仅作 geometry 敏感度上界，**不混入主统计**）
+--------------------------------------------------------------------------------
+diagnostic/rect_pipeline_fix/validation_square_predictions/results   400 txt  (F4 = rgbd 4ch, 该实验的 square 推理)
+diagnostic/rect_pipeline_fix/validation_rect_predictions/results     400 txt  (同一 F4 权重, rect 推理)
+
+NOT_AVAILABLE 字段汇总（本审计无法从任何冻结产物获得）
+--------------------------------------------------------------------------------
+candidate identity / candidate bbox / candidate rank / objectness / confidence /
+真实 IoU（仅 CIoU）/ pre-NMS 与 post-NMS 的同一 candidate 对照 / filtering 记录

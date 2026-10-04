@@ -1,0 +1,103 @@
+====================================================================================================
+PRE-FLIGHT
+====================================================================================================
+[inputs] prev=diagnostic\medium_93_47_attribution\per_gt_attribution.csv sha=62dbc551f4703bb3162baed16266f793b6e9cba4f21509236afee186bfc0c605
+[inputs] head=diagnostic\small_object_domains\_v6_domains.json sha=3505d9160c47aae813bef8774ea81cdcd3be51df8f5705c4f8058e17e232f355
+[inputs] final=diagnostic\sepstem_clahe\best_full\results (400 txt)
+[inputs] code=metrics.py sha=d2c8e4bf04e729b8 ops.py sha=1c674a27055bcc55 tal.py sha=aae7e8ac438f00cd predict_rect.py sha=0f247f541be90a0f
+[inputs] thresholds: conf=0.001 (predict_rect.py:186), nms_iou=0.7 (:187), max_det=300, multi_label=True (:262), max_boxes=100
+N_86 = 86   (上一轮记录 86)
+
+====================================================================================================
+PER-GT CAUSAL RECORD
+====================================================================================================
+per_gt_causal_audit.csv: 86 rows x 43 cols
+
+====================================================================================================
+§5 CLASS-SCORE DISTRIBUTION (head_class_score = pos_prob)
+====================================================================================================
+
+  [86 全体] n=86   lt1e6=35(40.7%)  b1e6_1e5=37(43.0%)  b1e5_1e4=10(11.6%)  b1e4_1e3=1(1.2%)  ge1e3=3(3.5%)  unavailable=0(0.0%)
+     median=1.624e-06  mean=5.845e-05  min=2.100e-09  max=1.928e-03
+
+  [93-collapse 中属于 86 的部分] n=72   lt1e6=35(48.6%)  b1e6_1e5=37(51.4%)  b1e5_1e4=0(0.0%)  b1e4_1e3=0(0.0%)  ge1e3=0(0.0%)  unavailable=0(0.0%)
+     median=1.099e-06  mean=2.116e-06  min=2.100e-09  max=9.781e-06
+
+  [47-wrong_class 中属于 86 的部分] n=31   lt1e6=10(32.3%)  b1e6_1e5=7(22.6%)  b1e5_1e4=10(32.3%)  b1e4_1e3=1(3.2%)  ge1e3=3(9.7%)  unavailable=0(0.0%)
+     median=6.736e-06  mean=1.582e-04  min=2.100e-09  max=1.928e-03
+
+====================================================================================================
+§12 SUBGROUP: HIGH GEOMETRY x ULTRA-LOW CLASS SCORE
+====================================================================================================
+  CIoU>=.50 & score<=1e-5 & final_any<.50    n= 72 (83.7%)  median_score=1.099e-06  max_score=9.781e-06
+  CIoU>=.75 & score<=1e-5 & final_any<.50    n= 26 (30.2%)  median_score=8.655e-07  max_score=9.383e-06
+
+====================================================================================================
+§9 GEOMETRY SENSITIVITY BOUND (异模型对照: F4 rgbd, square vs rect @ inference)
+====================================================================================================
+  F4 模型上 medium GT n=1316：square→rect 的 best_same IoU  Δ 中位=+0.0000  |Δ| p95=0.0990  跨过 .50 门槛: 升 11 / 降 19
+  ⇒ 推理侧几何（square→rect）对 medium best_same IoU 的量级有界（见上），
+    因此「head 的 CIoU>=.50 候选在 rect 下整体塌到 0」不能由推理几何解释 —— 但这是**异模型**上界，不是 D′ 的直接证据。
+
+====================================================================================================
+§14 TABLES
+====================================================================================================
+
+--- Table A: 86 条最终机制 ---
+  SUPPORTED_SCORE_FILTERING           83    96.5%
+  CONSISTENT_WITH_SCORE_FILTERING      0     0.0%
+  SUPPORTED_NMS                        0     0.0%
+  SUPPORTED_GEOMETRY_MISMATCH          0     0.0%
+  SUPPORTED_TOP100                     0     0.0%
+  MULTI_FACTOR                         0     0.0%
+  UNRESOLVED                           3     3.5%
+  (辅助) ANYCLASS_BOX_STATE = BOX_SURVIVED_AS_WRONG_CLASS  31
+  (辅助) ANYCLASS_BOX_STATE = CONSISTENT_WITH_SCORE_FILTERING  55
+
+--- Table A': 若严格要求 pos_prob < conf(0.001) 才给 SUPPORTED ---
+  pos_prob <  0.001  ⇒ SUPPORTED_SCORE_FILTERING : 83 (96.5%)
+  pos_prob >= 0.001  ⇒ UNRESOLVED（推导不成立）  : 3 (3.5%)
+     001035#9 cls=sign       pos_prob=1.166e-03 head_ciou=0.8784 final_any_iou=0.0069 final_pred_cls=6 raw_preds=20 trunc=0
+     002987#12 cls=person     pos_prob=1.190e-03 head_ciou=0.7405 final_any_iou=0.1958 final_pred_cls=5 raw_preds=23 trunc=0
+     hehe_230_000002_043_00000061#13 cls=person     pos_prob=1.928e-03 head_ciou=0.7133 final_any_iou=0.3239 final_pred_cls=5 raw_preds=19 trunc=0
+  → 这 3 条里，GT 类得分【不低于】阈值 ⇒ 候选本应被 multi_label 发出却未出现在最终输出；
+    可能是类内 NMS / max_det·max_boxes 截断 / 几何变化，但三者均属 NOT_OBSERVABLE ⇒ 记 UNRESOLVED（不猜）。
+
+--- Table E: TOP100_STATE = POSSIBLE 的 2 条 ---
+     003987#55 cls=bicycle    raw_preds=145 pos_prob=3.187e-07 head_ciou=0.5577 final_any_iou=0.1140
+     shuming_340_00000020#1 cls=sign       raw_preds=105 pos_prob=4.925e-07 head_ciou=0.8151 final_any_iou=0.1852
+     注意 §10：'图触顶' ≠ '该 GT 的候选因 top-100 消失'；无 candidate rank ⇒ 只能 POSSIBLE。
+
+--- Table B: class-score distribution (86) ---
+  lt1e6           35    40.7%
+  b1e6_1e5        37    43.0%
+  b1e5_1e4        10    11.6%
+  b1e4_1e3         1     1.2%
+  ge1e3            3     3.5%
+  unavailable      0     0.0%
+
+--- Table C: geometry x score state ---
+  CIoU>=0.50  COLLAPSED   72
+  CIoU>=0.50  LOW         11
+  CIoU>=0.50  NORMAL       3
+  CIoU>=0.75  COLLAPSED   26
+  CIoU>=0.75  LOW          7
+  CIoU>=0.75  NORMAL       1
+
+--- Table D: 其余机制的观测状态 ---
+  NMS_STATE               : {'NOT_OBSERVABLE': 86}
+  GEOMETRY_TRANSFORM_STATE: {'NOT_OBSERVABLE': 86}
+  TOP100_STATE            : {'NOT_OBSERVABLE': 84, 'POSSIBLE': 2}
+  （全 val 中原始框数 >100 的图: 4 张 —— 与官方 counts imgs_truncated 对照）
+
+====================================================================================================
+CONSISTENCY CHECKS
+====================================================================================================
+  [PASS] CHECK 1: 86 条与上一轮逐条一致  n=86
+  [PASS] CHECK 2: 每条含 image_id / gt_id / gt_class  
+  [PASS] CHECK 3: 全部 prefinal certified ∧ final best_any<.50  
+  [PASS] CHECK 4: class score 全为 numeric（统一 float）  non-numeric=0
+  [PASS] CHECK 5: 统计可由逐 GT CSV 重新聚合  
+  [PASS] CHECK 6: 未覆盖上一轮文件（新目录）  
+  [PASS] CHECK 7: CIoU<=IoU 的代码级界（CIoU 两项非负 + clamp）  metrics.py:305 iou-(rho2/c2+v*alpha), tal.py:155 clamp_(0)
+  [PASS] CHECK 8: 无任何 ARTIFACT 提供真实 IoU / candidate identity / 前后 NMS 对照  

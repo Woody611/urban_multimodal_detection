@@ -1,0 +1,8 @@
+metric,value
+medium val GT,1320
+of which 86 (certified pre-final loss),86
+86 全部 frozen best_same==0,0
+"86 的 GT 类 logit(stride-8, GT中心) 中位",-16.719
+86 的 sigmoid(logit) 中位,5.48615e-08
+对照(已检出 medium) GT 类 logit 中位,0.883
+classification head bias(stride-8) 中位,-9.8125

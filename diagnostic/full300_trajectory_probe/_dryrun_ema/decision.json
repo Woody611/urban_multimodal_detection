@@ -1,0 +1,58 @@
+{
+  "epoch_points": [
+    0,
+    1
+  ],
+  "random_baseline_majority_prior": 0.8571,
+  "p3_accuracy_g86": [
+    0.6364,
+    0.6364
+  ],
+  "p3_accuracy_control": [
+    0.8571,
+    0.8571
+  ],
+  "h_accuracy_g86": [
+    0.6364,
+    0.6364
+  ],
+  "h_accuracy_control": [
+    0.8571,
+    0.8571
+  ],
+  "mask_pos_rate": [
+    1.0,
+    1.0
+  ],
+  "cls_logit_median": [
+    -17.089189250644857,
+    -18.60471747538198
+  ],
+  "raw_align_median": [
+    2.646569919306785e-05,
+    1.917446388688404e-05
+  ],
+  "first_P3_degradation": null,
+  "first_cls_degradation": null,
+  "first_alignment_degradation": null,
+  "first_mask_pos_loss": null,
+  "p3_decline_total": 0.0,
+  "p3_early": 0.6364,
+  "near_random_early": true,
+  "h_decline_total": 0.0,
+  "h_recovers": false,
+  "thresholds": {
+    "TH_NEAR_RANDOM": 0.05,
+    "TH_DECLINE": 0.1,
+    "TH_CLS_NATS": 2.0,
+    "TH_ALIGN_FACTOR": 0.5
+  },
+  "CASE": "A",
+  "REPRESENTATION_INITIAL_WEAKNESS": "SUPPORTED",
+  "TRAINING_DEGRADATION": "NOT_SUPPORTED",
+  "TAL_SELECTION_FEEDBACK": "NOT_SUPPORTED",
+  "P3_WEAK_H_RECOVERY": "NOT_SUPPORTED",
+  "SYNCHRONIZED_MECHANISM": "SUPPORTED",
+  "CAUSALITY_LEVEL": "mechanistically supported (single trajectory, no intervention)",
+  "NOTE": "本判决由 _probe.py::_decide 依预注册阈值自动生成；阈值写在代码内，事前固定。"
+}

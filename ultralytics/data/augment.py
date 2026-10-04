@@ -4197,6 +4197,16 @@ def v8_transforms(dataset, imgsz, hyp,stretch=False):
     if  hyp.channels == 5:
         # RGBID 5ch：albumentations 不支持 >4ch，关闭模糊/CLAHE；RandomHSV 对非 3ch 自动跳过
         alb=Albumentations(p=0)
+    # ---- Infrastructure Repair (2026-10-03)：光度增强的**显式覆盖**（opt-in）----
+    # 缺省（albumentations_p is None）时不改变任何行为，上面的按通道硬分派原样生效。
+    # 动机：D′(5ch) 走 Albumentations(p=0)、3ch/4ch 走 (p=1.0)，这会让 modality 对比
+    #       在 augmentation 层面不可比。modality 基线配置写 `aug.albumentations_p: 0.0`
+    #       即可与 D′ 对齐。
+    _alb_override = getattr(hyp, "albumentations_p", None)
+    if _alb_override is not None:
+        _alb_p = float(_alb_override)
+        alb = Albumentations4C(p=_alb_p) if hyp.channels == 4 else Albumentations(p=_alb_p)
+        LOGGER.info(f"albumentations override: p={_alb_p} (channels={hyp.channels})")
     # ---- OASA（方案 A · Pre-Mosaic）：Compose 的第一个元素，早于 Mosaic ----
     # enabled 由 hyp.object_scale_aug 决定；但**是否真正生效**还要看 _mosaic_inst.p > 0
     # （close_mosaic 会用 hyp.mosaic=0 重建 transforms ⇒ 新实例 p=0 ⇒ OASA 自动 OFF）。

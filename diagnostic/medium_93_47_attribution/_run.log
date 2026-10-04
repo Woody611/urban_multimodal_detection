@@ -1,0 +1,68 @@
+GT: images=398  GT=2807  (official load_split)
+medium GT (native 1024-9216) = 1320
+V1 join: 1320/1320
+RECOVERED: zero_same=145 (ref 145)  wrong_class=47 (ref 47)  collapse=93 (ref 93)
+SET RELATIONS: |collapse|=93 |wrong_class|=47 intersection=30 union=110
+per_gt_attribution.csv: 110 rows
+
+[A. 93 classification-collapse] n=93
+   best_any_ge_050               6  (6.5%)
+   best_any_ge_075               1  (1.1%)
+   best_any_ge_090               1  (1.1%)
+   best_same_ge_050              0  (0.0%)
+   best_same_ge_075              0  (0.0%)
+   best_same_ge_090              0  (0.0%)
+   LOCALIZATION_LIMITED         87  (93.5%)
+   CLASSIFICATION_LIMITED        6  (6.5%)
+   STRONG_CLASSIFICATION_FAILURE    1  (1.1%)
+
+[B. 47 wrong_class] n=47
+   best_any_ge_050               9  (19.1%)
+   best_any_ge_075               2  (4.3%)
+   best_any_ge_090               1  (2.1%)
+   best_same_ge_050              0  (0.0%)
+   best_same_ge_075              0  (0.0%)
+   best_same_ge_090              0  (0.0%)
+   LOCALIZATION_LIMITED         38  (80.9%)
+   CLASSIFICATION_LIMITED        9  (19.1%)
+   STRONG_CLASSIFICATION_FAILURE    2  (4.3%)
+
+[C. union (110)] n=110
+   best_any_ge_050               9  (8.2%)
+   best_any_ge_075               2  (1.8%)
+   best_any_ge_090               1  (0.9%)
+   best_same_ge_050              0  (0.0%)
+   best_same_ge_075              0  (0.0%)
+   best_same_ge_090              0  (0.0%)
+   LOCALIZATION_LIMITED        101  (91.8%)
+   CLASSIFICATION_LIMITED        9  (8.2%)
+   STRONG_CLASSIFICATION_FAILURE    2  (1.8%)
+
+=== best_any x best_same cross-table (union) ===
+  best_any <0.50   best_same <0.50   n=101   localization-limited
+  best_any >=0.50  best_same <0.50   n=9     classification-limited
+  best_any >=0.75  best_same <0.50   n=2     strong classification failure
+  best_any >=0.75  best_same >=0.50  n=0     geometry exists; inspect ranking
+  best_any >=0.90  best_same >=0.75  n=0     very strong geometric candidate
+
+=== class breakdown ===
+  class          coll  wrong  any_mean  any_med  same_mean  same_med  cls_lim  loc_lim  strong
+  person           27      9    0.0416   0.0000     0.0000    0.0000        1       29       0
+  animal           19      1    0.0363   0.0000     0.0000    0.0000        1       18       0
+  seat              4      3    0.1250   0.0442     0.0000    0.0000        1        4       0
+  sign             14     12    0.2379   0.0431     0.0000    0.0000        4       14       2
+  bicycle           8      8    0.2004   0.1721     0.0000    0.0000        1       11       0
+  car               4      5    0.2774   0.2477     0.0000    0.0000        1        4       0
+  ball              2      2    0.0957   0.0418     0.0000    0.0000        0        3       0
+  light            14      4    0.0192   0.0000     0.0000    0.0000        0       15       0
+  garbage_can       1      3    0.1149   0.0481     0.0000    0.0000        0        3       0
+
+=== consistency checks ===
+  [PASS] CHECK A: collapse==93 / wrong_class==47  collapse=93 wrong_class=47
+  [PASS] CHECK B: union rows == 110 (93+47 nominal; overlap 30)  rows=110 union=110 intersection=30
+  [PASS] CHECK C: best_any_iou >= best_same_iou for every GT  tol=1e-06
+  [PASS] CHECK D: 0 <= IoU <= 1  
+  [PASS] CHECK E: if best_same present, its class == GT class  by construction (same-class filtered)
+  [PASS] CHECK F: best_any class==gt_class => best_any_iou==best_same_iou  violations=0 tol=1e-06
+  [PASS] CHECK G: aggregates re-derivable from per-GT rows  recount == summary
+  [PASS] CHECK H: possible_ranking_limited unreachable in this sample  all 110 have best_same==0 -> ranking cat structurally 0 (sample is pre-selected on same-class)

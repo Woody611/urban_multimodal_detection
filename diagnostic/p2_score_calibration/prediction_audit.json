@@ -1,0 +1,30 @@
+{
+ "images": 400,
+ "raw_boxes": 4715,
+ "conf_min": 0.001001,
+ "conf_max": 0.979883,
+ "conf_median": 0.452559,
+ "conf_p95": 0.9589093999999999,
+ "conf_p99": 0.9702391,
+ "boxes_per_image_min": 0,
+ "boxes_per_image_max": 184,
+ "boxes_per_image_mean": 11.7875,
+ "images_gt100": 4,
+ "class_hist": {
+  "person": 2068,
+  "boat": 82,
+  "animal": 1041,
+  "seat": 160,
+  "sign": 187,
+  "bicycle": 188,
+  "car": 465,
+  "ball": 29,
+  "light": 322,
+  "garbage_can": 110,
+  "uav": 50,
+  "tricycle": 13
+ },
+ "has_full_class_scores": false,
+ "pred_bundle_sha256": "3ed3cdda0b2eea4b1e9e6fa79f8e71ba6172521142e47fb7e7643819bdfaa50a",
+ "eval_images_used": 398
+}

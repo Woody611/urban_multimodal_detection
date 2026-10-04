@@ -1,0 +1,8 @@
+Error reading from C:\Users\45548\AppData\Roaming\Ultralytics\settings.json: "No Ultralytics setting 'openvino_msg'. \nView Ultralytics Settings with 'yolo settings' or at 'C:\\Users\\45548\\AppData\\Roaming\\Ultralytics\\settings.json'\nUpdate Settings with 'yolo settings key=value', i.e. 'yolo settings runs_dir=path/to/dir'. For help see https://docs.ultralytics.com/quickstart/#ultralytics-settings."
+Creating new Ultralytics Settings v0.0.6 file ✅ 
+View Ultralytics Settings with 'yolo settings' or at 'C:\Users\45548\AppData\Roaming\Ultralytics\settings.json'
+Update Settings with 'yolo settings key=value', i.e. 'yolo settings runs_dir=path/to/dir'. For help see https://docs.ultralytics.com/quickstart/#ultralytics-settings.
+[predict_rect] mode=rect scaleup=True weights=best.pt
+[predict_rect] source=D:\gyt\AIC\urban_multimodal_detection\data\raw\test\visible n=1000 conf=0.001 iou=0.7 imgsz=1280 max_det=300 max_boxes=100
+[predict_rect] use_simotm=RGBID channels=5 ir_encoding=clahe
+[predict_rect] 完成 1000 张图 → D:\gyt\AIC\urban_multimodal_detection\submissions\rgbid_sepstem_clahe_rectlate10_candidate\results（1000 个 TXT）

@@ -1,0 +1,93 @@
+{
+  "PROVENANCE_STATUS": "PASS",
+  "FEATURE_TENSOR_AVAILABLE": "YES(P3 + cv3-前置 h + logit_decomp; 无 per-modality 特征)",
+  "CLS_BOX_REPRESENTATION": "SHARED(backbone/neck/P3P4P5) + SEPARATE(head tower 64ch vs 256ch)",
+  "FIRST_MODALITY_FUSION": "Concat([2,4,6]) @ configs/yolo11m_sepstem.yaml:53 -> 64ch",
+  "n_medium": 1320,
+  "n_86": 86,
+  "logit_median_86": -16.71855,
+  "logit_median_control": 0.8828,
+  "feat_term_median_86": -6.9653,
+  "feat_term_median_control": 10.6345,
+  "bias_stride8": -9.8125,
+  "hypothesis_matrix": [
+    {
+      "h": "H1 classification representation weak",
+      "status": "PARTIALLY_SUPPORTED"
+    },
+    {
+      "h": "H2 multimodal fusion harms class separation",
+      "status": "NOT_OBSERVABLE"
+    },
+    {
+      "h": "H3 TAL / optimization causes collapse",
+      "status": "NOT_OBSERVABLE"
+    },
+    {
+      "h": "H4 shared cls/box representation explains divergence",
+      "status": "PARTIALLY_SUPPORTED"
+    },
+    {
+      "h": "H5 class imbalance explains collapse",
+      "status": "NOT_SUPPORTED"
+    }
+  ],
+  "checks": [
+    {
+      "name": "C1 provenance（6 项 SHA == 记录）",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "C2 no mutation（前四轮 diagnostic SHA 未变）",
+      "pass": true,
+      "detail": "sup=51a9232dfaff tal=08058c1a87a3 cau=7041256d270b att=62dbc551f470"
+    },
+    {
+      "name": "C3 no GPU（全程 torch CPU / numpy）",
+      "pass": true,
+      "detail": "torch.cuda.is_available()=False"
+    },
+    {
+      "name": "C4 no forward / no predict（本脚本无任何 model(...) 调用）",
+      "pass": true,
+      "detail": "仅 torch.load 读 state_dict"
+    },
+    {
+      "name": "C5 no training / no backward / no optimizer",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "C6 field semantics（logit_decomp == W_gt·h+b_gt 逐行验证）",
+      "pass": true,
+      "detail": "max|resid|=2.16e-06 over 400 sampled rows + 4960 rows earlier"
+    },
+    {
+      "name": "C7 no leakage（86 条为 val GT，未当作训练监督实例）",
+      "pass": true,
+      "detail": "sample_scope 在 CSV 中以 frozen_best_same_iou / detected 标注"
+    },
+    {
+      "name": "C8 no causal overclaim",
+      "pass": true,
+      "detail": "全部结论用 OBSERVED / CONSISTENT_WITH / STRUCTURALLY_PLAUSIBLE / NOT_OBSERVABLE"
+    },
+    {
+      "name": "C9 numeric safety",
+      "pass": true,
+      "detail": "p3/h 无 NaN=True; logit 有限=True"
+    }
+  ],
+  "nearest_centroid": {
+    "h_G86": 0.4651,
+    "h_control_detected": 0.9065,
+    "h_control_missed_non86": 0.7317,
+    "p3_G86": 0.2558,
+    "p3_control_detected": 0.6645,
+    "p3_control_missed_non86": 0.4817,
+    "random_baseline_majority_class": 0.2907,
+    "note": "类均值仅用对照组估计（无泄漏）；nearest-centroid top-1 类别准确率"
+  },
+  "H4_status_reconciled": "PARTIALLY_SUPPORTED (回填 nearest-centroid 证据后)"
+}

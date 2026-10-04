@@ -1,0 +1,7 @@
+[PASS] §1 provenance：13 项与 PROBE30/D′ 逐项一致，0 冲突（见 PROVENANCE.md 表）
+[PASS] §8 logit 恒等式（本机合成输入）：G9 out[c,y,x] == W_c·h+b_c —— 见 _integrity_gate300.py 输出
+[PASS] §2 状态恢复：G10 mode/BN/params/RNG 四项端到端恢复
+[PASS] LOCAL DRY-RUN（无 GPU/无训练/无 forward）：D1 构造+D2 build(281)+D3 head_W/head_b 落盘+D4 **四种机制 A/B/C/D 全判对**
+[PASS] 未修改任何源码/YAML/config/checkpoint；仅新增本目录；PROBE30 与更早五个 diagnostic 目录 SHA 未变
+[NOT RUN] 训练：本机无 GPU（torch 2.4.1+cpu, cuda unavailable）⇒ FULL-300 STATUS = NOT_RUN
+[INFO] _probe300.py sha=33c48de68c61f1a396b8efa2  _analyze300.py sha=d7e441c5ccb010bbe2dd21cc

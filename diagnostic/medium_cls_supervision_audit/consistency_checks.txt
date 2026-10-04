@@ -1,0 +1,8 @@
+[PASS] CHECK A: 86 条与上一轮完全一致  
+[PASS] CHECK B: D′ 配置唯一  
+[PASS] CHECK C: 实际 TAL 实现已确认  tal.py:95-158,215-240；topk10 alpha0.5 beta6.0；CIoU
+[PASS] CHECK D: 实际 cls loss 实现已确认  loss.py:415,527,533；BCEWithLogits reduction=none；分母=Σtarget_scores
+[PASS] CHECK E: 报告的 target 数值来源 = 代码恒等式 + 冻结 best_assign_iou（非估算）  
+[PASS] CHECK F: 逐 GT training-candidate identity（条件检查：仅当报告逐 GT assignment 时才要求）  PASS-by-vacuity：本审计**未**报告逐 GT training assignment，已明确标为 TRAINING_CANDIDATE_IDENTITY = NOT_OBSERVABLE（86 是 val GT；无 anchor/grid/candidate index dump）
+[PASS] CHECK G: numeric 已强制转换  num() 统一 float；non-numeric=0
+[PASS] CHECK H: summary 可由逐条 records 重新聚合  

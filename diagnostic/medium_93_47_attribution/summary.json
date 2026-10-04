@@ -1,0 +1,100 @@
+{
+  "A_collapse": {
+    "n": 93,
+    "best_any_ge_050": 6,
+    "best_any_ge_075": 1,
+    "best_any_ge_090": 1,
+    "best_same_ge_050": 0,
+    "best_same_ge_075": 0,
+    "best_same_ge_090": 0,
+    "LOCALIZATION_LIMITED": 87,
+    "CLASSIFICATION_LIMITED": 6,
+    "STRONG_CLASSIFICATION_FAILURE": 1,
+    "POSSIBLE_RANKING_LIMITED": 0,
+    "TOP100_LIMITED": "NOT_OBSERVABLE",
+    "MIXED": 0,
+    "UNRESOLVED": 0
+  },
+  "B_wrong_class": {
+    "n": 47,
+    "best_any_ge_050": 9,
+    "best_any_ge_075": 2,
+    "best_any_ge_090": 1,
+    "best_same_ge_050": 0,
+    "best_same_ge_075": 0,
+    "best_same_ge_090": 0,
+    "LOCALIZATION_LIMITED": 38,
+    "CLASSIFICATION_LIMITED": 9,
+    "STRONG_CLASSIFICATION_FAILURE": 2,
+    "POSSIBLE_RANKING_LIMITED": 0,
+    "TOP100_LIMITED": "NOT_OBSERVABLE",
+    "MIXED": 0,
+    "UNRESOLVED": 0
+  },
+  "C_union": {
+    "n": 110,
+    "best_any_ge_050": 9,
+    "best_any_ge_075": 2,
+    "best_any_ge_090": 1,
+    "best_same_ge_050": 0,
+    "best_same_ge_075": 0,
+    "best_same_ge_090": 0,
+    "LOCALIZATION_LIMITED": 101,
+    "CLASSIFICATION_LIMITED": 9,
+    "STRONG_CLASSIFICATION_FAILURE": 2,
+    "POSSIBLE_RANKING_LIMITED": 0,
+    "TOP100_LIMITED": "NOT_OBSERVABLE",
+    "MIXED": 0,
+    "UNRESOLVED": 0
+  },
+  "set_relations": {
+    "collapse": 93,
+    "wrong_class": 47,
+    "intersection": 30,
+    "union": 110
+  },
+  "per_gt_rows": 110,
+  "checks": [
+    {
+      "name": "CHECK A: collapse==93 / wrong_class==47",
+      "pass": true,
+      "detail": "collapse=93 wrong_class=47"
+    },
+    {
+      "name": "CHECK B: union rows == 110 (93+47 nominal; overlap 30)",
+      "pass": true,
+      "detail": "rows=110 union=110 intersection=30"
+    },
+    {
+      "name": "CHECK C: best_any_iou >= best_same_iou for every GT",
+      "pass": true,
+      "detail": "tol=1e-06"
+    },
+    {
+      "name": "CHECK D: 0 <= IoU <= 1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "CHECK E: if best_same present, its class == GT class",
+      "pass": true,
+      "detail": "by construction (same-class filtered)"
+    },
+    {
+      "name": "CHECK F: best_any class==gt_class => best_any_iou==best_same_iou",
+      "pass": true,
+      "detail": "violations=0 tol=1e-06"
+    },
+    {
+      "name": "CHECK G: aggregates re-derivable from per-GT rows",
+      "pass": true,
+      "detail": "recount == summary"
+    },
+    {
+      "name": "CHECK H: possible_ranking_limited unreachable in this sample",
+      "pass": true,
+      "detail": "all 110 have best_same==0 -> ranking cat structurally 0 (sample is pre-selected on same-class)"
+    }
+  ],
+  "tolerance": 1e-06
+}

@@ -1,0 +1,100 @@
+{
+ "pipeline": {
+  "raw_per_img": 82.1925,
+  "nms_per_img": 11.7875,
+  "top100_per_img": 11.3575,
+  "raw_total": 32877,
+  "nms_total": 4715,
+  "imgs_gt100": 4
+ },
+ "funnel_small": {
+  "MATCHED@0.5": 222,
+  "F0_no_raw_candidate": 95,
+  "F1_nms_disappearance": 30,
+  "F3_survives_official_fail": 13,
+  "F2_top100_disappearance": 11
+ },
+ "funnel_all_sizes": {
+  "small": {
+   "MATCHED@0.5": 222,
+   "F0_no_raw_candidate": 95,
+   "F1_nms_disappearance": 30,
+   "F3_survives_official_fail": 13,
+   "F2_top100_disappearance": 11
+  },
+  "medium": {
+   "MATCHED@0.5": 1064,
+   "F0_no_raw_candidate": 155,
+   "F1_nms_disappearance": 79,
+   "F3_survives_official_fail": 21,
+   "F2_top100_disappearance": 1
+  },
+  "large": {
+   "F0_no_raw_candidate": 51,
+   "MATCHED@0.5": 1009,
+   "F1_nms_disappearance": 51,
+   "F3_survives_official_fail": 5
+  }
+ },
+ "class_small": {
+  "0": {
+   "F0_no_raw_candidate": 35,
+   "MATCHED@0.5": 122,
+   "F1_nms_disappearance": 24,
+   "F3_survives_official_fail": 5,
+   "F2_top100_disappearance": 9
+  },
+  "1": {
+   "MATCHED@0.5": 2,
+   "F3_survives_official_fail": 1
+  },
+  "2": {
+   "F1_nms_disappearance": 4,
+   "MATCHED@0.5": 30,
+   "F3_survives_official_fail": 3,
+   "F0_no_raw_candidate": 26
+  },
+  "3": {
+   "MATCHED@0.5": 4,
+   "F0_no_raw_candidate": 4,
+   "F2_top100_disappearance": 1
+  },
+  "4": {
+   "MATCHED@0.5": 19,
+   "F0_no_raw_candidate": 9,
+   "F3_survives_official_fail": 2
+  },
+  "5": {
+   "MATCHED@0.5": 5,
+   "F0_no_raw_candidate": 6,
+   "F3_survives_official_fail": 1
+  },
+  "6": {
+   "MATCHED@0.5": 12,
+   "F0_no_raw_candidate": 5,
+   "F1_nms_disappearance": 1
+  },
+  "7": {
+   "F2_top100_disappearance": 1,
+   "F0_no_raw_candidate": 2,
+   "MATCHED@0.5": 3
+  },
+  "8": {
+   "MATCHED@0.5": 3,
+   "F0_no_raw_candidate": 7,
+   "F1_nms_disappearance": 1
+  },
+  "9": {
+   "F0_no_raw_candidate": 1,
+   "MATCHED@0.5": 4,
+   "F3_survives_official_fail": 1
+  },
+  "10": {
+   "MATCHED@0.5": 18
+  },
+  "11": {}
+ },
+ "small_n": 371,
+ "small_zero_iou_pre": 68,
+ "small_no_sameclass_pre": 16
+}

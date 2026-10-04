@@ -201,6 +201,217 @@ def _remap_separate_stem(model, src, rgb_stem, aux_stems):
     return n
 
 
+# ============================================================
+# Residual-Depth adapter remap (2026-10-04, P1)
+# ------------------------------------------------------------
+# Layout (the "candC" prototype): a 5ch input is split into the M4 input
+# ``[B,G,R,IR]`` (4ch) and the raw Depth channel (1ch). The M4 branch keeps a
+# **4ch Conv stem**; Depth goes through a **zero-initialised** ``ZeroConv2d`` and
+# is ADDed onto the stem output::
+#
+#     Silence -> SilenceChannel[0,4] -> Conv(4->C)         ---\
+#             -> SilenceChannel[4,5] -> ZeroConv2d(1->C)   --- ADD -> stock body
+#
+# At t=0 the fused tensor is ``M4_stem(x) + 0``, so the initialised network is
+# functionally identical to M4 carrying the same pretrained stem.
+#
+# Why this branch has to exist: this layout contains **no 1ch ``Conv`` stem**, so
+# before this branch existed it fell into the ``multi_ch`` branch below -- which
+# writes the first Conv only and returns -- leaving the entire index-shifted body
+# randomly initialised. Measured pretrained coverage was 9.7% while the old
+# contract gate still reported PASS.
+#
+# Fail-closed by construction: the layout is read from the model yaml, every
+# mapping is shape-checked against the stock checkpoint, and anything ambiguous,
+# missing or mismatched raises instead of falling back.
+# ============================================================
+
+
+def _find_residual_depth_adapter(model):
+    """Locate the ``M4 stem + ZeroConv2d(Depth) + ADD`` layout.
+
+    Returns ``(stem_idx, zc_idx, add_idx, silch_rgb_idx, silch_depth_idx)`` or
+    ``None`` when the model has no ``ZeroConv2d`` at all (=> not this family, the
+    pre-existing dispatch is untouched). Raises -- never guesses -- if a
+    ``ZeroConv2d`` is present but the surrounding fusion is not exactly this
+    layout.
+    """
+    mods = list(model.model)
+    layers = list(model.yaml.get("backbone", [])) + list(model.yaml.get("head", []))
+    zc = [i for i, m in enumerate(mods) if type(m).__name__ == "ZeroConv2d"]
+    if not zc:
+        return None  # not this family
+
+    def _raise(msg):
+        raise RuntimeError(f"[residual-depth remap] {msg}; refusing to guess")
+
+    if len(zc) != 1:
+        _raise(f"expected exactly one ZeroConv2d, found {len(zc)} at layers {zc}")
+    zc_idx = zc[0]
+    zc_mod = mods[zc_idx]
+    if zc_mod.in_channels != 1:
+        _raise(f"ZeroConv2d at layer {zc_idx} has in_channels={zc_mod.in_channels}, expected 1")
+
+    # ---- ADD layers whose inputs include the ZeroConv2d ----
+    adds = [
+        i
+        for i, m in enumerate(mods)
+        if type(m).__name__ == "ADD" and isinstance(layers[i][0], (list, tuple)) and zc_idx in layers[i][0]
+    ]
+    if len(adds) != 1:
+        _raise(f"expected exactly one ADD fed by the ZeroConv2d, found {len(adds)} at layers {adds}")
+    add_idx = adds[0]
+
+    # ---- the other ADD input must be the M4 (4ch) stem ----
+    other = [f for f in layers[add_idx][0] if f != zc_idx]
+    if len(other) != 1:
+        _raise(f"ADD at layer {add_idx} has inputs {list(layers[add_idx][0])}, expected 2")
+    stem_idx = int(other[0])
+    stem = mods[stem_idx]
+    if type(stem).__name__ != "Conv" or getattr(stem.conv, "in_channels", None) != 4:
+        _raise(
+            f"ADD at layer {add_idx} input {stem_idx} is {type(stem).__name__} with "
+            f"in_channels={getattr(getattr(stem, 'conv', None), 'in_channels', None)}, expected a 4ch Conv stem"
+        )
+
+    # ---- both branches must be fed by the expected SilenceChannel slices ----
+    def _feeder(i):
+        fr = layers[i][0]
+        j = i - 1 if fr == -1 else fr
+        if not isinstance(j, int) or j < 0 or j >= len(layers):
+            return None
+        mod = mods[j]
+        if type(mod).__name__ != "SilenceChannel":
+            return None
+        return j, int(getattr(mod, "c_start", -1)), int(getattr(mod, "c_end", -1))
+
+    f_stem = _feeder(stem_idx)
+    f_zc = _feeder(zc_idx)
+    if f_stem is None or f_stem[1:] != (0, 4):
+        _raise(f"M4 stem at layer {stem_idx} is not fed by a SilenceChannel[0,4] (got {f_stem})")
+    if f_zc is None or f_zc[1:] != (4, 5):
+        _raise(f"ZeroConv2d at layer {zc_idx} is not fed by a SilenceChannel[4,5] (got {f_zc})")
+    # parse_model rewrites a leading `Silence` to `nn.Identity` (and mutates the
+    # yaml in place), so accept either spelling at the root.
+    if type(mods[0]).__name__ not in ("Identity", "Silence"):
+        _raise(
+            f"layer 0 is {type(mods[0]).__name__!r}, expected a 'Silence'/nn.Identity passthrough "
+            f"(the 5ch tensor the two SilenceChannel slices reference)"
+        )
+    LOGGER.info(
+        f"residual-depth adapter layout: 5ch root -> SilenceChannel[0,4]@{f_stem[0]} -> M4 stem@{stem_idx}; "
+        f"SilenceChannel[4,5]@{f_zc[0]} -> ZeroConv2d@{zc_idx}; ADD@{add_idx}"
+    )
+    return stem_idx, zc_idx, add_idx
+
+
+def _remap_residual_depth_adapter(model, src, stem_idx, zc_idx, add_idx):
+    """Remap stock COCO weights into the residual-Depth adapter layout.
+
+    * M4 stem (in=4): ``ch[0:3]`` <- pretrained RGB, ``ch[3]`` <- ``mean(W_R,W_G,W_B)``,
+      BN copied from stock ``model.0.bn`` (``load()`` cannot reach it: the Silence
+      prefix shifted the module name to ``model.<stem_idx>.bn``).
+    * ZeroConv2d (Depth): **must already be exactly zero** and is never written.
+    * Everything after the ADD: layer ``i`` <- stock layer ``i - add_idx``, shape-checked.
+
+    Raises on any missing / mismatched / ambiguous tensor.
+    """
+    from ultralytics.nn.modules.conv import Conv  # noqa: F401  (documented layout)
+
+    layers = list(model.yaml.get("backbone", [])) + list(model.yaml.get("head", []))
+    mods = list(model.model)
+    stem = mods[stem_idx]
+    zc = mods[zc_idx]
+    offset = add_idx
+
+    stock_w = src.get("model.0.conv.weight")
+    if stock_w is None:
+        raise RuntimeError("[residual-depth remap] stock stem 'model.0.conv.weight' not present in pretrained weights")
+    if stock_w.shape[1] != 3:
+        raise RuntimeError(f"[residual-depth remap] expected a 3-channel stock stem, got in_channels={stock_w.shape[1]}")
+    if stock_w.shape[0] != stem.conv.weight.shape[0]:
+        raise RuntimeError(
+            f"[residual-depth remap] M4 stem out={stem.conv.weight.shape[0]} != stock out={stock_w.shape[0]}"
+        )
+
+    n = 0
+    n_zero = 0
+    with torch.no_grad():
+        # ---- 1. M4 stem: RGB prefix + mean(R,G,B) on the aux channel ----
+        stem.conv.weight[:, :3].copy_(stock_w)
+        stem.conv.weight[:, 3:].copy_(stock_w.float().mean(dim=1, keepdim=True).to(stem.conv.weight.dtype))
+        n += 1
+        for bk, bv in stem.bn.state_dict().items():
+            sk = f"model.0.bn.{bk}"
+            sv = src.get(sk)
+            if sv is None:
+                raise RuntimeError(f"[residual-depth remap] stock '{sk}' missing for the M4 stem BN")
+            if sv.ndim == 0:
+                bv.copy_(sv)
+            elif sv.shape[0] == bv.shape[0]:
+                bv.copy_(sv)
+            else:
+                raise RuntimeError(
+                    f"[residual-depth remap] stock '{sk}' has {tuple(sv.shape)} vs target {tuple(bv.shape)}"
+                )
+            n += 1
+
+        # ---- 2. Depth adapter must be an exact zero-init, and stays zero ----
+        for zk, zv in list(zc.state_dict().items()):
+            if torch.count_nonzero(zv).item() != 0:
+                raise RuntimeError(
+                    f"[residual-depth remap] ZeroConv2d parameter '{zk}' is not exactly zero "
+                    f"(max_abs={float(zv.abs().max()):.3e}); the residual adapter must be identity at t=0"
+                )
+            n_zero += 1
+        LOGGER.info(
+            f"residual-depth remap: M4 stem at layer {stem_idx} <- stock model.0 (ch[0:3]=RGB, ch[3]=mean(RGB)); "
+            f"ZeroConv2d at layer {zc_idx} left at exact zero ({n_zero} tensors)"
+        )
+
+        # ---- 3. body + neck + head: layer i <- stock (i - offset) ----
+        csd = model.state_dict()
+        detect_idx = len(layers) - 1
+        nc = int(getattr(model.model[-1], "nc", -1))
+        n_cls = 0
+        for i in range(offset + 1, len(layers)):
+            s = i - offset
+            prefix = f"model.{i}."
+            for k, v in csd.items():
+                if not k.startswith(prefix) or v.ndim == 0:
+                    continue
+                sk = f"model.{s}." + k[len(prefix) :]
+                sv = src.get(sk)
+                if sv is not None and tuple(sv.shape) == tuple(v.shape):
+                    v.copy_(sv)
+                    n += 1
+                    continue
+                if (
+                    i == detect_idx
+                    and ".cv3." in k
+                    and sv is not None
+                    and tuple(sv.shape[1:]) == tuple(v.shape[1:])
+                    and v.shape[0] == nc
+                    and sv.shape[0] != nc
+                ):
+                    n_cls += 1
+                    continue
+                if sv is None:
+                    raise RuntimeError(
+                        f"[residual-depth remap] no pretrained counterpart for '{k}' (looked for '{sk}')"
+                    )
+                raise RuntimeError(
+                    f"[residual-depth remap] shape mismatch for '{k}': candidate {tuple(v.shape)} vs stock {sk} {tuple(sv.shape)}"
+                )
+
+    LOGGER.info(
+        f"Residual-depth adapter remap: {n} tensors transferred "
+        f"(M4 stem layer {stem_idx} + layers {offset + 1}..{len(layers) - 1} <- stock 1..{len(layers) - 1 - offset}); "
+        f"ZeroConv2d (layer {zc_idx}) = exact zero; Detect cv3 re-initialised for nc={nc}: {n_cls} tensors"
+    )
+    return n
+
+
 def _transfer_rgb_pretrained(model, weights):
     """Transfer single-branch COCO pretrained weights into fusion models.
 
@@ -253,25 +464,95 @@ def _transfer_rgb_pretrained(model, weights):
         )
         return 0
 
-    # ---- RGBID early fusion: first Conv absorbs all 5 channels (no 1ch stem) ----
-    five_ch = next((m for m in stems if getattr(m.conv, "in_channels", None) == 5), None)
-    if five_ch is not None and not any(getattr(m.conv, "in_channels", None) == 1 for m in stems):
-        # Early fusion has no Silence -> first Conv is model.0. Standard load() already
-        # matched every key except the 5ch stem weight; fill it here (RGB=pretrained,
-        # IR/D=mean(R,G,B), mirroring the RGBD depth-stem init convention).
+    # ---- residual-Depth adapter (M4 stem + zero-init Depth + ADD) ----
+    # Dispatched FIRST and by an unambiguous marker: no existing config in this
+    # repo uses ZeroConv2d. Without this branch the layout falls into `multi_ch`
+    # below, which writes the first Conv and returns -- leaving the whole
+    # index-shifted body randomly initialised (measured 9.7% coverage) while the
+    # old contract gate still reported PASS.
+    _rda = _find_residual_depth_adapter(model)
+    if _rda is not None:
+        return _remap_residual_depth_adapter(model, src, *_rda)
+
+    # ---- early fusion, single stem absorbing N channels (no 1ch stem) ----
+    # 2026-10-03 修复：原条件写死 `in_channels == 5`（只为 RGBID 服务），4ch / 2ch 单 stem
+    # 不匹配任何分支 ⇒ 落入下面的 `return 0`（无日志、无 raise），而 `model.load()` 已因 shape
+    # 不符丢掉 `model.0.conv.weight` ⇒ 首个 Conv **静默保持随机初始化**。
+    # 现在统一处理 N != 3 的单 stem 布局，并在无法确定策略时**抛错**。
+    # ⚠ 必须只看**第一个** Conv（输入 stem）：`in_channels > 3` 也会命中模型深处的
+    #   Conv（如 64/128ch），那是普通层不是 stem。原实现写 `== 5` 恰好躲过了这个坑。
+    _first = stems[0] if stems else None
+    _fin = (getattr(_first.conv, "in_channels", None) or 0) if _first is not None else 0
+    multi_ch = _first if _fin > 3 else None
+    narrow_ch = _first if _fin in (1, 2) else None
+    if multi_ch is not None and not any(getattr(m.conv, "in_channels", None) == 1 for m in stems):
+        # 通道序约定 [B, G, R, AUX...]：前 3 通道吃预训练 RGB，其余 = mean(W_R,W_G,W_B)。
         w = src.get("model.0.conv.weight")
-        if w is not None and w.shape[1] == 3 and w.shape[0] == five_ch.conv.weight.shape[0]:
-            n_aux = five_ch.conv.weight.shape[1] - 3
-            with torch.no_grad():
-                five_ch.conv.weight[:, :3].copy_(w)  # RGB 预训练
-                five_ch.conv.weight[:, 3:].copy_(
-                    w.mean(dim=1, keepdim=True).repeat(1, n_aux, 1, 1)
-                )  # IR/D = mean(R,G,B)
-            LOGGER.info(
-                f"RGBID early-fusion stem init: RGB=pretrained, IR/D=mean(R,G,B) "
-                f"(stem in={five_ch.conv.in_channels})"
+        if w is None or w.shape[1] != 3 or w.shape[0] != multi_ch.conv.weight.shape[0]:
+            raise RuntimeError(
+                f"[multi-ch stem remap] cannot initialise in_channels="
+                f"{multi_ch.conv.in_channels} stem: stock stem 'model.0.conv.weight' "
+                f"{'missing' if w is None else tuple(w.shape)} vs target out="
+                f"{multi_ch.conv.weight.shape[0]}. 拒绝静默保留随机初始化。"
             )
-            return 5
+        # Fail-closed: this branch writes the stem and returns, and it can only
+        # rely on `load()` to have matched the rest of the graph **by name**. That
+        # is true only when the stem sits at layer 0 and no Silence/SilenceChannel
+        # prefix has shifted the indices. If the stem is anywhere else, the body is
+        # not matched by name and would stay randomly initialised -- raise instead.
+        _mi = next((i for i, m in enumerate(model.model) if m is multi_ch), None)
+        if _mi != 0:
+            raise RuntimeError(
+                f"[multi-ch stem remap] the {multi_ch.conv.in_channels}ch stem is at layer {_mi}, not 0: "
+                f"the Silence/Identity prefix shifted the module names, so `load()` cannot match the body "
+                f"and this branch would leave it randomly initialised. Refusing to guess."
+            )
+        n_aux = multi_ch.conv.weight.shape[1] - 3
+        with torch.no_grad():
+            multi_ch.conv.weight[:, :3].copy_(w)  # RGB 预训练
+            multi_ch.conv.weight[:, 3:].copy_(
+                w.mean(dim=1, keepdim=True).repeat(1, n_aux, 1, 1)
+            )  # AUX = mean(W_R,W_G,W_B)（与 RGBD depth-stem / sepstem aux-stem 同一约定）
+        gw = multi_ch.conv.weight
+        LOGGER.info(
+            f"multi-ch stem init: in={multi_ch.conv.in_channels} out={gw.shape[0]} | "
+            f"ch[0:3]=pretrained RGB ({tuple(w.shape)}) | ch[3:{gw.shape[1]}]=mean(R,G,B) | "
+            f"mean={float(gw.mean()):+.6f} std={float(gw.std()):.6f} "
+            f"finite={bool(torch.isfinite(gw).all())} | newly_init_tensors=1 transferred_tensors=4"
+        )
+        return 5
+
+    if narrow_ch is not None and not any(getattr(m.conv, "in_channels", None) == 3 for m in stems):
+        # 纯低频模态（IR+Depth 等，无 RGB）：每个输入通道都吃**灰度化** stock stem，
+        # 与 _remap_separate_stem 对 aux stem 的处理完全一致。
+        w = src.get("model.0.conv.weight")
+        if w is None or w.shape[1] != 3 or w.shape[0] != narrow_ch.conv.weight.shape[0]:
+            raise RuntimeError(
+                f"[narrow-ch stem remap] cannot initialise in_channels="
+                f"{narrow_ch.conv.in_channels} stem: stock stem 'model.0.conv.weight' "
+                f"{'missing' if w is None else tuple(w.shape)} vs target out="
+                f"{narrow_ch.conv.weight.shape[0]}. 拒绝静默保留随机初始化。"
+            )
+        with torch.no_grad():
+            narrow_ch.conv.weight.copy_(
+                w.mean(dim=1, keepdim=True).repeat(1, narrow_ch.conv.weight.shape[1], 1, 1)
+            )
+        gw = narrow_ch.conv.weight
+        LOGGER.info(
+            f"narrow-ch stem init (no RGB in input): in={narrow_ch.conv.in_channels} "
+            f"out={gw.shape[0]} | all ch = mean(W_R,W_G,W_B) | "
+            f"mean={float(gw.mean()):+.6f} std={float(gw.std()):.6f} "
+            f"finite={bool(torch.isfinite(gw).all())} | newly_init_tensors=1 transferred_tensors=4"
+        )
+        return 5
+
+    # ---- 关于 "1 个 3ch stem + 1 个 1ch stem" 的布局 ----
+    # 该布局（yolo11*_midfusion_rgbd_*.yaml / yolo11_rgbt.yaml 等 15 个既有模型）
+    # **合法地**依赖下面 RGBD concat_res 分支的硬编码索引表完成 remap。
+    # 2026-10-03 Infrastructure Repair 曾在此处加过一条 "歧义即 raise" 的守卫，
+    # 回归扫描显示它会让这 15 个既有模型全部失败 ⇒ **已回退**（属超出 infrastructure scope 的改动）。
+    # 残留风险（已知、未修）：若将来新增一个"1×3ch + 1×1ch"但**不是** concat_res 索引表布局的
+    # 模型，它会被这里静默误映射。新增此类模型时必须同步检查本函数的分派条件。
 
     # ---- Separate-Stem fusion (exactly one 3ch stem + exactly two 1ch stems) ----
     # Must be dispatched BEFORE the RGBD branch below: that branch keys off the mere
@@ -281,6 +562,28 @@ def _transfer_rgb_pretrained(model, weights):
     _ones = [m for m in stems if getattr(m.conv, "in_channels", None) == 1]
     if len(_three) == 1 and len(_ones) == 2:
         return _remap_separate_stem(model, src, _three[0], _ones)
+
+    # ---- fail-closed guard: a Silence-prefixed layout with a >3ch Conv stem ----
+    # Only the two layouts above know how to remap a multi-channel stem. Anything
+    # else that reaches this point would be silently swallowed by the RGBD index
+    # table below (its (fusion idx -> stock idx) table does not correspond to any
+    # other topology). Measured on the candB prototype: 50.5% of the body left
+    # randomly initialised, with no exception raised.
+    # ⚠ only the FIRST Conv is an input stem -- `in_channels > 3` also matches deep
+    # Convs (64/256/512ch) which are ordinary layers, exactly the trap the multi-ch
+    # branch above already documents.
+    _wide = [stems[0]] if stems and (getattr(stems[0].conv, "in_channels", None) or 0) > 3 else []
+    if _wide:
+        _ins = sorted({int(m.conv.in_channels) for m in _wide})
+        _wide_ids = {id(m) for m in _wide}
+        _li = [i for i, m in enumerate(model.model) if id(m) in _wide_ids]
+        raise RuntimeError(
+            f"[fusion remap] unsupported fusion layout: found Conv stem(s) with in_channels={_ins} "
+            f"at layer(s) {_li} together with 1ch stem(s), and this layout matches none of the "
+            f"implemented remap families (multi-ch single stem / narrow-ch / 1x3ch+2x1ch separate-stem / "
+            f"residual-Depth adapter). The RGBD concat_res index table does NOT apply here and would "
+            f"silently leave most of the body randomly initialised. Refusing to guess."
+        )
 
     if not any(getattr(m.conv, "in_channels", None) == 1 for m in stems):
         return 0  # not an RGBD fusion model -> nothing to remap

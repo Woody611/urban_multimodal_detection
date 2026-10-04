@@ -1,0 +1,206 @@
+{
+  "PROVENANCE_STATUS": "PASS",
+  "ALPHA": 0.5,
+  "BETA": 6.0,
+  "TOPK": 10,
+  "n_cand": 1905266,
+  "n_gt": 10105,
+  "C1_align_identity_max_resid": 8.37163838252053e-08,
+  "cand_align_field_semantics": "POST_MASK_POS (in-place tal.py:110) -> NOT usable for ranking; ranking uses recomputed align_raw",
+  "observed_positive_rate": 0.04709841040568614,
+  "recon_vs_observed": {
+    "gt": 10057,
+    "pos": 89735,
+    "both": 89735
+  },
+  "n_pos_per_gt": {
+    "median": 10,
+    "max": 10
+  },
+  "quadrants": {
+    "HIGH_IOU_HIGH_CLS": 102144,
+    "HIGH_IOU_LOW_CLS": 217025,
+    "LOW_IOU_HIGH_CLS": 15742,
+    "LOW_IOU_LOW_CLS": 1570355
+  },
+  "key_group_hi_iou_low_cls": {
+    "n_cand": 217025,
+    "n_gt": 7668,
+    "n_in_observed_pos": 304,
+    "hit_rate": 0.001400760281073609
+  },
+  "ciou075_low_cls": 125202,
+  "pool_maxciou_in_observed_pos_rate": 0.49830464267083985,
+  "equal_align_cls_ratio_iou_05_to_08": 0.003552713678800501,
+  "counterfactual": [
+    {
+      "cf_type": "cls_only",
+      "level": 1e-06,
+      "n_cand": 217025,
+      "n_observed_pos": 304,
+      "observed_hit_rate": 0.001400760281073609,
+      "n_cf_topk": 246,
+      "cf_hit_rate": 0.0011335099642898283,
+      "delta": -0.00026725031678378076
+    },
+    {
+      "cf_type": "cls_only",
+      "level": 1e-05,
+      "n_cand": 217025,
+      "n_observed_pos": 304,
+      "observed_hit_rate": 0.001400760281073609,
+      "n_cf_topk": 277,
+      "cf_hit_rate": 0.0012763506508466766,
+      "delta": -0.0001244096302269325
+    },
+    {
+      "cf_type": "cls_only",
+      "level": 0.0001,
+      "n_cand": 217025,
+      "n_observed_pos": 304,
+      "observed_hit_rate": 0.001400760281073609,
+      "n_cf_topk": 300,
+      "cf_hit_rate": 0.0013823292247436931,
+      "delta": -1.843105632991595e-05
+    },
+    {
+      "cf_type": "cls_only",
+      "level": 0.001,
+      "n_cand": 217025,
+      "n_observed_pos": 304,
+      "observed_hit_rate": 0.001400760281073609,
+      "n_cf_topk": 381,
+      "cf_hit_rate": 0.0017555581154244902,
+      "delta": 0.00035479783435088115
+    },
+    {
+      "cf_type": "cls_only",
+      "level": 0.01,
+      "n_cand": 217025,
+      "n_observed_pos": 304,
+      "observed_hit_rate": 0.001400760281073609,
+      "n_cf_topk": 723,
+      "cf_hit_rate": 0.0033314134316323003,
+      "delta": 0.0019306531505586912
+    },
+    {
+      "cf_type": "cls_only",
+      "level": 0.1,
+      "n_cand": 217025,
+      "n_observed_pos": 304,
+      "observed_hit_rate": 0.001400760281073609,
+      "n_cf_topk": 1807,
+      "cf_hit_rate": 0.008326229697039512,
+      "delta": 0.006925469415965903
+    },
+    {
+      "cf_type": "ciou_only",
+      "level": 0.3,
+      "n_cand": 217025,
+      "n_observed_pos": 304,
+      "observed_hit_rate": 0.001400760281073609,
+      "n_cf_topk": 155,
+      "cf_hit_rate": 0.0007142034327842414,
+      "delta": -0.0006865568482893676
+    },
+    {
+      "cf_type": "ciou_only",
+      "level": 0.4,
+      "n_cand": 217025,
+      "n_observed_pos": 304,
+      "observed_hit_rate": 0.001400760281073609,
+      "n_cf_topk": 212,
+      "cf_hit_rate": 0.000976845985485543,
+      "delta": -0.000423914295588066
+    },
+    {
+      "cf_type": "ciou_only",
+      "level": 0.5,
+      "n_cand": 217025,
+      "n_observed_pos": 304,
+      "observed_hit_rate": 0.001400760281073609,
+      "n_cf_topk": 252,
+      "cf_hit_rate": 0.0011611565487847021,
+      "delta": -0.00023960373228890694
+    },
+    {
+      "cf_type": "ciou_only",
+      "level": 0.6,
+      "n_cand": 217025,
+      "n_observed_pos": 304,
+      "observed_hit_rate": 0.001400760281073609,
+      "n_cf_topk": 276,
+      "cf_hit_rate": 0.0012717428867641976,
+      "delta": -0.00012901739430941144
+    },
+    {
+      "cf_type": "ciou_only",
+      "level": 0.7,
+      "n_cand": 217025,
+      "n_observed_pos": 304,
+      "observed_hit_rate": 0.001400760281073609,
+      "n_cf_topk": 302,
+      "cf_hit_rate": 0.001391544752908651,
+      "delta": -9.215528164958084e-06
+    },
+    {
+      "cf_type": "ciou_only",
+      "level": 0.8,
+      "n_cand": 217025,
+      "n_observed_pos": 304,
+      "observed_hit_rate": 0.001400760281073609,
+      "n_cf_topk": 341,
+      "cf_hit_rate": 0.0015712475521253311,
+      "delta": 0.00017048727105172207
+    },
+    {
+      "cf_type": "ciou_only",
+      "level": 0.9,
+      "n_cand": 217025,
+      "n_observed_pos": 304,
+      "observed_hit_rate": 0.001400760281073609,
+      "n_cf_topk": 397,
+      "cf_hit_rate": 0.0018292823407441538,
+      "delta": 0.00042852205967054474
+    }
+  ],
+  "topk_label": "OBSERVED (cand_align>0 == mask_pos)",
+  "TRAINING_CAUSALITY": "NOT_OBSERVABLE",
+  "checks": [
+    {
+      "name": "C1  align == cls^0.5 * CIoU^6（在 recorded>0 子集上逐项）",
+      "pass": true,
+      "detail": "max|resid|=8.372e-08（float32 精度）；cand_align 字段本身 = post-mask_pos，不可用于排序"
+    },
+    {
+      "name": "C2  topk=10 ⇒ 每 GT 观测正样本数 <= 10",
+      "pass": true,
+      "detail": "median=10 max=10"
+    },
+    {
+      "name": "C3  0<=CIoU<=1 且 0<=cls<=1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "C4  counterfactual 只改指定变量（npz 只读，副本上运算）",
+      "pass": true,
+      "detail": "npz sha 前后一致 = True"
+    },
+    {
+      "name": "C5  旧目录 SHA 未变（与 PRE-FLIGHT 读取值逐位比对）",
+      "pass": true,
+      "detail": "sup=51a9232dfaffd2b1 cau=7041256d270bf433"
+    },
+    {
+      "name": "C6  GPU=0 training=0 inference=0 source_mod=0",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "C7  top-k 结论有 candidate identity / rank 支持",
+      "pass": true,
+      "detail": "cand_gt = 稳定 identity；top-k 为 **OBSERVED**（cand_align>0 = mask_pos），rank 由重算 align_raw 给出"
+    }
+  ]
+}

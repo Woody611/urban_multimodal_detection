@@ -1,0 +1,20 @@
+TAL CLS FEEDBACK AUDIT - INPUT MANIFEST
+============================================================================================
+
+tal.py                aae7e8ac438f00cda88d7e151795b3f78270ec4ed56b883f413fd16233b7e527
+loss.py               0f092cf22a372f6d5c5e7197d7adde51cbb23c02ac4522978f42df5b23a6543b
+train cfg             a4e329cfc3d220206448cdd3377c1b3f5126c50f13c907ada522d98725486e12
+D-prime best.pt       1cae45f75693f54146e35c5fa076c0a6f78ca1cfa95595de74d959f40fae4fda
+frozen candidates     7b28dc555c3fffb64b8a89a7f1bf9566343198bb061cb4e41105fe2972be0ded
+head V1 (val)         3505d9160c47aae813bef8774ea81cdcd3be51df8f5705c4f8058e17e232f355
+prev per_gt_supervision51a9232dfaffd2b1963b374fa09e6acd60afb132f5dd7dc4ded8fabf0d83b584
+prev per_gt_causal_audit7041256d270bf433d206d43fe8c38877bcc2b52d67a7abbd384b6aa9304d100e
+
+npz 字段语义（由 _run.py 逐行确认，并为本轮 C1 实测所证实）：
+  cand_cls   = pd_scores.sigmoid()[GT 类]  = 【预测】的 GT 类概率，**不是 training target**
+  cand_ciou  = L['overlaps'] = bbox_iou(..., CIoU=True).clamp_(0)
+  cand_align = L['align_metric'] —— **post-mask_pos**（tal.py:110 in-place 覆写的结果）
+               **不可用于排序**；cand_align > 0 即【观测到的正样本集 mask_pos】
+  排序一律使用 align_raw = cand_cls^0.5 * cand_ciou^6（float32 精度内与 recorded>0 子集一致）
+  cand_gt    = 该候选所属 GT 索引（稳定 candidate identity）
+  该 dump 为 **train split**（250 张 train 图 × 3 epochs），不是 val、也不是 86 条

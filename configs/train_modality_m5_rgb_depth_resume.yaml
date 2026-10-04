@@ -1,0 +1,73 @@
+# ============================================================
+# ⚠ RESUME 专用副本 (2026-10-04) —— 只为「断训续跑」，**不是新实验**
+# ------------------------------------------------------------
+# 与原配置 `configs/train_modality_m5_rgb_depth.yaml` 的**唯一差异**：checkpoint.resume / resume_path。
+# 原配置保持不动（它的 SHA 是合同门与整条审计链的参照）。
+#
+# 注意：resume 时训练超参由 **checkpoint 内的 train_args** 决定
+#   (ultralytics `check_resume` 会 `self.args = get_cfg(ckpt_args)`)
+#   ⇒ 本文件除 imgsz/batch/device/close_mosaic 外的字段**不会被采用**。
+# ============================================================
+
+# ============================================================
+# ★ REPAIR STATUS (2026-10-03, Infrastructure Repair)
+#   STATUS = READY
+#   ① 4ch stem 预训练迁移已实现；② base.py 的 RGBD 分支改用 pairs_depth（与 loaders.py 统一）。
+# ============================================================
+
+# ============================================================
+# M5 — RGB + Depth 早期融合（4ch）
+# ============================================================
+# ⚠⚠ STATUS = BLOCKED（模型侧，同 M4）
+#   数据侧 OK：use_simotm='RGBD' ⇒ [B,G,R,D] 4ch。
+# ⚠ 通道序注意：RGBD 模式下 `pairs_rgb_ir` 承载的是 **depth** 映射
+#   （loaders.py / base.py 的 RGBD 分支用的是 pairs_ir 做路径替换）——
+#   见 configs/train_multimodal_rgbd.yaml 的既有写法，本文件沿用。
+# ============================================================
+
+experiment_name: "urban_multimodal_det_modality_m5_rgb_depth"
+seed: 42
+pretrained: "yolo11m.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 300
+patience: 0              # 与 D′ 一致：禁用早停，跑满预算
+batch_size: 8
+image_size: [1280, 1280]
+num_workers: 4
+
+learning_rate: 5.0e-3
+warmup_epochs: 3
+
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2           # 各 split 均已存在且**逐位同划分**（1600/400），幂等复用
+
+use_simotm: "RGBD"         # ⇒ [B,G,R,D] 4ch
+pairs_rgb_ir: ["visible", "depth"]      # ⚠ 本模式下承载 depth 映射
+pairs_rgb_depth: ["visible", "depth"]   # 同上
+channels: 4
+
+aug:                     # 对齐 D′ 的"光度增强惰性"（D′ 为 5ch ⇒ RandomHSV 直接 return）
+  hsv_h: 0.0
+  hsv_s: 0.0
+  hsv_v: 0.0
+  albumentations_p: 0.0  # D′ 是 5ch ⇒ Albumentations(p=0)；3ch/4ch 默认 p=1.0，
+                         # 这里显式覆盖为 0 才能与 D′ 在 augmentation 层面对齐
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: true
+  resume_path: "runs/urban_multimodal_det_modality_m5_rgb_depth/weights/last.pt"

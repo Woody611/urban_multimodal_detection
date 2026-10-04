@@ -1,0 +1,5 @@
+group,n,logit_median,feature_term_median,h_norm_median,p3_norm_median
+G-86,86,-16.7186,-6.9653,40.383,6.151
+control_full,1070,0.8828,10.6345,51.51,7.681
+control_size_matched,899,1.2239,10.9498,51.723,7.747
+medium_missed_non86,164,-11.0097,-1.2519,43.954,6.531

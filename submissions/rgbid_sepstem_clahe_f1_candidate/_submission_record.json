@@ -1,0 +1,37 @@
+{
+  "candidate": "rgbid_sepstem_clahe_f1_candidate",
+  "weights": "runs/urban_multimodal_det_yolo11_rgbid_sepstem_clahe_f1/weights/best.pt",
+  "weights_sha256": "9c6f524e04eb373a1acc0dd25c6242336136ee0ca844a69d7ae574ff37194c75",
+  "train_config": "configs/train_rgbid_sepstem_clahe_f1.yaml",
+  "train_config_sha256": "534ae8c4500b33ddf7aaf06a4f8ce9d197f4a232c840bac1fe8390fb27cf2182",
+  "predict_rect_defaults_updated": true,
+  "predict_rect_sha256": "abc22e8abe0b6fec701436b8cdedddabf56a6f12881422a01e1f6a0fc2da4a8b",
+  "infer_cmd": "python scripts/predict_rect.py --source data/raw/test/visible --output submissions/rgbid_sepstem_clahe_f1_candidate",
+  "settings": {
+    "mode": "rect",
+    "conf": 0.001,
+    "iou": 0.7,
+    "imgsz": 1280,
+    "max_det": 300,
+    "max_boxes": 100,
+    "use_simotm": "RGBID",
+    "channels": 5,
+    "ir_encoding": "clahe"
+  },
+  "validation": "check_submission.py --expect 1000  =>  ALL PASS",
+  "n_txt": 1000,
+  "n_boxes": 11909,
+  "empty_txt": 8,
+  "over_cap": 0,
+  "zip_bytes": 366331,
+  "official_val_mAP50_95": 0.51865,
+  "dprime_official_val_mAP50_95": 0.51528,
+  "delta": 0.00336,
+  "paired_bootstrap_CI": [
+    -0.00706,
+    0.01821
+  ],
+  "P_delta_gt_0": 0.78,
+  "fork_val_delta": -0.00205,
+  "verdict": "YELLOW -> CLOSE (提交由用户决定)"
+}

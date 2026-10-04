@@ -1,0 +1,8 @@
+[PASS] CHECK 1: 86 条与上一轮逐条一致  n=86
+[PASS] CHECK 2: 每条含 image_id / gt_id / gt_class  
+[PASS] CHECK 3: 全部 prefinal certified ∧ final best_any<.50  
+[PASS] CHECK 4: class score 全为 numeric（统一 float）  non-numeric=0
+[PASS] CHECK 5: 统计可由逐 GT CSV 重新聚合  
+[PASS] CHECK 6: 未覆盖上一轮文件（新目录）  
+[PASS] CHECK 7: CIoU<=IoU 的代码级界（CIoU 两项非负 + clamp）  metrics.py:305 iou-(rho2/c2+v*alpha), tal.py:155 clamp_(0)
+[PASS] CHECK 8: 无任何 ARTIFACT 提供真实 IoU / candidate identity / 前后 NMS 对照  

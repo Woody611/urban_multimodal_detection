@@ -1,0 +1,7 @@
+[PASS] C1  align == cls^0.5 * CIoU^6（在 recorded>0 子集上逐项）  max|resid|=8.372e-08（float32 精度）；cand_align 字段本身 = post-mask_pos，不可用于排序
+[PASS] C2  topk=10 ⇒ 每 GT 观测正样本数 <= 10  median=10 max=10
+[PASS] C3  0<=CIoU<=1 且 0<=cls<=1  
+[PASS] C4  counterfactual 只改指定变量（npz 只读，副本上运算）  npz sha 前后一致 = True
+[PASS] C5  旧目录 SHA 未变（与 PRE-FLIGHT 读取值逐位比对）  sup=51a9232dfaffd2b1 cau=7041256d270bf433
+[PASS] C6  GPU=0 training=0 inference=0 source_mod=0  
+[PASS] C7  top-k 结论有 candidate identity / rank 支持  cand_gt = 稳定 identity；top-k 为 **OBSERVED**（cand_align>0 = mask_pos），rank 由重算 align_raw 给出
