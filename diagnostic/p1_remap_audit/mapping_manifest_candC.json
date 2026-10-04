@@ -1,0 +1,6884 @@
+[
+  {
+    "target_name": "model.2.conv.weight",
+    "shape": [
+      64,
+      4,
+      3,
+      3
+    ],
+    "numel": 2304,
+    "layer": 2,
+    "kind": "DERIVED",
+    "source_name": "model.0.*",
+    "mapping_reason": "stem (derived)",
+    "status": "DERIVED"
+  },
+  {
+    "target_name": "model.2.bn.weight",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 2,
+    "kind": "DERIVED",
+    "source_name": "model.0.*",
+    "mapping_reason": "stem (derived)",
+    "status": "DERIVED"
+  },
+  {
+    "target_name": "model.2.bn.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 2,
+    "kind": "DERIVED",
+    "source_name": "model.0.*",
+    "mapping_reason": "stem (derived)",
+    "status": "DERIVED"
+  },
+  {
+    "target_name": "model.2.bn.running_mean",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 2,
+    "kind": "DERIVED",
+    "source_name": "model.0.*",
+    "mapping_reason": "stem (derived)",
+    "status": "DERIVED"
+  },
+  {
+    "target_name": "model.2.bn.running_var",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 2,
+    "kind": "DERIVED",
+    "source_name": "model.0.*",
+    "mapping_reason": "stem (derived)",
+    "status": "DERIVED"
+  },
+  {
+    "target_name": "model.4.weight",
+    "shape": [
+      64,
+      1,
+      3,
+      3
+    ],
+    "numel": 576,
+    "layer": 4,
+    "kind": "ZERO_INIT",
+    "source_name": null,
+    "mapping_reason": "Depth residual adapter (ZeroConv2d)",
+    "status": "ZERO_OK"
+  },
+  {
+    "target_name": "model.4.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 4,
+    "kind": "ZERO_INIT",
+    "source_name": null,
+    "mapping_reason": "Depth residual adapter (ZeroConv2d)",
+    "status": "ZERO_OK"
+  },
+  {
+    "target_name": "model.6.conv.weight",
+    "shape": [
+      128,
+      64,
+      3,
+      3
+    ],
+    "numel": 73728,
+    "layer": 6,
+    "source_name": "model.1.conv.weight",
+    "mapping_reason": "body/neck/head: L6 <- stock L1",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.6.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 6,
+    "source_name": "model.1.bn.weight",
+    "mapping_reason": "body/neck/head: L6 <- stock L1",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.6.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 6,
+    "source_name": "model.1.bn.bias",
+    "mapping_reason": "body/neck/head: L6 <- stock L1",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.6.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 6,
+    "source_name": "model.1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L6 <- stock L1",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.6.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 6,
+    "source_name": "model.1.bn.running_var",
+    "mapping_reason": "body/neck/head: L6 <- stock L1",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.cv1.conv.weight",
+    "shape": [
+      128,
+      128,
+      1,
+      1
+    ],
+    "numel": 16384,
+    "layer": 7,
+    "source_name": "model.2.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.cv1.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 7,
+    "source_name": "model.2.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.cv1.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 7,
+    "source_name": "model.2.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.cv1.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 7,
+    "source_name": "model.2.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.cv1.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 7,
+    "source_name": "model.2.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.cv2.conv.weight",
+    "shape": [
+      256,
+      192,
+      1,
+      1
+    ],
+    "numel": 49152,
+    "layer": 7,
+    "source_name": "model.2.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.cv2.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 7,
+    "source_name": "model.2.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.cv2.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 7,
+    "source_name": "model.2.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.cv2.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 7,
+    "source_name": "model.2.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.cv2.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 7,
+    "source_name": "model.2.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.cv1.conv.weight",
+    "shape": [
+      32,
+      64,
+      1,
+      1
+    ],
+    "numel": 2048,
+    "layer": 7,
+    "source_name": "model.2.m.0.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.cv1.bn.weight",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.cv1.bn.bias",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.cv1.bn.running_mean",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.cv1.bn.running_var",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.cv2.conv.weight",
+    "shape": [
+      32,
+      64,
+      1,
+      1
+    ],
+    "numel": 2048,
+    "layer": 7,
+    "source_name": "model.2.m.0.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.cv2.bn.weight",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.cv2.bn.bias",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.cv2.bn.running_mean",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.cv2.bn.running_var",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.cv3.conv.weight",
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "numel": 4096,
+    "layer": 7,
+    "source_name": "model.2.m.0.cv3.conv.weight",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.cv3.bn.weight",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 7,
+    "source_name": "model.2.m.0.cv3.bn.weight",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.cv3.bn.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 7,
+    "source_name": "model.2.m.0.cv3.bn.bias",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.cv3.bn.running_mean",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 7,
+    "source_name": "model.2.m.0.cv3.bn.running_mean",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.cv3.bn.running_var",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 7,
+    "source_name": "model.2.m.0.cv3.bn.running_var",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.m.0.cv1.conv.weight",
+    "shape": [
+      32,
+      32,
+      3,
+      3
+    ],
+    "numel": 9216,
+    "layer": 7,
+    "source_name": "model.2.m.0.m.0.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.m.0.cv1.bn.weight",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.m.0.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.m.0.cv1.bn.bias",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.m.0.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.m.0.cv1.bn.running_mean",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.m.0.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.m.0.cv1.bn.running_var",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.m.0.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.m.0.cv2.conv.weight",
+    "shape": [
+      32,
+      32,
+      3,
+      3
+    ],
+    "numel": 9216,
+    "layer": 7,
+    "source_name": "model.2.m.0.m.0.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.m.0.cv2.bn.weight",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.m.0.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.m.0.cv2.bn.bias",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.m.0.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.m.0.cv2.bn.running_mean",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.m.0.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.m.0.cv2.bn.running_var",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.m.0.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.m.1.cv1.conv.weight",
+    "shape": [
+      32,
+      32,
+      3,
+      3
+    ],
+    "numel": 9216,
+    "layer": 7,
+    "source_name": "model.2.m.0.m.1.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.m.1.cv1.bn.weight",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.m.1.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.m.1.cv1.bn.bias",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.m.1.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.m.1.cv1.bn.running_mean",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.m.1.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.m.1.cv1.bn.running_var",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.m.1.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.m.1.cv2.conv.weight",
+    "shape": [
+      32,
+      32,
+      3,
+      3
+    ],
+    "numel": 9216,
+    "layer": 7,
+    "source_name": "model.2.m.0.m.1.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.m.1.cv2.bn.weight",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.m.1.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.m.1.cv2.bn.bias",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.m.1.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.m.1.cv2.bn.running_mean",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.m.1.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.7.m.0.m.1.cv2.bn.running_var",
+    "shape": [
+      32
+    ],
+    "numel": 32,
+    "layer": 7,
+    "source_name": "model.2.m.0.m.1.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L7 <- stock L2",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.8.conv.weight",
+    "shape": [
+      256,
+      256,
+      3,
+      3
+    ],
+    "numel": 589824,
+    "layer": 8,
+    "source_name": "model.3.conv.weight",
+    "mapping_reason": "body/neck/head: L8 <- stock L3",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.8.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 8,
+    "source_name": "model.3.bn.weight",
+    "mapping_reason": "body/neck/head: L8 <- stock L3",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.8.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 8,
+    "source_name": "model.3.bn.bias",
+    "mapping_reason": "body/neck/head: L8 <- stock L3",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.8.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 8,
+    "source_name": "model.3.bn.running_mean",
+    "mapping_reason": "body/neck/head: L8 <- stock L3",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.8.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 8,
+    "source_name": "model.3.bn.running_var",
+    "mapping_reason": "body/neck/head: L8 <- stock L3",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.cv1.conv.weight",
+    "shape": [
+      256,
+      256,
+      1,
+      1
+    ],
+    "numel": 65536,
+    "layer": 9,
+    "source_name": "model.4.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.cv1.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 9,
+    "source_name": "model.4.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.cv1.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 9,
+    "source_name": "model.4.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.cv1.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 9,
+    "source_name": "model.4.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.cv1.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 9,
+    "source_name": "model.4.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.cv2.conv.weight",
+    "shape": [
+      512,
+      384,
+      1,
+      1
+    ],
+    "numel": 196608,
+    "layer": 9,
+    "source_name": "model.4.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.cv2.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 9,
+    "source_name": "model.4.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.cv2.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 9,
+    "source_name": "model.4.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.cv2.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 9,
+    "source_name": "model.4.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.cv2.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 9,
+    "source_name": "model.4.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.cv1.conv.weight",
+    "shape": [
+      64,
+      128,
+      1,
+      1
+    ],
+    "numel": 8192,
+    "layer": 9,
+    "source_name": "model.4.m.0.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.cv1.bn.weight",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.cv1.bn.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.cv1.bn.running_mean",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.cv1.bn.running_var",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.cv2.conv.weight",
+    "shape": [
+      64,
+      128,
+      1,
+      1
+    ],
+    "numel": 8192,
+    "layer": 9,
+    "source_name": "model.4.m.0.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.cv2.bn.weight",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.cv2.bn.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.cv2.bn.running_mean",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.cv2.bn.running_var",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.cv3.conv.weight",
+    "shape": [
+      128,
+      128,
+      1,
+      1
+    ],
+    "numel": 16384,
+    "layer": 9,
+    "source_name": "model.4.m.0.cv3.conv.weight",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.cv3.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 9,
+    "source_name": "model.4.m.0.cv3.bn.weight",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.cv3.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 9,
+    "source_name": "model.4.m.0.cv3.bn.bias",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.cv3.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 9,
+    "source_name": "model.4.m.0.cv3.bn.running_mean",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.cv3.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 9,
+    "source_name": "model.4.m.0.cv3.bn.running_var",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.m.0.cv1.conv.weight",
+    "shape": [
+      64,
+      64,
+      3,
+      3
+    ],
+    "numel": 36864,
+    "layer": 9,
+    "source_name": "model.4.m.0.m.0.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.m.0.cv1.bn.weight",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.m.0.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.m.0.cv1.bn.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.m.0.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.m.0.cv1.bn.running_mean",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.m.0.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.m.0.cv1.bn.running_var",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.m.0.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.m.0.cv2.conv.weight",
+    "shape": [
+      64,
+      64,
+      3,
+      3
+    ],
+    "numel": 36864,
+    "layer": 9,
+    "source_name": "model.4.m.0.m.0.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.m.0.cv2.bn.weight",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.m.0.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.m.0.cv2.bn.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.m.0.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.m.0.cv2.bn.running_mean",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.m.0.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.m.0.cv2.bn.running_var",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.m.0.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.m.1.cv1.conv.weight",
+    "shape": [
+      64,
+      64,
+      3,
+      3
+    ],
+    "numel": 36864,
+    "layer": 9,
+    "source_name": "model.4.m.0.m.1.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.m.1.cv1.bn.weight",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.m.1.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.m.1.cv1.bn.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.m.1.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.m.1.cv1.bn.running_mean",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.m.1.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.m.1.cv1.bn.running_var",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.m.1.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.m.1.cv2.conv.weight",
+    "shape": [
+      64,
+      64,
+      3,
+      3
+    ],
+    "numel": 36864,
+    "layer": 9,
+    "source_name": "model.4.m.0.m.1.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.m.1.cv2.bn.weight",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.m.1.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.m.1.cv2.bn.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.m.1.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.m.1.cv2.bn.running_mean",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.m.1.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.9.m.0.m.1.cv2.bn.running_var",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 9,
+    "source_name": "model.4.m.0.m.1.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L9 <- stock L4",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.10.conv.weight",
+    "shape": [
+      512,
+      512,
+      3,
+      3
+    ],
+    "numel": 2359296,
+    "layer": 10,
+    "source_name": "model.5.conv.weight",
+    "mapping_reason": "body/neck/head: L10 <- stock L5",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.10.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 10,
+    "source_name": "model.5.bn.weight",
+    "mapping_reason": "body/neck/head: L10 <- stock L5",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.10.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 10,
+    "source_name": "model.5.bn.bias",
+    "mapping_reason": "body/neck/head: L10 <- stock L5",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.10.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 10,
+    "source_name": "model.5.bn.running_mean",
+    "mapping_reason": "body/neck/head: L10 <- stock L5",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.10.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 10,
+    "source_name": "model.5.bn.running_var",
+    "mapping_reason": "body/neck/head: L10 <- stock L5",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.cv1.conv.weight",
+    "shape": [
+      512,
+      512,
+      1,
+      1
+    ],
+    "numel": 262144,
+    "layer": 11,
+    "source_name": "model.6.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.cv1.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 11,
+    "source_name": "model.6.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.cv1.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 11,
+    "source_name": "model.6.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.cv1.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 11,
+    "source_name": "model.6.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.cv1.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 11,
+    "source_name": "model.6.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.cv2.conv.weight",
+    "shape": [
+      512,
+      768,
+      1,
+      1
+    ],
+    "numel": 393216,
+    "layer": 11,
+    "source_name": "model.6.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.cv2.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 11,
+    "source_name": "model.6.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.cv2.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 11,
+    "source_name": "model.6.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.cv2.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 11,
+    "source_name": "model.6.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.cv2.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 11,
+    "source_name": "model.6.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.cv1.conv.weight",
+    "shape": [
+      128,
+      256,
+      1,
+      1
+    ],
+    "numel": 32768,
+    "layer": 11,
+    "source_name": "model.6.m.0.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.cv1.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.cv1.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.cv1.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.cv1.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.cv2.conv.weight",
+    "shape": [
+      128,
+      256,
+      1,
+      1
+    ],
+    "numel": 32768,
+    "layer": 11,
+    "source_name": "model.6.m.0.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.cv2.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.cv2.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.cv2.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.cv2.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.cv3.conv.weight",
+    "shape": [
+      256,
+      256,
+      1,
+      1
+    ],
+    "numel": 65536,
+    "layer": 11,
+    "source_name": "model.6.m.0.cv3.conv.weight",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.cv3.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 11,
+    "source_name": "model.6.m.0.cv3.bn.weight",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.cv3.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 11,
+    "source_name": "model.6.m.0.cv3.bn.bias",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.cv3.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 11,
+    "source_name": "model.6.m.0.cv3.bn.running_mean",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.cv3.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 11,
+    "source_name": "model.6.m.0.cv3.bn.running_var",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.m.0.cv1.conv.weight",
+    "shape": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 11,
+    "source_name": "model.6.m.0.m.0.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.m.0.cv1.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.m.0.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.m.0.cv1.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.m.0.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.m.0.cv1.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.m.0.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.m.0.cv1.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.m.0.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.m.0.cv2.conv.weight",
+    "shape": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 11,
+    "source_name": "model.6.m.0.m.0.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.m.0.cv2.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.m.0.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.m.0.cv2.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.m.0.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.m.0.cv2.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.m.0.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.m.0.cv2.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.m.0.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.m.1.cv1.conv.weight",
+    "shape": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 11,
+    "source_name": "model.6.m.0.m.1.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.m.1.cv1.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.m.1.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.m.1.cv1.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.m.1.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.m.1.cv1.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.m.1.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.m.1.cv1.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.m.1.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.m.1.cv2.conv.weight",
+    "shape": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 11,
+    "source_name": "model.6.m.0.m.1.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.m.1.cv2.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.m.1.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.m.1.cv2.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.m.1.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.m.1.cv2.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.m.1.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.11.m.0.m.1.cv2.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 11,
+    "source_name": "model.6.m.0.m.1.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L11 <- stock L6",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.12.conv.weight",
+    "shape": [
+      512,
+      512,
+      3,
+      3
+    ],
+    "numel": 2359296,
+    "layer": 12,
+    "source_name": "model.7.conv.weight",
+    "mapping_reason": "body/neck/head: L12 <- stock L7",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.12.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 12,
+    "source_name": "model.7.bn.weight",
+    "mapping_reason": "body/neck/head: L12 <- stock L7",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.12.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 12,
+    "source_name": "model.7.bn.bias",
+    "mapping_reason": "body/neck/head: L12 <- stock L7",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.12.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 12,
+    "source_name": "model.7.bn.running_mean",
+    "mapping_reason": "body/neck/head: L12 <- stock L7",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.12.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 12,
+    "source_name": "model.7.bn.running_var",
+    "mapping_reason": "body/neck/head: L12 <- stock L7",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.cv1.conv.weight",
+    "shape": [
+      512,
+      512,
+      1,
+      1
+    ],
+    "numel": 262144,
+    "layer": 13,
+    "source_name": "model.8.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.cv1.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 13,
+    "source_name": "model.8.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.cv1.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 13,
+    "source_name": "model.8.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.cv1.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 13,
+    "source_name": "model.8.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.cv1.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 13,
+    "source_name": "model.8.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.cv2.conv.weight",
+    "shape": [
+      512,
+      768,
+      1,
+      1
+    ],
+    "numel": 393216,
+    "layer": 13,
+    "source_name": "model.8.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.cv2.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 13,
+    "source_name": "model.8.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.cv2.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 13,
+    "source_name": "model.8.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.cv2.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 13,
+    "source_name": "model.8.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.cv2.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 13,
+    "source_name": "model.8.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.cv1.conv.weight",
+    "shape": [
+      128,
+      256,
+      1,
+      1
+    ],
+    "numel": 32768,
+    "layer": 13,
+    "source_name": "model.8.m.0.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.cv1.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.cv1.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.cv1.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.cv1.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.cv2.conv.weight",
+    "shape": [
+      128,
+      256,
+      1,
+      1
+    ],
+    "numel": 32768,
+    "layer": 13,
+    "source_name": "model.8.m.0.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.cv2.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.cv2.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.cv2.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.cv2.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.cv3.conv.weight",
+    "shape": [
+      256,
+      256,
+      1,
+      1
+    ],
+    "numel": 65536,
+    "layer": 13,
+    "source_name": "model.8.m.0.cv3.conv.weight",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.cv3.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 13,
+    "source_name": "model.8.m.0.cv3.bn.weight",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.cv3.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 13,
+    "source_name": "model.8.m.0.cv3.bn.bias",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.cv3.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 13,
+    "source_name": "model.8.m.0.cv3.bn.running_mean",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.cv3.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 13,
+    "source_name": "model.8.m.0.cv3.bn.running_var",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.m.0.cv1.conv.weight",
+    "shape": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 13,
+    "source_name": "model.8.m.0.m.0.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.m.0.cv1.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.m.0.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.m.0.cv1.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.m.0.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.m.0.cv1.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.m.0.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.m.0.cv1.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.m.0.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.m.0.cv2.conv.weight",
+    "shape": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 13,
+    "source_name": "model.8.m.0.m.0.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.m.0.cv2.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.m.0.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.m.0.cv2.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.m.0.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.m.0.cv2.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.m.0.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.m.0.cv2.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.m.0.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.m.1.cv1.conv.weight",
+    "shape": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 13,
+    "source_name": "model.8.m.0.m.1.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.m.1.cv1.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.m.1.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.m.1.cv1.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.m.1.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.m.1.cv1.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.m.1.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.m.1.cv1.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.m.1.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.m.1.cv2.conv.weight",
+    "shape": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 13,
+    "source_name": "model.8.m.0.m.1.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.m.1.cv2.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.m.1.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.m.1.cv2.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.m.1.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.m.1.cv2.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.m.1.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.13.m.0.m.1.cv2.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 13,
+    "source_name": "model.8.m.0.m.1.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L13 <- stock L8",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.14.cv1.conv.weight",
+    "shape": [
+      256,
+      512,
+      1,
+      1
+    ],
+    "numel": 131072,
+    "layer": 14,
+    "source_name": "model.9.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L14 <- stock L9",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.14.cv1.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 14,
+    "source_name": "model.9.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L14 <- stock L9",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.14.cv1.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 14,
+    "source_name": "model.9.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L14 <- stock L9",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.14.cv1.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 14,
+    "source_name": "model.9.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L14 <- stock L9",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.14.cv1.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 14,
+    "source_name": "model.9.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L14 <- stock L9",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.14.cv2.conv.weight",
+    "shape": [
+      512,
+      1024,
+      1,
+      1
+    ],
+    "numel": 524288,
+    "layer": 14,
+    "source_name": "model.9.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L14 <- stock L9",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.14.cv2.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 14,
+    "source_name": "model.9.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L14 <- stock L9",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.14.cv2.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 14,
+    "source_name": "model.9.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L14 <- stock L9",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.14.cv2.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 14,
+    "source_name": "model.9.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L14 <- stock L9",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.14.cv2.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 14,
+    "source_name": "model.9.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L14 <- stock L9",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.cv1.conv.weight",
+    "shape": [
+      512,
+      512,
+      1,
+      1
+    ],
+    "numel": 262144,
+    "layer": 15,
+    "source_name": "model.10.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.cv1.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 15,
+    "source_name": "model.10.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.cv1.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 15,
+    "source_name": "model.10.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.cv1.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 15,
+    "source_name": "model.10.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.cv1.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 15,
+    "source_name": "model.10.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.cv2.conv.weight",
+    "shape": [
+      512,
+      512,
+      1,
+      1
+    ],
+    "numel": 262144,
+    "layer": 15,
+    "source_name": "model.10.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.cv2.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 15,
+    "source_name": "model.10.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.cv2.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 15,
+    "source_name": "model.10.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.cv2.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 15,
+    "source_name": "model.10.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.cv2.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 15,
+    "source_name": "model.10.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.attn.qkv.conv.weight",
+    "shape": [
+      512,
+      256,
+      1,
+      1
+    ],
+    "numel": 131072,
+    "layer": 15,
+    "source_name": "model.10.m.0.attn.qkv.conv.weight",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.attn.qkv.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 15,
+    "source_name": "model.10.m.0.attn.qkv.bn.weight",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.attn.qkv.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 15,
+    "source_name": "model.10.m.0.attn.qkv.bn.bias",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.attn.qkv.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 15,
+    "source_name": "model.10.m.0.attn.qkv.bn.running_mean",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.attn.qkv.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 15,
+    "source_name": "model.10.m.0.attn.qkv.bn.running_var",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.attn.proj.conv.weight",
+    "shape": [
+      256,
+      256,
+      1,
+      1
+    ],
+    "numel": 65536,
+    "layer": 15,
+    "source_name": "model.10.m.0.attn.proj.conv.weight",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.attn.proj.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 15,
+    "source_name": "model.10.m.0.attn.proj.bn.weight",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.attn.proj.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 15,
+    "source_name": "model.10.m.0.attn.proj.bn.bias",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.attn.proj.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 15,
+    "source_name": "model.10.m.0.attn.proj.bn.running_mean",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.attn.proj.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 15,
+    "source_name": "model.10.m.0.attn.proj.bn.running_var",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.attn.pe.conv.weight",
+    "shape": [
+      256,
+      1,
+      3,
+      3
+    ],
+    "numel": 2304,
+    "layer": 15,
+    "source_name": "model.10.m.0.attn.pe.conv.weight",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.attn.pe.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 15,
+    "source_name": "model.10.m.0.attn.pe.bn.weight",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.attn.pe.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 15,
+    "source_name": "model.10.m.0.attn.pe.bn.bias",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.attn.pe.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 15,
+    "source_name": "model.10.m.0.attn.pe.bn.running_mean",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.attn.pe.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 15,
+    "source_name": "model.10.m.0.attn.pe.bn.running_var",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.ffn.0.conv.weight",
+    "shape": [
+      512,
+      256,
+      1,
+      1
+    ],
+    "numel": 131072,
+    "layer": 15,
+    "source_name": "model.10.m.0.ffn.0.conv.weight",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.ffn.0.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 15,
+    "source_name": "model.10.m.0.ffn.0.bn.weight",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.ffn.0.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 15,
+    "source_name": "model.10.m.0.ffn.0.bn.bias",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.ffn.0.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 15,
+    "source_name": "model.10.m.0.ffn.0.bn.running_mean",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.ffn.0.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 15,
+    "source_name": "model.10.m.0.ffn.0.bn.running_var",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.ffn.1.conv.weight",
+    "shape": [
+      256,
+      512,
+      1,
+      1
+    ],
+    "numel": 131072,
+    "layer": 15,
+    "source_name": "model.10.m.0.ffn.1.conv.weight",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.ffn.1.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 15,
+    "source_name": "model.10.m.0.ffn.1.bn.weight",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.ffn.1.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 15,
+    "source_name": "model.10.m.0.ffn.1.bn.bias",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.ffn.1.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 15,
+    "source_name": "model.10.m.0.ffn.1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.15.m.0.ffn.1.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 15,
+    "source_name": "model.10.m.0.ffn.1.bn.running_var",
+    "mapping_reason": "body/neck/head: L15 <- stock L10",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.cv1.conv.weight",
+    "shape": [
+      512,
+      1024,
+      1,
+      1
+    ],
+    "numel": 524288,
+    "layer": 18,
+    "source_name": "model.13.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.cv1.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 18,
+    "source_name": "model.13.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.cv1.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 18,
+    "source_name": "model.13.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.cv1.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 18,
+    "source_name": "model.13.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.cv1.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 18,
+    "source_name": "model.13.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.cv2.conv.weight",
+    "shape": [
+      512,
+      768,
+      1,
+      1
+    ],
+    "numel": 393216,
+    "layer": 18,
+    "source_name": "model.13.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.cv2.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 18,
+    "source_name": "model.13.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.cv2.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 18,
+    "source_name": "model.13.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.cv2.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 18,
+    "source_name": "model.13.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.cv2.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 18,
+    "source_name": "model.13.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.cv1.conv.weight",
+    "shape": [
+      128,
+      256,
+      1,
+      1
+    ],
+    "numel": 32768,
+    "layer": 18,
+    "source_name": "model.13.m.0.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.cv1.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.cv1.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.cv1.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.cv1.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.cv2.conv.weight",
+    "shape": [
+      128,
+      256,
+      1,
+      1
+    ],
+    "numel": 32768,
+    "layer": 18,
+    "source_name": "model.13.m.0.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.cv2.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.cv2.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.cv2.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.cv2.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.cv3.conv.weight",
+    "shape": [
+      256,
+      256,
+      1,
+      1
+    ],
+    "numel": 65536,
+    "layer": 18,
+    "source_name": "model.13.m.0.cv3.conv.weight",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.cv3.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 18,
+    "source_name": "model.13.m.0.cv3.bn.weight",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.cv3.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 18,
+    "source_name": "model.13.m.0.cv3.bn.bias",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.cv3.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 18,
+    "source_name": "model.13.m.0.cv3.bn.running_mean",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.cv3.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 18,
+    "source_name": "model.13.m.0.cv3.bn.running_var",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.m.0.cv1.conv.weight",
+    "shape": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 18,
+    "source_name": "model.13.m.0.m.0.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.m.0.cv1.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.m.0.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.m.0.cv1.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.m.0.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.m.0.cv1.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.m.0.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.m.0.cv1.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.m.0.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.m.0.cv2.conv.weight",
+    "shape": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 18,
+    "source_name": "model.13.m.0.m.0.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.m.0.cv2.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.m.0.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.m.0.cv2.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.m.0.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.m.0.cv2.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.m.0.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.m.0.cv2.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.m.0.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.m.1.cv1.conv.weight",
+    "shape": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 18,
+    "source_name": "model.13.m.0.m.1.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.m.1.cv1.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.m.1.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.m.1.cv1.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.m.1.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.m.1.cv1.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.m.1.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.m.1.cv1.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.m.1.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.m.1.cv2.conv.weight",
+    "shape": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 18,
+    "source_name": "model.13.m.0.m.1.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.m.1.cv2.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.m.1.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.m.1.cv2.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.m.1.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.m.1.cv2.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.m.1.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.18.m.0.m.1.cv2.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 18,
+    "source_name": "model.13.m.0.m.1.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L18 <- stock L13",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.cv1.conv.weight",
+    "shape": [
+      256,
+      1024,
+      1,
+      1
+    ],
+    "numel": 262144,
+    "layer": 21,
+    "source_name": "model.16.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.cv1.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 21,
+    "source_name": "model.16.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.cv1.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 21,
+    "source_name": "model.16.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.cv1.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 21,
+    "source_name": "model.16.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.cv1.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 21,
+    "source_name": "model.16.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.cv2.conv.weight",
+    "shape": [
+      256,
+      384,
+      1,
+      1
+    ],
+    "numel": 98304,
+    "layer": 21,
+    "source_name": "model.16.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.cv2.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 21,
+    "source_name": "model.16.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.cv2.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 21,
+    "source_name": "model.16.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.cv2.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 21,
+    "source_name": "model.16.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.cv2.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 21,
+    "source_name": "model.16.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.cv1.conv.weight",
+    "shape": [
+      64,
+      128,
+      1,
+      1
+    ],
+    "numel": 8192,
+    "layer": 21,
+    "source_name": "model.16.m.0.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.cv1.bn.weight",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.cv1.bn.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.cv1.bn.running_mean",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.cv1.bn.running_var",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.cv2.conv.weight",
+    "shape": [
+      64,
+      128,
+      1,
+      1
+    ],
+    "numel": 8192,
+    "layer": 21,
+    "source_name": "model.16.m.0.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.cv2.bn.weight",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.cv2.bn.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.cv2.bn.running_mean",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.cv2.bn.running_var",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.cv3.conv.weight",
+    "shape": [
+      128,
+      128,
+      1,
+      1
+    ],
+    "numel": 16384,
+    "layer": 21,
+    "source_name": "model.16.m.0.cv3.conv.weight",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.cv3.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 21,
+    "source_name": "model.16.m.0.cv3.bn.weight",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.cv3.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 21,
+    "source_name": "model.16.m.0.cv3.bn.bias",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.cv3.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 21,
+    "source_name": "model.16.m.0.cv3.bn.running_mean",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.cv3.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 21,
+    "source_name": "model.16.m.0.cv3.bn.running_var",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.m.0.cv1.conv.weight",
+    "shape": [
+      64,
+      64,
+      3,
+      3
+    ],
+    "numel": 36864,
+    "layer": 21,
+    "source_name": "model.16.m.0.m.0.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.m.0.cv1.bn.weight",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.m.0.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.m.0.cv1.bn.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.m.0.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.m.0.cv1.bn.running_mean",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.m.0.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.m.0.cv1.bn.running_var",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.m.0.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.m.0.cv2.conv.weight",
+    "shape": [
+      64,
+      64,
+      3,
+      3
+    ],
+    "numel": 36864,
+    "layer": 21,
+    "source_name": "model.16.m.0.m.0.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.m.0.cv2.bn.weight",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.m.0.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.m.0.cv2.bn.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.m.0.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.m.0.cv2.bn.running_mean",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.m.0.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.m.0.cv2.bn.running_var",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.m.0.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.m.1.cv1.conv.weight",
+    "shape": [
+      64,
+      64,
+      3,
+      3
+    ],
+    "numel": 36864,
+    "layer": 21,
+    "source_name": "model.16.m.0.m.1.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.m.1.cv1.bn.weight",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.m.1.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.m.1.cv1.bn.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.m.1.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.m.1.cv1.bn.running_mean",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.m.1.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.m.1.cv1.bn.running_var",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.m.1.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.m.1.cv2.conv.weight",
+    "shape": [
+      64,
+      64,
+      3,
+      3
+    ],
+    "numel": 36864,
+    "layer": 21,
+    "source_name": "model.16.m.0.m.1.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.m.1.cv2.bn.weight",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.m.1.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.m.1.cv2.bn.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.m.1.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.m.1.cv2.bn.running_mean",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.m.1.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.21.m.0.m.1.cv2.bn.running_var",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 21,
+    "source_name": "model.16.m.0.m.1.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L21 <- stock L16",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.22.conv.weight",
+    "shape": [
+      256,
+      256,
+      3,
+      3
+    ],
+    "numel": 589824,
+    "layer": 22,
+    "source_name": "model.17.conv.weight",
+    "mapping_reason": "body/neck/head: L22 <- stock L17",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.22.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 22,
+    "source_name": "model.17.bn.weight",
+    "mapping_reason": "body/neck/head: L22 <- stock L17",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.22.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 22,
+    "source_name": "model.17.bn.bias",
+    "mapping_reason": "body/neck/head: L22 <- stock L17",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.22.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 22,
+    "source_name": "model.17.bn.running_mean",
+    "mapping_reason": "body/neck/head: L22 <- stock L17",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.22.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 22,
+    "source_name": "model.17.bn.running_var",
+    "mapping_reason": "body/neck/head: L22 <- stock L17",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.cv1.conv.weight",
+    "shape": [
+      512,
+      768,
+      1,
+      1
+    ],
+    "numel": 393216,
+    "layer": 24,
+    "source_name": "model.19.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.cv1.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 24,
+    "source_name": "model.19.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.cv1.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 24,
+    "source_name": "model.19.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.cv1.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 24,
+    "source_name": "model.19.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.cv1.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 24,
+    "source_name": "model.19.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.cv2.conv.weight",
+    "shape": [
+      512,
+      768,
+      1,
+      1
+    ],
+    "numel": 393216,
+    "layer": 24,
+    "source_name": "model.19.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.cv2.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 24,
+    "source_name": "model.19.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.cv2.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 24,
+    "source_name": "model.19.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.cv2.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 24,
+    "source_name": "model.19.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.cv2.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 24,
+    "source_name": "model.19.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.cv1.conv.weight",
+    "shape": [
+      128,
+      256,
+      1,
+      1
+    ],
+    "numel": 32768,
+    "layer": 24,
+    "source_name": "model.19.m.0.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.cv1.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.cv1.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.cv1.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.cv1.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.cv2.conv.weight",
+    "shape": [
+      128,
+      256,
+      1,
+      1
+    ],
+    "numel": 32768,
+    "layer": 24,
+    "source_name": "model.19.m.0.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.cv2.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.cv2.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.cv2.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.cv2.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.cv3.conv.weight",
+    "shape": [
+      256,
+      256,
+      1,
+      1
+    ],
+    "numel": 65536,
+    "layer": 24,
+    "source_name": "model.19.m.0.cv3.conv.weight",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.cv3.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 24,
+    "source_name": "model.19.m.0.cv3.bn.weight",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.cv3.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 24,
+    "source_name": "model.19.m.0.cv3.bn.bias",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.cv3.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 24,
+    "source_name": "model.19.m.0.cv3.bn.running_mean",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.cv3.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 24,
+    "source_name": "model.19.m.0.cv3.bn.running_var",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.m.0.cv1.conv.weight",
+    "shape": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 24,
+    "source_name": "model.19.m.0.m.0.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.m.0.cv1.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.m.0.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.m.0.cv1.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.m.0.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.m.0.cv1.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.m.0.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.m.0.cv1.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.m.0.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.m.0.cv2.conv.weight",
+    "shape": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 24,
+    "source_name": "model.19.m.0.m.0.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.m.0.cv2.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.m.0.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.m.0.cv2.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.m.0.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.m.0.cv2.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.m.0.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.m.0.cv2.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.m.0.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.m.1.cv1.conv.weight",
+    "shape": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 24,
+    "source_name": "model.19.m.0.m.1.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.m.1.cv1.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.m.1.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.m.1.cv1.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.m.1.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.m.1.cv1.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.m.1.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.m.1.cv1.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.m.1.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.m.1.cv2.conv.weight",
+    "shape": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 24,
+    "source_name": "model.19.m.0.m.1.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.m.1.cv2.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.m.1.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.m.1.cv2.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.m.1.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.m.1.cv2.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.m.1.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.24.m.0.m.1.cv2.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 24,
+    "source_name": "model.19.m.0.m.1.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L24 <- stock L19",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.25.conv.weight",
+    "shape": [
+      512,
+      512,
+      3,
+      3
+    ],
+    "numel": 2359296,
+    "layer": 25,
+    "source_name": "model.20.conv.weight",
+    "mapping_reason": "body/neck/head: L25 <- stock L20",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.25.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 25,
+    "source_name": "model.20.bn.weight",
+    "mapping_reason": "body/neck/head: L25 <- stock L20",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.25.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 25,
+    "source_name": "model.20.bn.bias",
+    "mapping_reason": "body/neck/head: L25 <- stock L20",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.25.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 25,
+    "source_name": "model.20.bn.running_mean",
+    "mapping_reason": "body/neck/head: L25 <- stock L20",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.25.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 25,
+    "source_name": "model.20.bn.running_var",
+    "mapping_reason": "body/neck/head: L25 <- stock L20",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.cv1.conv.weight",
+    "shape": [
+      512,
+      1024,
+      1,
+      1
+    ],
+    "numel": 524288,
+    "layer": 27,
+    "source_name": "model.22.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.cv1.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 27,
+    "source_name": "model.22.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.cv1.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 27,
+    "source_name": "model.22.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.cv1.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 27,
+    "source_name": "model.22.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.cv1.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 27,
+    "source_name": "model.22.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.cv2.conv.weight",
+    "shape": [
+      512,
+      768,
+      1,
+      1
+    ],
+    "numel": 393216,
+    "layer": 27,
+    "source_name": "model.22.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.cv2.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 27,
+    "source_name": "model.22.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.cv2.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 27,
+    "source_name": "model.22.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.cv2.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 27,
+    "source_name": "model.22.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.cv2.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 27,
+    "source_name": "model.22.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.cv1.conv.weight",
+    "shape": [
+      128,
+      256,
+      1,
+      1
+    ],
+    "numel": 32768,
+    "layer": 27,
+    "source_name": "model.22.m.0.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.cv1.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.cv1.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.cv1.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.cv1.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.cv2.conv.weight",
+    "shape": [
+      128,
+      256,
+      1,
+      1
+    ],
+    "numel": 32768,
+    "layer": 27,
+    "source_name": "model.22.m.0.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.cv2.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.cv2.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.cv2.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.cv2.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.cv3.conv.weight",
+    "shape": [
+      256,
+      256,
+      1,
+      1
+    ],
+    "numel": 65536,
+    "layer": 27,
+    "source_name": "model.22.m.0.cv3.conv.weight",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.cv3.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 27,
+    "source_name": "model.22.m.0.cv3.bn.weight",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.cv3.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 27,
+    "source_name": "model.22.m.0.cv3.bn.bias",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.cv3.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 27,
+    "source_name": "model.22.m.0.cv3.bn.running_mean",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.cv3.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 27,
+    "source_name": "model.22.m.0.cv3.bn.running_var",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.m.0.cv1.conv.weight",
+    "shape": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 27,
+    "source_name": "model.22.m.0.m.0.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.m.0.cv1.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.m.0.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.m.0.cv1.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.m.0.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.m.0.cv1.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.m.0.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.m.0.cv1.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.m.0.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.m.0.cv2.conv.weight",
+    "shape": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 27,
+    "source_name": "model.22.m.0.m.0.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.m.0.cv2.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.m.0.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.m.0.cv2.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.m.0.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.m.0.cv2.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.m.0.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.m.0.cv2.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.m.0.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.m.1.cv1.conv.weight",
+    "shape": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 27,
+    "source_name": "model.22.m.0.m.1.cv1.conv.weight",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.m.1.cv1.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.m.1.cv1.bn.weight",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.m.1.cv1.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.m.1.cv1.bn.bias",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.m.1.cv1.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.m.1.cv1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.m.1.cv1.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.m.1.cv1.bn.running_var",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.m.1.cv2.conv.weight",
+    "shape": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 27,
+    "source_name": "model.22.m.0.m.1.cv2.conv.weight",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.m.1.cv2.bn.weight",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.m.1.cv2.bn.weight",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.m.1.cv2.bn.bias",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.m.1.cv2.bn.bias",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.m.1.cv2.bn.running_mean",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.m.1.cv2.bn.running_mean",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.27.m.0.m.1.cv2.bn.running_var",
+    "shape": [
+      128
+    ],
+    "numel": 128,
+    "layer": 27,
+    "source_name": "model.22.m.0.m.1.cv2.bn.running_var",
+    "mapping_reason": "body/neck/head: L27 <- stock L22",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.0.0.conv.weight",
+    "shape": [
+      64,
+      256,
+      3,
+      3
+    ],
+    "numel": 147456,
+    "layer": 28,
+    "source_name": "model.23.cv2.0.0.conv.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.0.0.bn.weight",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.0.0.bn.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.0.0.bn.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.0.0.bn.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.0.0.bn.running_mean",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.0.0.bn.running_mean",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.0.0.bn.running_var",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.0.0.bn.running_var",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.0.1.conv.weight",
+    "shape": [
+      64,
+      64,
+      3,
+      3
+    ],
+    "numel": 36864,
+    "layer": 28,
+    "source_name": "model.23.cv2.0.1.conv.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.0.1.bn.weight",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.0.1.bn.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.0.1.bn.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.0.1.bn.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.0.1.bn.running_mean",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.0.1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.0.1.bn.running_var",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.0.1.bn.running_var",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.0.2.weight",
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "numel": 4096,
+    "layer": 28,
+    "source_name": "model.23.cv2.0.2.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.0.2.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.0.2.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.1.0.conv.weight",
+    "shape": [
+      64,
+      512,
+      3,
+      3
+    ],
+    "numel": 294912,
+    "layer": 28,
+    "source_name": "model.23.cv2.1.0.conv.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.1.0.bn.weight",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.1.0.bn.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.1.0.bn.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.1.0.bn.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.1.0.bn.running_mean",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.1.0.bn.running_mean",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.1.0.bn.running_var",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.1.0.bn.running_var",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.1.1.conv.weight",
+    "shape": [
+      64,
+      64,
+      3,
+      3
+    ],
+    "numel": 36864,
+    "layer": 28,
+    "source_name": "model.23.cv2.1.1.conv.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.1.1.bn.weight",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.1.1.bn.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.1.1.bn.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.1.1.bn.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.1.1.bn.running_mean",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.1.1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.1.1.bn.running_var",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.1.1.bn.running_var",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.1.2.weight",
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "numel": 4096,
+    "layer": 28,
+    "source_name": "model.23.cv2.1.2.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.1.2.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.1.2.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.2.0.conv.weight",
+    "shape": [
+      64,
+      512,
+      3,
+      3
+    ],
+    "numel": 294912,
+    "layer": 28,
+    "source_name": "model.23.cv2.2.0.conv.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.2.0.bn.weight",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.2.0.bn.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.2.0.bn.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.2.0.bn.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.2.0.bn.running_mean",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.2.0.bn.running_mean",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.2.0.bn.running_var",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.2.0.bn.running_var",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.2.1.conv.weight",
+    "shape": [
+      64,
+      64,
+      3,
+      3
+    ],
+    "numel": 36864,
+    "layer": 28,
+    "source_name": "model.23.cv2.2.1.conv.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.2.1.bn.weight",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.2.1.bn.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.2.1.bn.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.2.1.bn.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.2.1.bn.running_mean",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.2.1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.2.1.bn.running_var",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.2.1.bn.running_var",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.2.2.weight",
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "numel": 4096,
+    "layer": 28,
+    "source_name": "model.23.cv2.2.2.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv2.2.2.bias",
+    "shape": [
+      64
+    ],
+    "numel": 64,
+    "layer": 28,
+    "source_name": "model.23.cv2.2.2.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.0.0.conv.weight",
+    "shape": [
+      256,
+      1,
+      3,
+      3
+    ],
+    "numel": 2304,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.0.0.conv.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.0.0.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.0.0.bn.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.0.0.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.0.0.bn.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.0.0.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.0.0.bn.running_mean",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.0.0.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.0.0.bn.running_var",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.0.1.conv.weight",
+    "shape": [
+      256,
+      256,
+      1,
+      1
+    ],
+    "numel": 65536,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.0.1.conv.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.0.1.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.0.1.bn.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.0.1.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.0.1.bn.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.0.1.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.0.1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.0.1.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.0.1.bn.running_var",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.1.0.conv.weight",
+    "shape": [
+      256,
+      1,
+      3,
+      3
+    ],
+    "numel": 2304,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.1.0.conv.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.1.0.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.1.0.bn.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.1.0.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.1.0.bn.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.1.0.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.1.0.bn.running_mean",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.1.0.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.1.0.bn.running_var",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.1.1.conv.weight",
+    "shape": [
+      256,
+      256,
+      1,
+      1
+    ],
+    "numel": 65536,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.1.1.conv.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.1.1.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.1.1.bn.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.1.1.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.1.1.bn.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.1.1.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.1.1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.1.1.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.1.1.bn.running_var",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.0.2.weight",
+    "shape": [
+      12,
+      256,
+      1,
+      1
+    ],
+    "numel": 3072,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.2.weight",
+    "mapping_reason": "Detect classifier re-initialised for nc=12",
+    "kind": "NEW_RANDOM",
+    "status": "NEW_RANDOM"
+  },
+  {
+    "target_name": "model.28.cv3.0.2.bias",
+    "shape": [
+      12
+    ],
+    "numel": 12,
+    "layer": 28,
+    "source_name": "model.23.cv3.0.2.bias",
+    "mapping_reason": "Detect classifier re-initialised for nc=12",
+    "kind": "NEW_RANDOM",
+    "status": "NEW_RANDOM"
+  },
+  {
+    "target_name": "model.28.cv3.1.0.0.conv.weight",
+    "shape": [
+      512,
+      1,
+      3,
+      3
+    ],
+    "numel": 4608,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.0.0.conv.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.1.0.0.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.0.0.bn.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.1.0.0.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.0.0.bn.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.1.0.0.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.0.0.bn.running_mean",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.1.0.0.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.0.0.bn.running_var",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.1.0.1.conv.weight",
+    "shape": [
+      256,
+      512,
+      1,
+      1
+    ],
+    "numel": 131072,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.0.1.conv.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.1.0.1.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.0.1.bn.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.1.0.1.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.0.1.bn.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.1.0.1.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.0.1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.1.0.1.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.0.1.bn.running_var",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.1.1.0.conv.weight",
+    "shape": [
+      256,
+      1,
+      3,
+      3
+    ],
+    "numel": 2304,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.1.0.conv.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.1.1.0.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.1.0.bn.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.1.1.0.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.1.0.bn.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.1.1.0.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.1.0.bn.running_mean",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.1.1.0.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.1.0.bn.running_var",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.1.1.1.conv.weight",
+    "shape": [
+      256,
+      256,
+      1,
+      1
+    ],
+    "numel": 65536,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.1.1.conv.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.1.1.1.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.1.1.bn.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.1.1.1.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.1.1.bn.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.1.1.1.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.1.1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.1.1.1.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.1.1.bn.running_var",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.1.2.weight",
+    "shape": [
+      12,
+      256,
+      1,
+      1
+    ],
+    "numel": 3072,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.2.weight",
+    "mapping_reason": "Detect classifier re-initialised for nc=12",
+    "kind": "NEW_RANDOM",
+    "status": "NEW_RANDOM"
+  },
+  {
+    "target_name": "model.28.cv3.1.2.bias",
+    "shape": [
+      12
+    ],
+    "numel": 12,
+    "layer": 28,
+    "source_name": "model.23.cv3.1.2.bias",
+    "mapping_reason": "Detect classifier re-initialised for nc=12",
+    "kind": "NEW_RANDOM",
+    "status": "NEW_RANDOM"
+  },
+  {
+    "target_name": "model.28.cv3.2.0.0.conv.weight",
+    "shape": [
+      512,
+      1,
+      3,
+      3
+    ],
+    "numel": 4608,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.0.0.conv.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.2.0.0.bn.weight",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.0.0.bn.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.2.0.0.bn.bias",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.0.0.bn.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.2.0.0.bn.running_mean",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.0.0.bn.running_mean",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.2.0.0.bn.running_var",
+    "shape": [
+      512
+    ],
+    "numel": 512,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.0.0.bn.running_var",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.2.0.1.conv.weight",
+    "shape": [
+      256,
+      512,
+      1,
+      1
+    ],
+    "numel": 131072,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.0.1.conv.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.2.0.1.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.0.1.bn.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.2.0.1.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.0.1.bn.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.2.0.1.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.0.1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.2.0.1.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.0.1.bn.running_var",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.2.1.0.conv.weight",
+    "shape": [
+      256,
+      1,
+      3,
+      3
+    ],
+    "numel": 2304,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.1.0.conv.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.2.1.0.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.1.0.bn.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.2.1.0.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.1.0.bn.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.2.1.0.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.1.0.bn.running_mean",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.2.1.0.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.1.0.bn.running_var",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.2.1.1.conv.weight",
+    "shape": [
+      256,
+      256,
+      1,
+      1
+    ],
+    "numel": 65536,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.1.1.conv.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.2.1.1.bn.weight",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.1.1.bn.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.2.1.1.bn.bias",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.1.1.bn.bias",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.2.1.1.bn.running_mean",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.1.1.bn.running_mean",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.2.1.1.bn.running_var",
+    "shape": [
+      256
+    ],
+    "numel": 256,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.1.1.bn.running_var",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  },
+  {
+    "target_name": "model.28.cv3.2.2.weight",
+    "shape": [
+      12,
+      256,
+      1,
+      1
+    ],
+    "numel": 3072,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.2.weight",
+    "mapping_reason": "Detect classifier re-initialised for nc=12",
+    "kind": "NEW_RANDOM",
+    "status": "NEW_RANDOM"
+  },
+  {
+    "target_name": "model.28.cv3.2.2.bias",
+    "shape": [
+      12
+    ],
+    "numel": 12,
+    "layer": 28,
+    "source_name": "model.23.cv3.2.2.bias",
+    "mapping_reason": "Detect classifier re-initialised for nc=12",
+    "kind": "NEW_RANDOM",
+    "status": "NEW_RANDOM"
+  },
+  {
+    "target_name": "model.28.dfl.conv.weight",
+    "shape": [
+      1,
+      16,
+      1,
+      1
+    ],
+    "numel": 16,
+    "layer": 28,
+    "source_name": "model.23.dfl.conv.weight",
+    "mapping_reason": "body/neck/head: L28 <- stock L23",
+    "kind": "PRETRAINED",
+    "status": "EXACT"
+  }
+]

@@ -1,0 +1,21 @@
+MEDIUM CLASSIFICATION SUPERVISION AUDIT - INPUT MANIFEST
+============================================================================================
+D-prime identity: config sha == a4e329cfc3d220206448cdd3377c1b3f5126c50f13c907ada522d98725486e12 (== provenance record)
+                  ckpt sha   == 1cae45f75693f54146e35c5fa076c0a6f78ca1cfa95595de74d959f40fae4fda (== provenance record)
+                  tal.py     == aae7e8ac438f00cd... / loss.py == 0f092cf22a372f6d... (== provenance record)
+
+上一轮 86 逐 GT               diagnostic\medium_head_to_final_audit\per_gt_causal_audit.csv     38199B  7041256d270bf433d206d43fe8c38877bcc2b52d67a7abbd384b6aa9304d100e
+上一轮 110 attribution       diagnostic\medium_93_47_attribution\per_gt_attribution.csv       20746B  62dbc551f4703bb3162baed16266f793b6e9cba4f21509236afee186bfc0c605
+head 侧 V1                 diagnostic\small_object_domains\_v6_domains.json               4631435B  3505d9160c47aae813bef8774ea81cdcd3be51df8f5705c4f8058e17e232f355
+D′ train config           configs\train_rgbid_sepstem_clahe.yaml                            3187B  a4e329cfc3d220206448cdd3377c1b3f5126c50f13c907ada522d98725486e12
+TAL 实现                    ultralytics\utils\tal.py                                         18883B  aae7e8ac438f00cda88d7e151795b3f78270ec4ed56b883f413fd16233b7e527
+loss 实现                   ultralytics\utils\loss.py                                        62492B  0f092cf22a372f6d5c5e7197d7adde51cbb23c02ac4522978f42df5b23a6543b
+D′ args.yaml              runs\urban_multimodal_det_yolo11_rgbid_sepstem_clahe\args.yaml      2010B  8b56d5aaf6e241e74ac07e6ed4fc5c7fdec96baf39a06bec34c68c499696a1d2
+train labels              data\processed\rgbid_split_train\labels\train\visible               dir  
+D-prime best.pt           runs\urban_multimodal_det_yolo11_rgbid_sepstem_clahe\weights\best.pt   40641641B  1cae45f75693f54146e35c5fa076c0a6f78ca1cfa95595de74d959f40fae4fda
+
+NOT_AVAILABLE / NOT_OBSERVABLE 汇总：
+  - 无 target_scores / target_labels 的冻结 tensor dump（target 由 tal.py:100-116 + 240 的代码恒等式给出）
+  - 无 anchor/grid/candidate index dump 关联到 val 的 86 条 GT（TRAINING_CANDIDATE_IDENTITY = NOT_OBSERVABLE）
+  - 无 gradient / 逐 GT loss contribution 的冻结 dump（需 backward ⇒ NOT_OBSERVABLE_FROM_FROZEN_ARTIFACTS）
+  - candidate_density_counterfactual/_results.npz 的 cand_cls 是【预测的 GT 类得分】，**不是** target；且为 train split

@@ -1,0 +1,67 @@
+{
+  "candidate": "rgbid_sepstem_clahe_rectlate10_last_candidate",
+  "created": "2026-10-01T13:28:00+08:00",
+  "purpose": "RectLate10 的**唯一含 rect 尾巴**的 checkpoint（ep300）。用于线上取 rect-late 信号。",
+  "uploaded": false,
+  "weights": "runs/urban_multimodal_det_yolo11_rgbid_sepstem_clahe_rectlate10/weights/last.pt",
+  "weights_sha256": "ebb2dffb0ec47d96d7351f3199b9a681f446697390bdd0f0f571856c0967be75",
+  "weights_epoch": 300,
+  "train_config": "configs/train_rgbid_sepstem_clahe_rectlate10.yaml",
+  "train_config_sha256": "edc16cc45f0e2012c49e962b696ed4b46e04aaaa20684a569234cd9f61463e12",
+  "predict_rect_sha256": "9d704300143a5786f7b74450f35e6c656d55c82812ca34d0e7b830d96034f524",
+  "infer_cmd": "python scripts/predict_rect.py --mode rect --weights runs/urban_multimodal_det_yolo11_rgbid_sepstem_clahe_rectlate10/weights/last.pt --train_config configs/train_rgbid_sepstem_clahe_rectlate10.yaml --source data/raw/test/visible --output submissions/rgbid_sepstem_clahe_rectlate10_last_candidate",
+  "settings": {
+    "mode": "rect",
+    "conf": 0.001,
+    "iou": 0.7,
+    "imgsz": 1280,
+    "max_det": 300,
+    "max_boxes": 100,
+    "use_simotm": "RGBID",
+    "channels": 5,
+    "ir_encoding": "clahe"
+  },
+  "distinct_from_best_package": {
+    "diff_vs_rectlate10_best_results": "994 / 1000 个 TXT 不同",
+    "weight_max_abs_diff_vs_best": 1.421875,
+    "note": "确认为不同产物，与 best 包（≡ incumbent）不重复。"
+  },
+  "validation": {
+    "check_submission.py": "ALL PASS (10/10)",
+    "make_candidate_submission.py": "PASS with --accept-degenerate-wh",
+    "degenerate_wh_rows": 107,
+    "degenerate_wh_precedent": "冻结 pipeline 既有行为（RGBID test 155 行 / F4 test 72 行，线上已评分）"
+  },
+  "n_txt": 1000,
+  "n_boxes": 10918,
+  "images_at_100_box_cap": 3,
+  "empty_txt": 10,
+  "over_cap": 0,
+  "zip_sha256": "252290ef6fe283ce25a1afe15b5ee30b2f9499a1cecf46a19590c6e95f844ec2",
+  "zip_bytes": 349410,
+  "zip_entries": 1000,
+  "zip_crc_errors": 0,
+  "val_400_rect_cap100": {
+    "rectlate10_last_official": 0.50755,
+    "rectlate10_last_fork": 0.55805,
+    "rectlate10_last_trainval_ep300": 0.56024,
+    "dprime_best_official": 0.51528,
+    "dprime_best_fork": 0.56609,
+    "dprime_last_official": 0.50617,
+    "dprime_last_fork": 0.55435,
+    "delta_vs_incumbent_official": -0.00773,
+    "delta_vs_incumbent_fork": -0.00804,
+    "rect_tail_effect_vs_dprime_last_official": 0.00138,
+    "rect_tail_effect_vs_dprime_last_fork": 0.00370
+  },
+  "online_projection": {
+    "via_fork_ratio_86.05": 48.02,
+    "via_official_ratio_94.53": 47.98,
+    "incumbent": 48.712,
+    "delta": -0.7,
+    "confidence": "方向较可信（族内 fork 4/4 同号；gap ≈2× 噪声带 sd 0.003-0.004）；幅度 ±0.3 量级不确定（投影带规则在 F1 上有偏离点 85.34，且 best-last 越大偏离越大 / H-spike）"
+  },
+  "attribution_warning": "本包混合两个变量：rect 尾巴(+0.0037 fork) 与 last-vs-best(−0.0080 fork)。线上若落在 ≈48.0，绝大部分由 last-vs-best 造成，**不能**据此判定 rect-late 无效。",
+  "verdict": "投影 ≈48.0 vs incumbent 48.712 ⇒ 若目标是保持/提高线上分数，**不要提交**；若目标是用一次提交量测「末段 rect 训练 + 最终 checkpoint」的真实线上表现，则它是当前唯一可交的 rectlate10 产物。上传由用户明确授权。",
+  "discipline": "若线上为负，RectLate10 路线 CLOSE，不得再据此扫 rect 切点（290/295/…）；本项目 rect 轴已有「RECT 全程」多变量负点。"
+}

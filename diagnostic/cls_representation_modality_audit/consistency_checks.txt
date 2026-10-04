@@ -1,0 +1,9 @@
+[PASS] C1 provenance（6 项 SHA == 记录）  
+[PASS] C2 no mutation（前四轮 diagnostic SHA 未变）  sup=51a9232dfaff tal=08058c1a87a3 cau=7041256d270b att=62dbc551f470
+[PASS] C3 no GPU（全程 torch CPU / numpy）  torch.cuda.is_available()=False
+[PASS] C4 no forward / no predict（本脚本无任何 model(...) 调用）  仅 torch.load 读 state_dict
+[PASS] C5 no training / no backward / no optimizer  
+[PASS] C6 field semantics（logit_decomp == W_gt·h+b_gt 逐行验证）  max|resid|=2.16e-06 over 400 sampled rows + 4960 rows earlier
+[PASS] C7 no leakage（86 条为 val GT，未当作训练监督实例）  sample_scope 在 CSV 中以 frozen_best_same_iou / detected 标注
+[PASS] C8 no causal overclaim  全部结论用 OBSERVED / CONSISTENT_WITH / STRUCTURALLY_PLAUSIBLE / NOT_OBSERVABLE
+[PASS] C9 numeric safety  p3/h 无 NaN=True; logit 有限=True

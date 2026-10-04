@@ -1,0 +1,63 @@
+# ============================================================
+# ★ REPAIR STATUS (2026-10-03, Infrastructure Repair)
+#   STATUS = READY
+#   ① 新增 'IRD' 数据模式（base.py / loaders.py / train.py 分派）；② 2ch stem 预训练迁移已实现。
+# ============================================================
+
+# ============================================================
+# M6 — IR + Depth 早期融合（2ch）  ·  CONFIG ONLY，不训练
+# ============================================================
+# ⚠⚠ STATUS = BLOCKED ×2
+#   (a) 数据侧：本 fork **没有** IR+Depth 的组合模式。base.py 的
+#       _merge_channels* 只有 (RGB+IR) / (RGB+IR+RGB) / (RGB+IR+D) / (RGB+D)。
+#   (b) 模型侧：同 M4/M5 的 4ch/2ch 预训练 remap 缺失。
+#   最小修复需要新增一个 'IRD' 数据分支 + 扩展 remap。本轮**仅登记，不实现**。
+# ============================================================
+
+experiment_name: "urban_multimodal_det_modality_m6_ir_depth"
+seed: 42
+pretrained: "yolo11m.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 300
+patience: 0              # 与 D′ 一致：禁用早停，跑满预算
+batch_size: 8
+image_size: [1280, 1280]
+num_workers: 4
+
+learning_rate: 5.0e-3
+warmup_epochs: 3
+
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2           # 各 split 均已存在且**逐位同划分**（1600/400），幂等复用
+
+use_simotm: "IRD"          # ⚠ 该模式在 base.py/loaders.py 中不存在（见文件头）
+pairs_rgb_ir: ["visible", "infrared"]   # 需新增映射设计
+pairs_rgb_depth: ["visible", "depth"]
+channels: 2
+ir_encoding: clahe        # 与 D′ 的 IR 编码一致
+
+aug:                     # 对齐 D′ 的"光度增强惰性"（D′ 为 5ch ⇒ RandomHSV 直接 return）
+  hsv_h: 0.0
+  hsv_s: 0.0
+  hsv_v: 0.0
+  albumentations_p: 0.0  # D′ 是 5ch ⇒ Albumentations(p=0)；3ch/4ch 默认 p=1.0，
+                         # 这里显式覆盖为 0 才能与 D′ 在 augmentation 层面对齐
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: false
+  resume_path: ""

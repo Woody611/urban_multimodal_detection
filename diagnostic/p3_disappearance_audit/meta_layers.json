@@ -1,0 +1,35 @@
+{
+ "git_sha": null,
+ "inference": {
+  "conf": 0.001,
+  "iou": 0.7,
+  "imgsz": 1280,
+  "batch": 16,
+  "max_det": 300,
+  "mode": "rect",
+  "scaleup": true,
+  "multi_label": true,
+  "agnostic": false,
+  "max_nms": 30000,
+  "max_wh": 7680
+ },
+ "source": "data\\processed\\rgbid_split\\images\\val\\visible",
+ "nc": 12,
+ "stride": 32,
+ "use_simotm": "RGBID",
+ "ir_encoding": "clahe",
+ "provenance_sha256": {
+  "scripts/predict_rect.py": "9d704300143a5786f7b74450f35e6c656d55c82812ca34d0e7b830d96034f524",
+  "scripts/predict.py": "ffc1edd08aa0d22b2e007ef76a83b7358ddb12e623aeafd1788a7d11236e1f13",
+  "ultralytics/utils/ops.py": "1c674a27055bcc55077bfcdb6b58fd3d96196dbad09c2f1f0da260e6f52f74ed",
+  "ultralytics/data/loaders.py": "f84bdcf29081e6f95b58fbf19c255d1da52281d27c107746d0661eaf6d8c3c1c",
+  "scripts/official_eval.py": "e82128abc082ed05f39dd2ef40f7d36680944911f1940a3f0a2f35eb38321783",
+  "configs/train_rgbid_sepstem_clahe.yaml": "a4e329cfc3d220206448cdd3377c1b3f5126c50f13c907ada522d98725486e12",
+  "configs/yolo11m_sepstem.yaml": "9b14f2946073338414b4441784b6df87a868b982be32ac8d50b6d1c4a17f3dd8",
+  "checkpoint_best.pt": "1cae45f75693f54146e35c5fa076c0a6f78ca1cfa95595de74d959f40fae4fda"
+ },
+ "images": 400,
+ "reference": "diagnostic\\sepstem_clahe\\best_full\\results",
+ "reference_reproduced": true,
+ "n_ref_checked": 400
+}

@@ -1,0 +1,124 @@
+{
+  "N_86": 86,
+  "class_score_buckets": {
+    "all": {
+      "lt1e6": 35,
+      "b1e6_1e5": 37,
+      "b1e5_1e4": 10,
+      "b1e4_1e3": 1,
+      "ge1e3": 3,
+      "unavailable": 0
+    },
+    "collapse_part": {
+      "lt1e6": 35,
+      "b1e6_1e5": 37,
+      "b1e5_1e4": 0,
+      "b1e4_1e3": 0,
+      "ge1e3": 0,
+      "unavailable": 0
+    },
+    "wrong_class_part": {
+      "lt1e6": 10,
+      "b1e6_1e5": 7,
+      "b1e5_1e4": 10,
+      "b1e4_1e3": 1,
+      "ge1e3": 3,
+      "unavailable": 0
+    }
+  },
+  "class_score_stats": {
+    "all": {
+      "n": 86,
+      "median": 1.62415e-06,
+      "mean": 5.844872093023256e-05,
+      "min": 2.1e-09,
+      "max": 0.0019284154
+    },
+    "collapse_part": {
+      "n": 72,
+      "median": 1.09885e-06,
+      "mean": 2.1162583333333328e-06,
+      "min": 2.1e-09,
+      "max": 9.7814e-06
+    },
+    "wrong_class_part": {
+      "n": 31,
+      "median": 6.736e-06,
+      "mean": 0.00015822046774193547,
+      "min": 2.1e-09,
+      "max": 0.0019284154
+    }
+  },
+  "subgroup_CIoU_ge050_score_le1e5": 72,
+  "subgroup_CIoU_ge075_score_le1e5": 26,
+  "tableA_primary": {
+    "SUPPORTED_SCORE_FILTERING": 83,
+    "UNRESOLVED": 3
+  },
+  "anyclass_box_survived": 31,
+  "nms_state": "NOT_OBSERVABLE",
+  "geometry_state": "NOT_OBSERVABLE",
+  "top100_state": {
+    "NOT_OBSERVABLE": 84,
+    "POSSIBLE": 2
+  },
+  "img_truncated_count_all_val": 4,
+  "geometry_control": {
+    "status": "CONTROL_ONLY_DIFFERENT_MODEL",
+    "n": 1316,
+    "median_delta": 0.0,
+    "p95_absdelta": 0.09895697236061096,
+    "gain_ge050": 11,
+    "lose_ge050": 19
+  },
+  "confidence_composition": "CLASS_PROBABILITY_MAX (ops.py:250 amax(1)); no objectness channel",
+  "thresholds": {
+    "conf": 0.001,
+    "nms_iou": 0.7,
+    "multi_label": true,
+    "max_boxes": 100
+  },
+  "checks": [
+    {
+      "name": "CHECK 1: 86 条与上一轮逐条一致",
+      "pass": true,
+      "detail": "n=86"
+    },
+    {
+      "name": "CHECK 2: 每条含 image_id / gt_id / gt_class",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "CHECK 3: 全部 prefinal certified ∧ final best_any<.50",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "CHECK 4: class score 全为 numeric（统一 float）",
+      "pass": true,
+      "detail": "non-numeric=0"
+    },
+    {
+      "name": "CHECK 5: 统计可由逐 GT CSV 重新聚合",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "CHECK 6: 未覆盖上一轮文件（新目录）",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "CHECK 7: CIoU<=IoU 的代码级界（CIoU 两项非负 + clamp）",
+      "pass": true,
+      "detail": "metrics.py:305 iou-(rho2/c2+v*alpha), tal.py:155 clamp_(0)"
+    },
+    {
+      "name": "CHECK 8: 无任何 ARTIFACT 提供真实 IoU / candidate identity / 前后 NMS 对照",
+      "pass": true,
+      "detail": ""
+    }
+  ],
+  "tolerance": 1e-06
+}

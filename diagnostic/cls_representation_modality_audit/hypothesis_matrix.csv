@@ -1,0 +1,6 @@
+H,required,current_evidence,status
+H1 classification representation weak,feature / class separation evidence,"h 的 nearest-centroid 类别准确率 0.4651 vs 对照 0.9065（随机 0.2907）；cos(h,类均值) 0.62-0.70 vs 0.83-0.97（7/7 类一致）；特征项 W·h 中位 -6.965 vs +10.950 (尺寸匹配后差 -17.915 nats)；bias 项完全相同(-9.76)。限制：0.465 仍高于随机，且单快照方向不可分离。",PARTIALLY_SUPPORTED
+H2 multimodal fusion harms class separation,modality feature evidence,**无任何 per-modality feature / modality-specific logit / per-modality 梯度 artifact**。modality_dropout 是训练期 dropout 实验而非逐模态特征归因。,NOT_OBSERVABLE
+H3 TAL / optimization causes collapse,training trajectory,上一轮已证 TAL assignment bias 静态存在（79x 额外排除），但 TRAINING_CAUSALITY = NOT_OBSERVABLE；本轮无 trajectory。,NOT_OBSERVABLE
+H4 shared cls/box representation explains divergence,shared architecture + feature evidence,架构：共享 backbone/neck + P3/P4/P5，head 内 64ch/256ch 完全分离。★ 表征级直接证据（本轮回填）：共享 P3 在 86 的 cell 上 nearest-centroid 类别准确率 0.2558 **≤ 随机 0.2907**，而 box tower 用同一份 P3 产出 CIoU>=0.50 的几何；对照为 0.6645。仍然：单快照，方向不可分离。,PARTIALLY_SUPPORTED
+H5 class imbalance explains collapse,direct causal evidence,descriptive：class-wise collapse_rate 有差异（见 class_collapse_summary.csv），但**无因果证据**；且高频类 person 也有 collapse。,NOT_SUPPORTED

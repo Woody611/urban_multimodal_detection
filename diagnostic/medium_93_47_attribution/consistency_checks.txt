@@ -1,0 +1,8 @@
+[PASS] CHECK A: collapse==93 / wrong_class==47  collapse=93 wrong_class=47
+[PASS] CHECK B: union rows == 110 (93+47 nominal; overlap 30)  rows=110 union=110 intersection=30
+[PASS] CHECK C: best_any_iou >= best_same_iou for every GT  tol=1e-06
+[PASS] CHECK D: 0 <= IoU <= 1  
+[PASS] CHECK E: if best_same present, its class == GT class  by construction (same-class filtered)
+[PASS] CHECK F: best_any class==gt_class => best_any_iou==best_same_iou  violations=0 tol=1e-06
+[PASS] CHECK G: aggregates re-derivable from per-GT rows  recount == summary
+[PASS] CHECK H: possible_ranking_limited unreachable in this sample  all 110 have best_same==0 -> ranking cat structurally 0 (sample is pre-selected on same-class)

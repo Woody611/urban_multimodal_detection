@@ -1,0 +1,579 @@
+{
+  "CUDA_USED": "NO",
+  "THRESHOLD": 0.8,
+  "baseline": {
+    "HEAD": "5f1a8d5802aa49adf35e8fa6fb112a1030b3e6d3",
+    "branch": "yyy",
+    "sha256_16": {
+      "ultralytics/models/yolo/detect/train.py": "71096a9e044652a5",
+      "ultralytics/nn/tasks.py": "79c8dbab9cd810d2",
+      "ultralytics/data/base.py": "bf380a22d2491f73",
+      "ultralytics/data/loaders.py": "56c07c8520cf5b25",
+      "ultralytics/data/augment.py": "abfc90f53f75f7ad",
+      "ultralytics/cfg/default.yaml": "cf06d3a61a5cc9a9",
+      "scripts/train.py": "67cb9fe02757fd59",
+      "scripts/predict_rect.py": "9d704300143a5786",
+      "scripts/official_eval.py": "e82128abc082ed05",
+      "scripts/validate_modality_contract.py": "283c28f006bbe834",
+      "scripts/pretrained_coverage.py": "3178dae235f1384f",
+      "configs/yolo11m_sepstem.yaml": "9b14f29460733384",
+      "configs/yolo11m_earlyfusion.yaml": "edc95f4665ead847",
+      "configs/yolo11m_modality4ch.yaml": "871d9d0da0122453",
+      "configs/yolo11m_modality3ch.yaml": "58906628b858274c",
+      "configs/yolo11m_modality2ch.yaml": "6e7bfb1555a3c68d",
+      "yolo11m.pt": "d5ffc1a674953a08"
+    },
+    "gitignored": [
+      "ultralytics/data/base.py",
+      "ultralytics/data/loaders.py",
+      "yolo11m.pt"
+    ]
+  },
+  "prototypes": {
+    "candC": "C:\\Users\\45548\\AppData\\Local\\Temp\\f3m_audit\\yolo11m_candC.yaml",
+    "candC_negA1_extra_layer": "C:\\Users\\45548\\AppData\\Local\\Temp\\f3m_audit\\yolo11m_candC_negA1_extra_layer.yaml",
+    "candC_negA2_wrong_depth_slice": "C:\\Users\\45548\\AppData\\Local\\Temp\\f3m_audit\\yolo11m_candC_negA2_wrong_depth_slice.yaml"
+  },
+  "coverage": {
+    "D": {
+      "family": "single_stem",
+      "reasons": [
+        "single 5ch Conv stem@L0 -> single-stem family; every layer Lk <- stock Lk (stem checked as derived slices)"
+      ],
+      "threshold": 0.8,
+      "n_expected": 532,
+      "n_exact": 532,
+      "coverage_tensors": 1.0,
+      "coverage_params": 1.0,
+      "counts": {
+        "PRETRAINED": 532,
+        "DERIVED": 5,
+        "ZERO_INIT": 0,
+        "NEW_RANDOM": 6,
+        "other": 0
+      },
+      "problems": {
+        "shape_mismatch": [],
+        "unresolved": [],
+        "unexpected": [],
+        "not_equal": []
+      },
+      "stem_notes": [
+        "L0 (derived, in=5, out=64): OK [ch[0:3] == stock RGB, ch[3:] == mean(R,G,B)]",
+        "L0 (derived): OK"
+      ],
+      "checks": {
+        "pretrained_exact_match_ratio>=threshold": true,
+        "critical_stem_mapping": true,
+        "zero_init_exact": true,
+        "shape_mismatch==0": true,
+        "unresolved_expected_mapping==0": true,
+        "unexpected_mapping==0": true,
+        "not_equal==0": true
+      },
+      "ok": true,
+      "n_ret": 5
+    },
+    "D'": {
+      "family": "separate_stem",
+      "reasons": [
+        "1x3ch + 2x1ch stems fused by 3-input Concat@L7 -> separate-stem; body L8.. <- stock 1.."
+      ],
+      "threshold": 0.8,
+      "n_expected": 532,
+      "n_exact": 532,
+      "coverage_tensors": 1.0,
+      "coverage_params": 1.0,
+      "counts": {
+        "PRETRAINED": 532,
+        "DERIVED": 15,
+        "ZERO_INIT": 0,
+        "NEW_RANDOM": 6,
+        "other": 0
+      },
+      "problems": {
+        "shape_mismatch": [],
+        "unresolved": [],
+        "unexpected": [],
+        "not_equal": []
+      },
+      "stem_notes": [
+        "L2 (derived_rgb, in=3, out=48): OK [ch == stock RGB stem]",
+        "L2 (derived_rgb): OK",
+        "L4 (derived_aux, in=1, out=8): OK [all ch == mean(R,G,B)]",
+        "L4 (derived_aux): OK",
+        "L6 (derived_aux, in=1, out=8): OK [all ch == mean(R,G,B)]",
+        "L6 (derived_aux): OK"
+      ],
+      "checks": {
+        "pretrained_exact_match_ratio>=threshold": true,
+        "critical_stem_mapping": true,
+        "zero_init_exact": true,
+        "shape_mismatch==0": true,
+        "unresolved_expected_mapping==0": true,
+        "unexpected_mapping==0": true,
+        "not_equal==0": true
+      },
+      "ok": true,
+      "n_ret": 550
+    },
+    "M4": {
+      "family": "single_stem",
+      "reasons": [
+        "single 4ch Conv stem@L0 -> single-stem family; every layer Lk <- stock Lk (stem checked as derived slices)"
+      ],
+      "threshold": 0.8,
+      "n_expected": 532,
+      "n_exact": 532,
+      "coverage_tensors": 1.0,
+      "coverage_params": 1.0,
+      "counts": {
+        "PRETRAINED": 532,
+        "DERIVED": 5,
+        "ZERO_INIT": 0,
+        "NEW_RANDOM": 6,
+        "other": 0
+      },
+      "problems": {
+        "shape_mismatch": [],
+        "unresolved": [],
+        "unexpected": [],
+        "not_equal": []
+      },
+      "stem_notes": [
+        "L0 (derived, in=4, out=64): OK [ch[0:3] == stock RGB, ch[3:] == mean(R,G,B)]",
+        "L0 (derived): OK"
+      ],
+      "checks": {
+        "pretrained_exact_match_ratio>=threshold": true,
+        "critical_stem_mapping": true,
+        "zero_init_exact": true,
+        "shape_mismatch==0": true,
+        "unresolved_expected_mapping==0": true,
+        "unexpected_mapping==0": true,
+        "not_equal==0": true
+      },
+      "ok": true,
+      "n_ret": 5
+    },
+    "candC": {
+      "family": "residual_depth_adapter",
+      "reasons": [
+        "ZeroConv2d@L4 + ADD@L5 fed by [L2, L4] -> residual-Depth adapter; body L6.. <- stock 1.."
+      ],
+      "threshold": 0.8,
+      "n_expected": 532,
+      "n_exact": 532,
+      "coverage_tensors": 1.0,
+      "coverage_params": 1.0,
+      "counts": {
+        "PRETRAINED": 532,
+        "DERIVED": 5,
+        "ZERO_INIT": 2,
+        "NEW_RANDOM": 6,
+        "other": 0
+      },
+      "problems": {
+        "shape_mismatch": [],
+        "unresolved": [],
+        "unexpected": [],
+        "not_equal": []
+      },
+      "stem_notes": [
+        "L2 (derived, in=4, out=64): OK [ch[0:3] == stock RGB, ch[3:] == mean(R,G,B)]",
+        "L2 (derived): OK"
+      ],
+      "checks": {
+        "pretrained_exact_match_ratio>=threshold": true,
+        "critical_stem_mapping": true,
+        "zero_init_exact": true,
+        "shape_mismatch==0": true,
+        "unresolved_expected_mapping==0": true,
+        "unexpected_mapping==0": true,
+        "not_equal==0": true
+      },
+      "ok": true,
+      "n_ret": 538
+    }
+  },
+  "manifest_rows": 545,
+  "stem_notes": [
+    "L2 (derived, in=4, out=64): OK [ch[0:3] == stock RGB, ch[3:] == mean(R,G,B)]",
+    "L2 (derived): OK"
+  ],
+  "zero_conv": {
+    "tensors": 2,
+    "max_abs_weight": 0.0,
+    "max_abs_bias": 0.0,
+    "status": [
+      "ZERO_OK",
+      "ZERO_OK"
+    ]
+  },
+  "add_layer": {
+    "type": "ADD",
+    "params": 0,
+    "alpha": 1.0
+  },
+  "identity": {
+    "stem_vs_m4": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "rel": 0.0,
+      "exact": true
+    },
+    "fused_vs_m4": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "rel": 0.0,
+      "exact": true
+    },
+    "zero_vs_zeros": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "rel": 0.0,
+      "exact": true
+    },
+    "status": "PASS"
+  },
+  "negative_tests": {
+    "A1 extra layer after ADD": {
+      "expected": "RAISE",
+      "observed": "RAISE:RuntimeError: [residual-depth remap] no pretrained counterpart for 'model.7.conv.weight' (",
+      "passed": true
+    },
+    "A2 depth fed by IR slice": {
+      "expected": "RAISE",
+      "observed": "RAISE:RuntimeError: [residual-depth remap] ZeroConv2d at layer 4 is not fed by a SilenceChannel[",
+      "passed": true
+    },
+    "B1 delete stock stem": {
+      "expected": "RAISE",
+      "observed": "RAISE: RuntimeError: [residual-depth remap] stock stem 'model.0.conv.weight' not present in pretraine",
+      "passed": true
+    },
+    "B2 delete mid-body tensor": {
+      "expected": "RAISE",
+      "observed": "RAISE: RuntimeError: [residual-depth remap] no pretrained counterpart for 'model.15.cv1.conv.weight' ",
+      "passed": true
+    },
+    "C pre-P1 dispatcher on candC": {
+      "expected": "silent (no raise) but GATE FAIL",
+      "observed": "no raise, n_ret=5, coverage_t=0.0019, gate=FAIL",
+      "passed": true
+    },
+    "C2 new code, branch disabled": {
+      "expected": "RAISE (multi-ch fail-closed guard)",
+      "observed": "RAISE: RuntimeError: [multi-ch stem remap] the 4ch stem is at layer 2, not 0: the Silen",
+      "passed": true
+    }
+  },
+  "regression": {
+    "scanned": 30,
+    "regressions": []
+  },
+  "regression_rows": [
+    {
+      "cfg": "yolo11_earlyfusion.yaml",
+      "before_n": null,
+      "after_n": null,
+      "before_cov": NaN,
+      "after_cov": NaN,
+      "before_err": "RuntimeError: [multi-ch stem remap] cannot initialise in_channels=5 stem: stock stem 'model.0.conv.weight' (64, 3, 3, 3) vs target out=16. 拒绝静默保留随机初始化。",
+      "after_err": "RuntimeError: [multi-ch stem remap] cannot initialise in_channels=5 stem: stock stem 'model.0.conv.weight' (64, 3, 3, 3) vs target out=16. 拒绝静默保留随机初始化。",
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11_latefusion.yaml",
+      "before_n": null,
+      "after_n": null,
+      "before_cov": NaN,
+      "after_cov": NaN,
+      "before_err": "RuntimeError: [sepstem remap] fusion Concat at layer 73 references [42, 54, 66], but the detected stems are at [2, 14, 26]; refusing to guess",
+      "after_err": "RuntimeError: [sepstem remap] fusion Concat at layer 73 references [42, 54, 66], but the detected stems are at [2, 14, 26]; refusing to guess",
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11_midfusion.yaml",
+      "before_n": null,
+      "after_n": null,
+      "before_cov": NaN,
+      "after_cov": NaN,
+      "before_err": "RuntimeError: [sepstem remap] fusion Concat at layer 19 references [6, 12, 18], but the detected stems are at [2, 8, 14]; refusing to guess",
+      "after_err": "RuntimeError: [sepstem remap] fusion Concat at layer 19 references [6, 12, 18], but the detected stems are at [2, 8, 14]; refusing to guess",
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11_midfusion_rgbd.yaml",
+      "before_n": 4,
+      "after_n": 4,
+      "before_cov": NaN,
+      "after_cov": NaN,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11_midfusion_rgbd_add.yaml",
+      "before_n": 44,
+      "after_n": 44,
+      "before_cov": NaN,
+      "after_cov": NaN,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11_midfusion_rgbd_add6ch.yaml",
+      "before_n": 0,
+      "after_n": 0,
+      "before_cov": NaN,
+      "after_cov": NaN,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11_midfusion_rgbd_add_dw.yaml",
+      "before_n": 44,
+      "after_n": 44,
+      "before_cov": NaN,
+      "after_cov": NaN,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11_midfusion_rgbd_cbam.yaml",
+      "before_n": 34,
+      "after_n": 34,
+      "before_cov": NaN,
+      "after_cov": NaN,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11_midfusion_rgbd_concat.yaml",
+      "before_n": 4,
+      "after_n": 4,
+      "before_cov": NaN,
+      "after_cov": NaN,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11_midfusion_rgbd_concat_res.yaml",
+      "before_n": 34,
+      "after_n": 34,
+      "before_cov": NaN,
+      "after_cov": NaN,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11_midfusion_rgbd_gated.yaml",
+      "before_n": 44,
+      "after_n": 44,
+      "before_cov": NaN,
+      "after_cov": NaN,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11_midfusion_rgbd_se.yaml",
+      "before_n": 34,
+      "after_n": 34,
+      "before_cov": NaN,
+      "after_cov": NaN,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11_midfusion_rgbd_wf.yaml",
+      "before_n": 44,
+      "after_n": 44,
+      "before_cov": NaN,
+      "after_cov": NaN,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11_rgbt.yaml",
+      "before_n": 34,
+      "after_n": 34,
+      "before_cov": NaN,
+      "after_cov": NaN,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11_visible.yaml",
+      "before_n": 0,
+      "after_n": 0,
+      "before_cov": 0.08292682926829269,
+      "after_cov": 0.08292682926829269,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11l_midfusion_rgbd_concat_res.yaml",
+      "before_n": 529,
+      "after_n": 529,
+      "before_cov": NaN,
+      "after_cov": NaN,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11m_earlyfusion.yaml",
+      "before_n": 5,
+      "after_n": 5,
+      "before_cov": 1.0,
+      "after_cov": 1.0,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11m_earlyfusion_p3attn.yaml",
+      "before_n": 5,
+      "after_n": 5,
+      "before_cov": 0.9962546816479401,
+      "after_cov": 0.9962546816479401,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11m_midfusion_rgbd_concat_res.yaml",
+      "before_n": 537,
+      "after_n": 537,
+      "before_cov": NaN,
+      "after_cov": NaN,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11m_midfusion_rgbd_concat_res_p2.yaml",
+      "before_n": 480,
+      "after_n": 480,
+      "before_cov": NaN,
+      "after_cov": NaN,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11m_modality2ch.yaml",
+      "before_n": 5,
+      "after_n": 5,
+      "before_cov": 1.0,
+      "after_cov": 1.0,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11m_modality3ch.yaml",
+      "before_n": 0,
+      "after_n": 0,
+      "before_cov": 1.0,
+      "after_cov": 1.0,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11m_modality4ch.yaml",
+      "before_n": 5,
+      "after_n": 5,
+      "before_cov": 1.0,
+      "after_cov": 1.0,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11m_rgbid_p2_probe.yaml",
+      "before_n": 5,
+      "after_n": 5,
+      "before_cov": 0.7050243111831442,
+      "after_cov": 0.7050243111831442,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11m_sepstem.yaml",
+      "before_n": 550,
+      "after_n": 550,
+      "before_cov": 1.0,
+      "after_cov": 1.0,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11m_sepstem_40_16_8.yaml",
+      "before_n": 550,
+      "after_n": 550,
+      "before_cov": 1.0,
+      "after_cov": 1.0,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11m_sepstem_e1.yaml",
+      "before_n": 550,
+      "after_n": 550,
+      "before_cov": 0.9888475836431226,
+      "after_cov": 0.9888475836431226,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11s_midfusion_rgbd_concat_res.yaml",
+      "before_n": 198,
+      "after_n": 198,
+      "before_cov": NaN,
+      "after_cov": NaN,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11s_midfusion_rgbd_concat_res_p2.yaml",
+      "before_n": 192,
+      "after_n": 192,
+      "before_cov": NaN,
+      "after_cov": NaN,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    },
+    {
+      "cfg": "yolo11s_visible.yaml",
+      "before_n": 0,
+      "after_n": 0,
+      "before_cov": 0.48292682926829267,
+      "after_cov": 0.48292682926829267,
+      "before_err": null,
+      "after_err": null,
+      "unchanged": true
+    }
+  ],
+  "P1_STATUS": "PASS",
+  "3M_READY": "YES"
+}

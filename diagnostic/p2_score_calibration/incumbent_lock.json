@@ -1,0 +1,10 @@
+{
+ "runs\\urban_multimodal_det_yolo11_rgbid_sepstem_clahe\\weights\\best.pt": {
+  "sha256": "1cae45f75693f54146e35c5fa076c0a6f78ca1cfa95595de74d959f40fae4fda",
+  "bytes": 40641641
+ },
+ "diagnostic\\sepstem_clahe\\best_full\\results": {
+  "bundle_sha256": "1a78255dbb9bd7b595a9777860816dbb8cc0c13d8bac55075952825e26c2b97c",
+  "files": 400
+ }
+}

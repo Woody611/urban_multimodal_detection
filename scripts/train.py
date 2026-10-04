@@ -399,6 +399,42 @@ def _split_train_val_rgbid(dataset_cfg, val_ratio: float, seed: int) -> Path:
 # train.yaml → ultralytics 参数映射
 # ============================================================
 
+def resolve_data_path(train_cfg, dataset_cfg_path):
+    """按 use_simotm 解析（必要时**生成**）该实验的 dataset.yaml —— 生产的唯一入口。
+
+    2026-10-03 抽出：此前这段分派内联在 main() 里，任何绕过 main() 的调用方
+    （例如 diagnostic/gpu_smoke_gate.py）都会**跳过 split 生成**，于是拿到一条
+    指向不存在目录的路径。现在 main() 与 smoke gate 共用本函数，
+    ⇒ smoke 测的就是生产路径。
+    """
+    dataset_cfg = _load_yaml(dataset_cfg_path)
+    data_path = dataset_cfg_path
+    val_ratio = float(train_cfg.get("val_ratio", 0.0))
+    use_simotm = str(train_cfg.get("use_simotm", "SimOTMBBS"))
+    if val_ratio > 0 and not _val_has_labels(dataset_cfg):
+        if use_simotm in ("RGBT", "RGBIR", "Infrared"):
+            # RGBT/RGBIR(4ch 融合) 与 Infrared(单模态) 都靠 visible->infrared 路径替换，
+            # 复用 visible+infrared 配对的 rgbt_split（不碰 visible_split）。
+            data_path = str(_split_train_val_rgbt(
+                dataset_cfg, val_ratio, int(train_cfg.get("seed", 42))))
+        elif use_simotm in ("Depth", "RGBD"):
+            # Depth(单模态) 与 RGBD(RGB+Depth 双模态融合) 都靠 visible->depth 路径替换，
+            # 复用 visible+depth 配对的 depth_split（不碰 visible_split）。
+            data_path = str(_split_train_val_depth(
+                dataset_cfg, val_ratio, int(train_cfg.get("seed", 42))))
+        elif use_simotm in ("RGBID", "IRD"):
+            # RGBID (visible+infrared+depth) 与 IRD (infrared+depth) 都靠 visible->infrared /
+            # visible->depth 两条路径替换，复用同一个 rgbid_split（含三模态目录）。
+            # ⚠ IRD 加入本组是 2026-10-03 的修复：此前 IRD 不存在，会落到 else -> visible_split，
+            #   那里没有 infrared/ depth 子目录 ⇒ 路径替换必然失败。
+            data_path = str(_split_train_val_rgbid(
+                dataset_cfg, val_ratio, int(train_cfg.get("seed", 42))))
+        else:
+            data_path = str(_split_train_val(
+                dataset_cfg, val_ratio, int(train_cfg.get("seed", 42))))
+    return data_path
+
+
 def _build_train_kwargs(train_cfg, data_path):
     """把 train.yaml 映射为 ultralytics YOLO.train() 参数。"""
     ckpt = train_cfg.get("checkpoint", {})
@@ -458,7 +494,8 @@ def _build_train_kwargs(train_cfg, data_path):
     aug = train_cfg.get("aug", {})
     for key in ("hsv_h", "hsv_s", "hsv_v", "degrees", "translate", "scale", "shear",
                 "perspective", "flipud", "fliplr", "bgr", "mosaic", "mixup",
-                "copy_paste", "copy_paste_mode", "erasing", "crop_fraction", "close_mosaic"):
+                "copy_paste", "copy_paste_mode", "erasing", "crop_fraction", "close_mosaic",
+                "albumentations_p"):
         if key in aug:
             kwargs[key] = aug[key]
 
@@ -520,6 +557,60 @@ def _build_train_kwargs(train_cfg, data_path):
 
 
 # ============================================================
+# Case 2 —— late-rect geometry switch（唯一实验变量：训练末段画布 square → rect）
+# ============================================================
+# 背景（审计结论，见 diagnostic/rect_geometry_audit）：
+#   - ultralytics 的 `rect` 是 train/val **共用**的 cfg 键：build.py:105 `rect=cfg.rect or rect`，
+#     而 detect/train.py:352 对 val 恒传 True ⇒ **val 一直是 rect**；只有训练画布是 square。
+#   - 全程训练 `rect=True` **不是单变量**：dataset.py:177-178 会强制 `hyp.mosaic=0`、
+#     `hyp.mixup=0`，detect/train.py:360-361 还会强制 `shuffle=False`，且 set_rectangle()
+#     会把 dataset 按 AR 重排。mosaic 1.0→0.0 本身就是最大的单一变化。
+#   - 因此本实验只在 **close_mosaic 已经让 mosaic=0 之后**（末 10 epoch）才把画布切成 rect：
+#     两组共享 mosaic OFF，唯一差异只剩 letterbox 画布几何。
+#
+# 生效链路（全部为既有代码，未改动）：
+#   get_image_and_label (base.py:603-604)   if self.rect: label["rect_shape"] = batch_shapes[batch[index]]
+#   RandomPerspective.__call__ (augment.py:1256-1257)  labels = self.pre_transform(labels)
+#   LetterBox.__call__ (augment.py:1788)    new_shape = labels.pop("rect_shape", self.new_shape)
+#
+# 关闭语义：train.yaml 未写 `rect_late_start_epoch`（或写 0）时**不注册回调** ⇒ 对 D′ /
+# Box×2 / 一切既有配置逐位无影响。
+def _make_rect_late_callback(start_epoch: int):
+    """返回 on_train_epoch_start 回调：在第 start_epoch 个 epoch（1-based，与 results.csv 同一编号）
+    把 train dataset 的 letterbox 画布从 square 切到 rect。
+
+    内部 `trainer.epoch` 是 0-based，results.csv 写的是 `epoch + 1`（trainer.py:666），
+    而 close_mosaic 的触发条件是 `epoch == epochs - close_mosaic`（trainer.py:355）。
+    故 `start_epoch` 必须等于 `epochs - close_mosaic + 1`，否则 rect 相位与 mosaic-off 相位
+    不重合，实验不再是单变量 —— 该条件在回调里**硬断言**。
+    """
+    target = int(start_epoch)
+
+    def _cb(trainer):
+        ep1 = int(getattr(trainer, "epoch", -1)) + 1
+        if ep1 != target:
+            return
+        n_expected = int(trainer.epochs) - int(trainer.args.close_mosaic) + 1
+        if ep1 != n_expected:
+            raise RuntimeError(
+                f"[rect_late] rect_late_start_epoch={ep1} 必须等于 "
+                f"epochs-close_mosaic+1={n_expected}（当前 epochs={trainer.epochs}, "
+                f"close_mosaic={trainer.args.close_mosaic}）。相位不重合 ⇒ 实验非单变量，拒绝执行。")
+        ds = getattr(getattr(trainer, "train_loader", None), "dataset", None)
+        if ds is None:
+            raise RuntimeError("[rect_late] trainer.train_loader.dataset 不可用")
+        if getattr(ds, "rect", False):
+            return
+        ds.rect = True        # 先置位，再算矩形批次（set_rectangle 不检查 self.rect，但语义上须一致）
+        ds.set_rectangle()    # 计算 batch_shapes/batch ⇒ get_image_and_label 开始挂 rect_shape
+        print(f"[rect_late] epoch {ep1}: train geometry square -> rect   "
+              f"batch_shapes={getattr(ds, 'batch_shapes', None)!r}  "
+              f"pad={getattr(ds, 'pad', None)}  imgsz={getattr(ds, 'imgsz', None)}")
+
+    return _cb
+
+
+# ============================================================
 # 主流程
 # ============================================================
 
@@ -543,28 +634,8 @@ def main():
     dataset_cfg_path = args.dataset_config
     dataset_cfg = _load_yaml(dataset_cfg_path)
 
-    # ---- data: 无标注 val 时按 val_ratio 切分 train，否则直接用原 dataset.yaml ----
-    data_path = dataset_cfg_path
-    val_ratio = float(train_cfg.get("val_ratio", 0.0))
-    use_simotm = str(train_cfg.get("use_simotm", "SimOTMBBS"))
-    if val_ratio > 0 and not _val_has_labels(dataset_cfg):
-        if use_simotm in ("RGBT", "Infrared"):
-            # RGBT(4ch 融合) 与 Infrared(单模态) 都靠 visible->infrared 路径替换，
-            # 复用 visible+infrared 配对的 rgbt_split（不碰 visible_split）。
-            data_path = str(_split_train_val_rgbt(
-                dataset_cfg, val_ratio, int(train_cfg.get("seed", 42))))
-        elif use_simotm in ("Depth", "RGBD"):
-            # Depth(单模态) 与 RGBD(RGB+Depth 双模态融合) 都靠 visible->depth 路径替换，
-            # 复用 visible+depth 配对的 depth_split（不碰 visible_split）。
-            data_path = str(_split_train_val_depth(
-                dataset_cfg, val_ratio, int(train_cfg.get("seed", 42))))
-        elif use_simotm == "RGBID":
-            # RGBID: 独立切分，生成 visible+infrared+depth 配对的 rgbid_split
-            data_path = str(_split_train_val_rgbid(
-                dataset_cfg, val_ratio, int(train_cfg.get("seed", 42))))
-        else:
-            data_path = str(_split_train_val(
-                dataset_cfg, val_ratio, int(train_cfg.get("seed", 42))))
+    # ---- data: 按 use_simotm 解析（必要时生成）split —— 与 smoke gate 共用 resolve_data_path ----
+    data_path = resolve_data_path(train_cfg, dataset_cfg_path)
 
     kwargs = _build_train_kwargs(train_cfg, data_path)
 
@@ -613,6 +684,14 @@ def main():
           f"opt={kwargs['optimizer']} cos_lr={kwargs.get('cos_lr', False)}")
 
     model = YOLO(model_path)
+
+    # ---- Case 2：late-rect 几何切换（唯一实验变量）。未写该键时不注册 ⇒ no-op ----
+    _rect_late = int(train_cfg.get("rect_late_start_epoch", 0) or 0)
+    if _rect_late:
+        model.add_callback("on_train_epoch_start", _make_rect_late_callback(_rect_late))
+        print(f"[train] rect_late_start_epoch={_rect_late} "
+              f"(预期 = epochs - close_mosaic + 1 = {kwargs['epochs']} - "
+              f"{_load_yaml('ultralytics/cfg/default.yaml').get('close_mosaic')} + 1)")
     model.train(**kwargs)
 
 

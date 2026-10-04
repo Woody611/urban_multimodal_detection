@@ -1,0 +1,8 @@
+artifact,sha,field,semantic,stage,split,pre_post,model,usable
+diagnostic/p3_feature_space/_v7_vectors.json,977593ae0012610004077b7fa58cd2cdd9e2a59dc2d90044b5e65ab3b6db0496,p3,model.model[23] 输出（P3 颈特征）256ch,neck,T1/T2/V1,pre-head,D-prime best.pt,YES
+diagnostic/p3_feature_space/_v7_vectors.json,977593ae0012610004077b7fa58cd2cdd9e2a59dc2d90044b5e65ab3b6db0496,h,Detect.cv3[0][-1] 的输入（分类头前置特征）256ch,cls-head-input,T1/T2/V1,pre-logit,D-prime best.pt,YES
+diagnostic/p3_feature_space/_v7_vectors.json,977593ae0012610004077b7fa58cd2cdd9e2a59dc2d90044b5e65ab3b6db0496,logit_decomp,W_gt·h+b_gt = GT 类 logit（stride-8 分支，GT 中心 cell）,cls-head-output,T1/T2/V1,pre-sigmoid/pre-NMS,D-prime best.pt,YES
+diagnostic/p3_feature_space/_v11_layers.npz,4189d4d92f28bc545862941097569e606fa6d669903c96d609e1809f46116335,"L9..L23_{G1,G4,TS}",逐层池化特征向量（G1=38 小目标硬漏 / G4=194 小目标检出 / TS=467）,whole network,val(G1/G4)+train(TS),pre-head,D-prime best.pt,NO(仅 small-object 组，不含 medium 86)
+diagnostic/l17_selectivity_audit/_results.npz,a5b1237bae7c34756b08f327d732ca0dc1259ecbfed04763a71b6eee263658f2,g1_orig_vec/g1_donor_vec/...,L17 局部 cell 向量与干预后 logit,L17,val(G1),干预实验,D-prime best.pt,NO(仅 small G1，且为干预实验)
+diagnostic/depth_reliability_small_miss/_results.npz,37064bc2c6ad8918fad97fa8e769b6bd95d9451c7991010ff541f17cbf0424bd,*_rgb_contrast/*_ir_contrast/*_raw_std/...,GT 框内**输入图像**统计（非特征）,input,val,pre-model,—,PARTIAL(仅输入侧、非表征侧)
+diagnostic/candidate_density_counterfactual/_results.npz,7b28dc555c3fffb64b8a89a7f1bf9566343198bb061cb4e41105fe2972be0ded,cand_cls/cand_ciou/cand_align,TAL 正样本池候选的预测 cls/CIoU/align（**cand_align 为 post-mask_pos**）,TAL-assignment,train,pre-NMS,D-prime best.pt,PARTIAL(候选级，非特征级)

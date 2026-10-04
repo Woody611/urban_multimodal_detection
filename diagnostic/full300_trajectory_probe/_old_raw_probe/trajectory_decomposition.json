@@ -1,0 +1,224 @@
+{
+  "observe_epochs_0based": [
+    0,
+    1,
+    2,
+    5,
+    10,
+    20,
+    30,
+    50,
+    75,
+    100,
+    125,
+    150,
+    175,
+    200,
+    225,
+    250,
+    275,
+    289
+  ],
+  "observe_epochs_csv": [
+    1,
+    2,
+    3,
+    6,
+    11,
+    21,
+    31,
+    51,
+    76,
+    101,
+    126,
+    151,
+    176,
+    201,
+    226,
+    251,
+    276,
+    290
+  ],
+  "case": "B",
+  "representation_effect_nats": 0.1825,
+  "classifier_effect_nats": 6.9484,
+  "first_divergence": {
+    "gap_widens_by_1.0nats": "not reached",
+    "gap_widens_by_2.0nats": "not reached",
+    "gap_widens_by_5.0nats": "not reached"
+  },
+  "separation": [
+    {
+      "epoch": 0,
+      "d_logit": -0.1953,
+      "d_feature": -0.1855,
+      "d_h_norm": -3.4262,
+      "d_cosH": -0.0,
+      "d_W_norm": 0.0045,
+      "d_cosW": 0.0
+    },
+    {
+      "epoch": 1,
+      "d_logit": -0.3573,
+      "d_feature": -0.3751,
+      "d_h_norm": -1.671,
+      "d_cosH": -0.02898,
+      "d_W_norm": 0.0051,
+      "d_cosW": 2e-05
+    },
+    {
+      "epoch": 2,
+      "d_logit": -0.456,
+      "d_feature": -0.4715,
+      "d_h_norm": -1.8278,
+      "d_cosH": -0.02052,
+      "d_W_norm": 0.0055,
+      "d_cosW": 0.00049
+    },
+    {
+      "epoch": 5,
+      "d_logit": -0.6963,
+      "d_feature": -0.6538,
+      "d_h_norm": -1.9244,
+      "d_cosH": 0.0041,
+      "d_W_norm": 0.0008,
+      "d_cosW": 0.00162
+    },
+    {
+      "epoch": 10,
+      "d_logit": -0.3103,
+      "d_feature": -0.4149,
+      "d_h_norm": -1.3763,
+      "d_cosH": -0.00078,
+      "d_W_norm": 0.0057,
+      "d_cosW": 0.00018
+    },
+    {
+      "epoch": 20,
+      "d_logit": -0.6682,
+      "d_feature": -0.6866,
+      "d_h_norm": -1.0517,
+      "d_cosH": -0.00757,
+      "d_W_norm": 0.0099,
+      "d_cosW": 0.0
+    },
+    {
+      "epoch": 30,
+      "d_logit": -0.5555,
+      "d_feature": -0.5277,
+      "d_h_norm": -2.6132,
+      "d_cosH": 0.01102,
+      "d_W_norm": 0.0082,
+      "d_cosW": 0.0
+    },
+    {
+      "epoch": 50,
+      "d_logit": -0.9715,
+      "d_feature": -0.9636,
+      "d_h_norm": -2.658,
+      "d_cosH": -0.00201,
+      "d_W_norm": -0.0069,
+      "d_cosW": 0.0
+    },
+    {
+      "epoch": 75,
+      "d_logit": -0.9974,
+      "d_feature": -0.9669,
+      "d_h_norm": -1.5894,
+      "d_cosH": -0.01137,
+      "d_W_norm": -0.0115,
+      "d_cosW": 0.0
+    },
+    {
+      "epoch": 100,
+      "d_logit": -1.0867,
+      "d_feature": -1.0959,
+      "d_h_norm": -0.4222,
+      "d_cosH": -0.01773,
+      "d_W_norm": -0.0156,
+      "d_cosW": 0.0
+    },
+    {
+      "epoch": 125,
+      "d_logit": -0.6077,
+      "d_feature": -0.7218,
+      "d_h_norm": -1.5315,
+      "d_cosH": -0.00147,
+      "d_W_norm": -0.0118,
+      "d_cosW": 0.0
+    },
+    {
+      "epoch": 150,
+      "d_logit": -0.5448,
+      "d_feature": -0.6053,
+      "d_h_norm": -1.9925,
+      "d_cosH": -0.02785,
+      "d_W_norm": -0.0071,
+      "d_cosW": 0.0
+    },
+    {
+      "epoch": 175,
+      "d_logit": -0.5336,
+      "d_feature": -0.4026,
+      "d_h_norm": -1.7006,
+      "d_cosH": -0.0194,
+      "d_W_norm": -0.0069,
+      "d_cosW": 0.0
+    },
+    {
+      "epoch": 200,
+      "d_logit": -0.6263,
+      "d_feature": -0.5872,
+      "d_h_norm": -1.8788,
+      "d_cosH": -0.01261,
+      "d_W_norm": -0.0062,
+      "d_cosW": 0.0
+    },
+    {
+      "epoch": 225,
+      "d_logit": -0.5433,
+      "d_feature": -0.5151,
+      "d_h_norm": -1.3142,
+      "d_cosH": -0.0147,
+      "d_W_norm": -0.0064,
+      "d_cosW": 0.0
+    },
+    {
+      "epoch": 250,
+      "d_logit": -0.5862,
+      "d_feature": -0.6717,
+      "d_h_norm": -1.8654,
+      "d_cosH": -0.01109,
+      "d_W_norm": -0.0064,
+      "d_cosW": 0.0
+    },
+    {
+      "epoch": 275,
+      "d_logit": -0.5618,
+      "d_feature": -0.5999,
+      "d_h_norm": -1.9356,
+      "d_cosH": -0.0109,
+      "d_W_norm": -0.0063,
+      "d_cosW": 0.0
+    },
+    {
+      "epoch": 289,
+      "d_logit": -0.6438,
+      "d_feature": -0.7073,
+      "d_h_norm": -1.6326,
+      "d_cosH": -0.02164,
+      "d_W_norm": -0.0062,
+      "d_cosW": 0.0
+    }
+  ],
+  "thresholds": {
+    "MATERIAL_NATS": 2.0,
+    "DIV_THRESH": [
+      1.0,
+      2.0,
+      5.0
+    ],
+    "CLOSE_EPS": 0.5
+  },
+  "limitations": "single trajectory, no intervention; temporal association only"
+}

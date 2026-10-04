@@ -1,0 +1,172 @@
+{
+  "epochs": [
+    0,
+    10,
+    20,
+    30,
+    40,
+    50,
+    60,
+    70,
+    80,
+    90,
+    100,
+    110,
+    120,
+    130,
+    140,
+    150,
+    160,
+    170,
+    180,
+    190,
+    200,
+    210,
+    220,
+    230,
+    240,
+    250,
+    260,
+    270,
+    280,
+    290
+  ],
+  "n_gt": 1320,
+  "f0_buckets": {
+    "INIT_DEAD": 27,
+    "EARLY(1-50)": 28,
+    "MID(51-150)": 15,
+    "LATE(151-290)": 7,
+    "NEVER_DEAD": 39
+  },
+  "n_f0": 116,
+  "n_matched": 984,
+  "transition_f0": 50,
+  "median_t_dead_transition": 45.0,
+  "logit_recon_err": 0.0,
+  "order_ok": true,
+  "onset_table": [
+    {
+      "signal": "h_norm",
+      "measurable": 49,
+      "pct_measurable": 98.0,
+      "onset_before_death": 43,
+      "pct_before": 87.75510204081633,
+      "median_rel_days": -40.0
+    },
+    {
+      "signal": "cos_Wm",
+      "measurable": 50,
+      "pct_measurable": 100.0,
+      "onset_before_death": 36,
+      "pct_before": 72.0,
+      "median_rel_days": -20.0
+    },
+    {
+      "signal": "best_IoU",
+      "measurable": 50,
+      "pct_measurable": 100.0,
+      "onset_before_death": 34,
+      "pct_before": 68.0,
+      "median_rel_days": -10.0
+    },
+    {
+      "signal": "target",
+      "measurable": 50,
+      "pct_measurable": 100.0,
+      "onset_before_death": 34,
+      "pct_before": 68.0,
+      "median_rel_days": -10.0
+    },
+    {
+      "signal": "z_gt",
+      "measurable": 50,
+      "pct_measurable": 100.0,
+      "onset_before_death": 33,
+      "pct_before": 66.0,
+      "median_rel_days": -20.0
+    },
+    {
+      "signal": "margin",
+      "measurable": 50,
+      "pct_measurable": 100.0,
+      "onset_before_death": 28,
+      "pct_before": 56.0,
+      "median_rel_days": -15.0
+    },
+    {
+      "signal": "cos_W",
+      "measurable": 50,
+      "pct_measurable": 100.0,
+      "onset_before_death": 28,
+      "pct_before": 56.0,
+      "median_rel_days": -20.0
+    },
+    {
+      "signal": "cos_mu",
+      "measurable": 50,
+      "pct_measurable": 100.0,
+      "onset_before_death": 26,
+      "pct_before": 52.0,
+      "median_rel_days": -10.0
+    }
+  ],
+  "effects": [
+    {
+      "metric": "z_gt",
+      "f0_med": -12.712913320979698,
+      "mat_med": 0.23653898598655498,
+      "cliffs_d": -0.5506910569105692,
+      "p": 4.83115374590171e-11
+    },
+    {
+      "metric": "margin",
+      "f0_med": 5.3405028952633735,
+      "mat_med": 12.31552430597145,
+      "cliffs_d": -0.6051626016260163,
+      "p": 4.954492854065526e-13
+    },
+    {
+      "metric": "cos_mu",
+      "f0_med": 0.7593416262835946,
+      "mat_med": 0.9404188044157132,
+      "cliffs_d": -0.5426016260162602,
+      "p": 9.206042681731057e-11
+    },
+    {
+      "metric": "cos_W",
+      "f0_med": -0.06982695474087601,
+      "mat_med": 0.24092052887770682,
+      "cliffs_d": -0.5684146341463414,
+      "p": 1.1393417195474377e-11
+    },
+    {
+      "metric": "cos_Wm",
+      "f0_med": -0.39364929071585875,
+      "mat_med": -0.17363039387697535,
+      "cliffs_d": -0.4891463414634146,
+      "p": 5.1860914461958355e-09
+    },
+    {
+      "metric": "h_norm",
+      "f0_med": 45.300022414439134,
+      "mat_med": 51.70427769644887,
+      "cliffs_d": -0.4728455284552846,
+      "p": 1.6381783594524095e-08
+    },
+    {
+      "metric": "W_gt_norm",
+      "f0_med": 0.7520421868899145,
+      "mat_med": 0.7646113627390596,
+      "cliffs_d": -0.12012195121951219,
+      "p": 0.13635451986613398
+    },
+    {
+      "metric": "best_IoU",
+      "f0_med": 0.7163626253604889,
+      "mat_med": NaN,
+      "cliffs_d": -0.42370672097759676,
+      "p": 4.2066325758942716e-07
+    }
+  ]
+}

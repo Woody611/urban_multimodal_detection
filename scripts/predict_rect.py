@@ -51,47 +51,53 @@ from ultralytics.utils.ops import non_max_suppression, scale_boxes  # noqa: E402
 # 复用 predict.py 的输出格式化/通道重排，保证 TXT 与提交格式逐字节一致
 from predict import _to_chw, _format_lines, _load_yaml, _parse_pairs  # noqa: E402
 
-# 默认模型 = E1（D′ + L12–L17 Region Response Gain）= **当前候选最优**。
-# 该 run = configs/train_rgbid_sepstem_clahe_e1.yaml + configs/yolo11m_sepstem_e1.yaml；best.pt = ep253（训练内 val）。
+# 默认模型 = RectLate10（D′ 的**唯一变量**：末 10 个 epoch 把训练侧 letterbox 切成 rect）。
+# run = configs/train_rgbid_sepstem_clahe_rectlate10.yaml + configs/yolo11m_sepstem.yaml
+#   （**model_config 与 D′ 完全相同** —— RectLate10 不改架构，故不需要单独的 model yaml）。
 #
-# E1 vs D′ 的差异**恰好两项**：model_config（E1 机制）+ experiment_name，其余逐字相同。
-# RegionResponseGain 挂在既有层内部（不新增 top-level 层），参数量 20,077,332（+0.0766%）。
-# ⚠ E1 的架构嵌在 ckpt 的 model.yaml 内（e1_enabled: true / e1_layers [13,15,17]），
-#   YOLO(weights) 会据此重建；**不要**用 D′ 的 model_config 去加载 E1 权重。
+# ⚠⚠ **本默认值指向 best.pt，而它在数值上就是 D′ 的 best.pt —— 产物零信息量。**
+#   实测（torch.load 后逐张量比对，2026-10-01）：
+#     max| D′_best − RL_best | = 0.0   ← **逐位相同**
+#     max| D′_best − RL_last | = 1.421875
+#   原因：`rect_late_start_epoch: 291`，而 best 落在 **ep246**（fitness 0.56690）——
+#   rect 阶段（ep291–300）从未刷新 best。RL 的 best.pt 即 D′ 在 ep246 的同一份权重。
+#   ⇒ 用默认值打包 = 复制 incumbent 提交（除代码漂移外）。若要取 rect 信号，必须显式
+#     传 --weights runs/..._rectlate10/weights/last.pt。
 #
-#   | 模型      | 本地官方 | 本地 fork | 训练内val | 线上     |
-#   |-----------|---------:|----------:|----------:|---------:|
-#   | D′（控制）|  0.51528 |   0.56609 |  0.56690  |  48.712  |
-#   | E1（本值）|  0.50988 |   0.56270 |  0.56546  |  未提交  |
-#   | Δ (E1−D′) | −0.00540 |  −0.00339 | −0.00144  |          |
+#   | checkpoint        | 本地官方 | 本地 fork | 训练内val | 线上     | 状态          |
+#   |-------------------|---------:|----------:|----------:|---------:|---------------|
+#   | D′ best（控制）   |  0.51528 |   0.56609 |  0.56690  |  48.712  | **incumbent** |
+#   | D′ last           |  0.50617 |   0.55435 |  0.55522  |   —      | 对照           |
+#   | **RL last (ep300)** | 0.50755 |  0.55805 |  0.56024  |  未提交  | **唯一含 rect** |
+#   | RL best (ep246)   |  ≡ D′ best（逐位相同，未单测） |  | 0.56690 |  未提交  | **本默认值**   |
+#   以上四行同 400 张 val、rect 推理链、cap=100（diagnostic/rectlate10_pair/ + 审计报告）。
 #
-# ⚠⚠ E1 在**全部四个本地口径上一致低于 D′**（2026-09-28 同环境 A/B，D′ 控制组重跑复现
-#    0.51528 = E1 合同声明的 baseline，测量链自洽）。这不是「符号矛盾」的那类结果 ——
-#    训练内 val / fork / 官方三个口径**同号**，是本项目迄今最干净的负结果。
-#    但需注意：E1 相对 D′ 是**跨架构**差分（多挂 3 个 RegionResponseGain），
-#    而 fork 口径的「与线上同序」保证只在**同架构族内**成立，故 fork 这一票的证据力弱于往常。
-#    ⇒ 是否提交由线上定夺；本地证据不支持 E1 优于 D′。数据来源：
-#      diagnostic/e1_region_gain/best_full (E1) 与 ctrl_dprime (D′控制)，均 400 图 / GT 2807。
+#   rect 尾巴本身为正：RL_last − D′_last = fork **+0.0037** / official **+0.0014**（同号）。
+#   但 best→last 落差（fork −0.0117）远大于它 ⇒ RL_last 对 incumbent 为 **−0.0080**，
+#   线上投影 ≈ **47.9 vs 48.71**。rect 效应在噪声带（sd≈0.003–0.004）之内、量级不够。
 #
-# ⛔ 已证伪、不要再设回默认值：OASA（Pre-Mosaic Object-Aware Small-object Scale Aug）两个尺度
-#
-#   | 模型      | 本地官方 | 本地 fork | 线上     |
-#   |-----------|---------:|----------:|---------:|
-#   | D′        |  0.51528 |   0.56690 |  48.712  |
-#   | OASA 2.0  |  0.51122 |   0.55409 |  未提交  |
-#   | OASA 1.4  |  0.50739 |   0.56070 |  48.134  |  ← 实测低于 D' 0.578
-#
-#   1.4 的线上结果**确认了本地口径的负号**（本项目此前 D、D' 两例都是「本地判负、线上判正」，
-#   这一例不是）⇒ OASA 在两个尺度 × 两个口径下都没有产生可交付增益，路线已收口。
-#   OASA 是纯训练期增广（val/test gating OFF），推理路径与 D' 逐位相同，所以这两条分支的
-#   提交包与 D' 只差权重；包仍保留在 submissions/rgbid_oasa_s14_candidate/ 与
-#   submissions/rgbid_sepstem_clahe_oasa_candidate/ 供追溯。
+# ⛔ 已 CLOSE / 已证伪 —— 不要设为默认值：
+#   Box×2（box gain 7.5→15.0）  fork 上 5/5 mAP 统计量全负，best −0.00743 / last −0.01000，
+#                               CONTINUE 门槛缺口 0.01903 ⇒ CLOSE（包已建，未上传）
+#   F1  （native-small replay） 线上 48.204 vs D′ 48.712 = **−0.508** ⇒ CLOSE
+#                               （本地官方口径曾给 +0.00336，符号错；fork −0.00205 符号对）
+#   E1  （L12–L17 RRG）         四个本地口径全部低于 D′（官方 −0.00540）⇒ 未提交
+#   OASA 1.4 / 2.0              线上 48.134 / 47.610，均低于 D′ 48.712 ⇒ CLOSE
+#   conf=0.0001                 线上 −2.729（旧测试集）
+#   box=10.0 / dfl=2.0          旧 RGBD 架构实测 0.52093 / 0.51894 vs 对照 0.53273 ⇒ 负
+#   RECT 全程 rect=true         框架强制 mosaic=0 / mixup=0 / shuffle=False ⇒ 多变量，不做
+#   同时不要重开：P2 / 1536 / attention / native-small replay 扫参 / ensemble（赛题明令禁止）
 #
 # 权重与训练配置必须成对：train_config 携带 use_simotm/channels/ir_encoding，
 # 这三项决定 LoadImagesAndVideos 的通道拼接与 IR 预处理；用错配置会静默改变输入分布。
-# 历史默认值（F4 = RGBD 4ch @1280、D = RGBID 早期融合）已弃用，需要时用 --weights/--train_config 显式指定。
-DEFAULT_WEIGHTS = "runs/urban_multimodal_det_yolo11_rgbid_sepstem_clahe_f1/weights/best.pt"
-DEFAULT_TRAIN_CONFIG = "configs/train_rgbid_sepstem_clahe_f1.yaml"
+# RectLate10 与 D′ 的这三项逐字相同（RGBID / 5 / clahe），但**仍必须显式配对** ——
+# 配错（例如配上 box2 或 f1 的 config）会静默换掉输入分布或架构。
+# 注意：`rect_late_start_epoch` 只属于 RectLate10，**推理侧完全不读**该键。
+#
+# 历史默认值（F4 = RGBD 4ch @1280、D = RGBID 早期融合、E1、F1、Box×2）已弃用，
+# 需要时用 --weights / --train_config 显式指定。
+DEFAULT_WEIGHTS = "runs/urban_multimodal_det_yolo11_rgbid_sepstem_clahe_rectlate10/weights/best.pt"
+DEFAULT_TRAIN_CONFIG = "configs/train_rgbid_sepstem_clahe_rectlate10.yaml"
 
 
 def _compute_rect_shape(h0: int, w0: int, imgsz: int, stride: int, pad: float = 0.5):

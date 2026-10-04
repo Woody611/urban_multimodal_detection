@@ -1,0 +1,19 @@
+[34m[1mval: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\val\visible.cache... 400 images, 0 backgrounds, 2 corrupt: 100%|██████████| 400/400 [00:00<?, ?it/s][34m[1mval: [0mScanning D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\labels\val\visible.cache... 400 images, 0 backgrounds, 2 corrupt: 100%|██████████| 400/400 [00:00<?, ?it/s][34m[1mval: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\val\visible\000050.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0034       1.001]
+[34m[1mval: [0mWARNING ⚠️ D:\gyt\AIC\urban_multimodal_detection\data\processed\rgbid_split_train\images\val\visible\003817.png: ignoring corrupt image/label: non-normalized or out of bounds coordinates [     1.0019]
+
+[data] val=398  imgs used=281
+[legacy] n=1320 max|ΔP3|=0.0 max|Δh|=0.0 max|Δlogit|=1.960e-06
+[deploy] n=1320 max|resid|=9.315e-06
+[h] G86      legacy=  40.382  deploy=  40.380  ratio=0.9999
+[h] CONTROL  legacy=  51.510  deploy=  51.545  ratio=1.0007
+[h] ALL      legacy=  49.859  deploy=  50.091  ratio=1.0046
+
+============================================================
+  coordinate_repair          PASS
+  legacy_v1_regression       PASS
+  deployment_baseline        PASS
+  ema_identity               PASS
+  p3_logit_identity          PASS
+  p4_non_intrusive           PASS
+  h_collection_sanity        PASS
+-> D:\gyt\AIC\urban_multimodal_detection\diagnostic\full300_trajectory_probe\_preflight_deploy.json

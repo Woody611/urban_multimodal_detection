@@ -32,10 +32,25 @@ from official_eval import (  # noqa: E402
 
 IMAGES = ROOT / "data/processed/rgbid_split_train/images/val/visible"
 LABELS = ROOT / "data/processed/rgbid_split_train/labels/val/visible"
+# 2026-10-03: 路径/显示名/输出路径改为可由 CLI 覆盖；**无参数时与本文件历史行为逐字相同**。
+#   key 仍沿用 "Dp"(control) / "E1"(treatment) —— 它们在脚本内被字面引用约 10 处，改名风险大于收益。
 MODELS = {
     "Dp": ROOT / "diagnostic/sepstem_clahe/best_full/results",
     "E1": ROOT / "diagnostic/e1_region_gain/official_eval/results",
 }
+NAMES_OUT = {"Dp": "D′", "E1": "E1"}
+OUT_JSON = ROOT / "diagnostic/e1_region_gain/_e1_vs_dprime_boot.json"
+
+
+def _parse_boot_args():
+    import argparse
+    ap = argparse.ArgumentParser(description="配对 image-level bootstrap（同一 400 图 / 同一官方 evaluator）")
+    ap.add_argument("--a", default=None, help="control 结果目录（默认 D′ best_full）")
+    ap.add_argument("--b", default=None, help="treatment 结果目录（默认 E1）")
+    ap.add_argument("--name-a", default=None, help="control 显示名")
+    ap.add_argument("--name-b", default=None, help="treatment 显示名")
+    ap.add_argument("--out", default=None, help="输出 JSON 路径")
+    return ap.parse_args()
 NAMES = {0: "person", 1: "boat", 2: "animal", 3: "seat", 4: "sign", 5: "bicycle",
          6: "car", 7: "ball", 8: "light", 9: "garbage_can", 10: "uav", 11: "tricycle"}
 BUCKETS = (("all", 0.0, 1e18), ("small", 0.0, 1024.0),
@@ -155,10 +170,24 @@ def seg(per_iou):
 
 # ------------------------------------------------------------------ main
 def main():
+    global OUT_JSON
+    A_ = _parse_boot_args()
+    if A_.a:
+        MODELS["Dp"] = Path(A_.a).resolve()
+    if A_.b:
+        MODELS["E1"] = Path(A_.b).resolve()
+    if A_.name_a:
+        NAMES_OUT["Dp"] = A_.name_a
+    if A_.name_b:
+        NAMES_OUT["E1"] = A_.name_b
+    if A_.out:
+        OUT_JSON = Path(A_.out).resolve()
     t0 = time.time()
     per_image, stats = load_split(IMAGES, LABELS)
     print("=" * 108)
-    print("D′ vs E1 —— 同一官方 evaluator / 同一 400 TXT / cap=100 / 不重新推理 / METRIC_A")
+    print(f"{NAMES_OUT['Dp']} vs {NAMES_OUT['E1']} —— 同一官方 evaluator / 同一 400 TXT / cap=100 / 不重新推理 / METRIC_A")
+    print(f"  control   = {MODELS['Dp']}")
+    print(f"  treatment = {MODELS['E1']}")
     print(f"  images={stats['images']}  corrupt={stats['corrupt']}  有效图={len(per_image)}  GT={stats['gt']}")
     print("=" * 108)
 
@@ -353,8 +382,8 @@ def main():
                            float(E["per_class"][c].mean() - D["per_class"][c].mean()),
                            [float(x) for x in np.percentile(boot["per_class"][:, c], [2.5, 97.5])]]
                           for _, c, *_ in rows])
-    (ROOT / "diagnostic/e1_region_gain/_e1_vs_dprime_boot.json").write_text(
-        json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
+    OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
+    OUT_JSON.write_text(json.dumps(out, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
 if __name__ == "__main__":

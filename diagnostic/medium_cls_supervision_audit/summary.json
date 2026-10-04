@@ -1,0 +1,187 @@
+{
+  "N_86": 86,
+  "n_gt_train": 11562,
+  "n_txt_train": 1599,
+  "gt_class_positive_confirmed": 86,
+  "target_gt_zero": 86,
+  "loss_receives_target": 86,
+  "target_peak": {
+    "min": 0.511306,
+    "median": 0.7226975,
+    "max": 0.948015
+  },
+  "head_n_pos": {
+    "min": 6,
+    "median": 10,
+    "max": 10
+  },
+  "grad_abs_median": 0.7226975,
+  "bce_median_nats": 9.6615,
+  "TRAINING_CANDIDATE_IDENTITY": "NOT_OBSERVABLE",
+  "FORWARD_BACKWARD_REQUIRED": "NOT_OBSERVABLE_FROM_FROZEN_ARTIFACTS",
+  "MECHANISM_STATUS": "SUPERVISION_CONFIRMED",
+  "class_distribution": [
+    {
+      "cls": 0,
+      "cls_name": "person",
+      "train_gt": 4421,
+      "train_share": 0.382373,
+      "positive_images": 4421,
+      "fail86": 25,
+      "fail110": 30,
+      "fail86_per_1k_trainGT": 5.655
+    },
+    {
+      "cls": 1,
+      "cls_name": "boat",
+      "train_gt": 107,
+      "train_share": 0.009254,
+      "positive_images": 107,
+      "fail86": 0,
+      "fail110": 0,
+      "fail86_per_1k_trainGT": 0.0
+    },
+    {
+      "cls": 2,
+      "cls_name": "animal",
+      "train_gt": 2328,
+      "train_share": 0.201349,
+      "positive_images": 2328,
+      "fail86": 16,
+      "fail110": 19,
+      "fail86_per_1k_trainGT": 6.873
+    },
+    {
+      "cls": 3,
+      "cls_name": "seat",
+      "train_gt": 511,
+      "train_share": 0.044197,
+      "positive_images": 511,
+      "fail86": 1,
+      "fail110": 5,
+      "fail86_per_1k_trainGT": 1.957
+    },
+    {
+      "cls": 4,
+      "cls_name": "sign",
+      "train_gt": 659,
+      "train_share": 0.056997,
+      "positive_images": 659,
+      "fail86": 13,
+      "fail110": 18,
+      "fail86_per_1k_trainGT": 19.727
+    },
+    {
+      "cls": 5,
+      "cls_name": "bicycle",
+      "train_gt": 550,
+      "train_share": 0.04757,
+      "positive_images": 550,
+      "fail86": 10,
+      "fail110": 12,
+      "fail86_per_1k_trainGT": 18.182
+    },
+    {
+      "cls": 6,
+      "cls_name": "car",
+      "train_gt": 1283,
+      "train_share": 0.110967,
+      "positive_images": 1283,
+      "fail86": 3,
+      "fail110": 5,
+      "fail86_per_1k_trainGT": 2.338
+    },
+    {
+      "cls": 7,
+      "cls_name": "ball",
+      "train_gt": 70,
+      "train_share": 0.006054,
+      "positive_images": 70,
+      "fail86": 2,
+      "fail110": 3,
+      "fail86_per_1k_trainGT": 28.571
+    },
+    {
+      "cls": 8,
+      "cls_name": "light",
+      "train_gt": 1211,
+      "train_share": 0.10474,
+      "positive_images": 1211,
+      "fail86": 13,
+      "fail110": 15,
+      "fail86_per_1k_trainGT": 10.735
+    },
+    {
+      "cls": 9,
+      "cls_name": "garbage_can",
+      "train_gt": 225,
+      "train_share": 0.01946,
+      "positive_images": 225,
+      "fail86": 3,
+      "fail110": 3,
+      "fail86_per_1k_trainGT": 13.333
+    },
+    {
+      "cls": 10,
+      "cls_name": "uav",
+      "train_gt": 174,
+      "train_share": 0.015049,
+      "positive_images": 174,
+      "fail86": 0,
+      "fail110": 0,
+      "fail86_per_1k_trainGT": 0.0
+    },
+    {
+      "cls": 11,
+      "cls_name": "tricycle",
+      "train_gt": 23,
+      "train_share": 0.001989,
+      "positive_images": 23,
+      "fail86": 0,
+      "fail110": 0,
+      "fail86_per_1k_trainGT": 0.0
+    }
+  ],
+  "checks": [
+    {
+      "name": "CHECK A: 86 条与上一轮完全一致",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "CHECK B: D′ 配置唯一",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "CHECK C: 实际 TAL 实现已确认",
+      "pass": true,
+      "detail": "tal.py:95-158,215-240；topk10 alpha0.5 beta6.0；CIoU"
+    },
+    {
+      "name": "CHECK D: 实际 cls loss 实现已确认",
+      "pass": true,
+      "detail": "loss.py:415,527,533；BCEWithLogits reduction=none；分母=Σtarget_scores"
+    },
+    {
+      "name": "CHECK E: 报告的 target 数值来源 = 代码恒等式 + 冻结 best_assign_iou（非估算）",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "CHECK F: 逐 GT training-candidate identity（条件检查：仅当报告逐 GT assignment 时才要求）",
+      "pass": true,
+      "detail": "PASS-by-vacuity：本审计**未**报告逐 GT training assignment，已明确标为 TRAINING_CANDIDATE_IDENTITY = NOT_OBSERVABLE（86 是 val GT；无 anchor/grid/candidate index dump）"
+    },
+    {
+      "name": "CHECK G: numeric 已强制转换",
+      "pass": true,
+      "detail": "num() 统一 float；non-numeric=0"
+    },
+    {
+      "name": "CHECK H: summary 可由逐条 records 重新聚合",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

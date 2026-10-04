@@ -1,0 +1,112 @@
+# ============================================================
+# ★ SEED REPLICATE (2026-10-04) —— **跑间方差探针**，不是候选实验
+# ------------------------------------------------------------
+# 目的：全项目 9 个 modality 配置**全部是 seed: 42**，从未量过跑间方差。
+#       我们的配对 bootstrap 是 **image-level**，回答的是
+#       「给定这两个训好的模型，差异在图像间是否稳定」——
+#       **不是**「换 seed 重训会不会复现」。
+#       决策树 Case 2/3 判的是「M4 > M1」：若单跑 SD ≈0.005，
+#       则 Δ=+0.003 无法解释。**这一步是给所有 Δ 装误差棒。**
+#
+# 与原配置 `configs/train_modality_m1_rgb.yaml` 的**唯一差异**：seed 42 -> 2
+#   (+ experiment_name 改名以免覆盖正式 run 目录)。其余逐字相同。
+#
+# ⚠ 本文件**故意**不通过 `scripts/validate_modality_contract.py`
+#   （合同门断言 `seed == 42`，那是给**候选配置**用的）。
+#   **它不是候选、不参与决策树的 Case 判定、不得用于提交。**
+#   它只产出一个数字：**同配方换 seed 后 official mAP50-95 的跑间差异。**
+# ============================================================
+
+# ============================================================
+# ★ REPAIR STATUS (2026-10-03, Infrastructure Repair)
+#   STATUS = READY
+#   推理侧 image 路径的 Gray2BGR 分支本就存在；M1 不受本轮修复影响（除 albumentations_p 覆盖）。
+# ============================================================
+
+# ============================================================
+# M1 — RGB-only baseline
+# ============================================================
+# Fusion Phase 0 · 参照 D′ = SepStem + IR-CLAHE, RGB+IR+Depth @1280 (official 0.515281)
+#
+# 唯一变量: **模态** —— 本例只喂 visible 单模态，其余训练块逐字复制 D′。
+#
+# 命令:
+#   python scripts/train.py --model_config configs/yolo11m_modality3ch.yaml \
+#       --train_config configs/train_modality_m1_rgb.yaml
+#
+# ------------------------------------------------------------------
+# ⚠⚠ 本文件最重要的两条声明，任何改动都会破坏可比性
+# ------------------------------------------------------------------
+# 1) use_simotm: "Gray2BGR"
+#    **名字有误导性**：base.py:248 / loaders.py:505 的分支体就是
+#        im = imread(file_path)        # BGR, 3 通道原彩
+#    它不做灰度化。它是本 fork 中**唯一**一条"原彩 3 通道"的显式路径。
+#
+#    ❌ 绝对不要用 "SimOTMBBS"：它的分支体是
+#        im = imread(path, IMREAD_GRAYSCALE); SimOTMBBS(im) -> [gray, blur, blur]
+#       —— 那是**灰度+3×3 模糊**，不是 RGB。历史 configs/train.yaml 与
+#          configs/train_e0.yaml 把它标成 "(RGB baseline)"，是**误标**。
+#
+#    ⚠ "Gray2BGR" 这条分支在 configs/ 下**从未被任何配置使用过** ⇒
+#      属于首次启用的代码路径，必须过 preflight（见 README §Validation）。
+#
+# 2) aug.hsv_* = 0.0 —— **必须**
+#    D′ 是 5 通道，augment.py:3497 `if img.shape[-1] != 3: return labels`
+#    ⇒ D′ 的 RandomHSV **完全不生效**（"光度增强惰性"）。
+#    3 通道下 RandomHSV 会生效（默认 hsv_h .015 / hsv_s .7 / hsv_v .4）。
+#    把三个 gain 置 0 才能与 D′ 的光度增强状态一致。
+#    残留项：3ch 走 `alb = Albumentations(p=1.0)`（D′ 是 p=0），见 README 的
+#    "残余不可由 config 消除的差异"。
+# ------------------------------------------------------------------
+
+experiment_name: "urban_multimodal_det_modality_m1_rgb_seed2"
+seed: 2
+pretrained: "yolo11m.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 300
+patience: 0              # 与 D′ 一致：禁用早停，跑满预算
+batch_size: 8
+image_size: [1280, 1280]
+num_workers: 4
+
+learning_rate: 5.0e-3
+warmup_epochs: 3
+
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2           # 已存在 visible_split ⇒ 幂等复用，不会重切
+
+use_simotm: "Gray2BGR"   # 原彩 3 通道（见文件头 ⚠1）
+pairs_rgb_ir: ["visible", "infrared"]   # 本模式下不生效（无路径替换）
+pairs_rgb_depth: ["visible", "depth"]   # 本模式下不生效
+channels: 3
+
+aug:                     # 见文件头 ⚠2 —— 对齐 D′ 的"光度增强惰性"
+  hsv_h: 0.0
+  hsv_s: 0.0
+  hsv_v: 0.0
+  albumentations_p: 0.0  # D′ 是 5ch ⇒ Albumentations(p=0)；3ch 默认 p=1.0，
+                         # 这里显式覆盖为 0 才能与 D′ 在 augmentation 层面对齐
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: false
+  resume_path: ""
+
+# 与 D′ 的**已声明差异**（仅此一项，理由见 README 公平性表）：
+#   不含 rect_late_start_epoch —— 原版 D′ 配置（train_rgbid_sepstem_clahe.yaml）
+#   本身也没有该键；它只存在于 rectlate10 变体，且切换点在 ep291 > D′ best(ep246)，
+#   对 0.515281 无贡献。为保持所有被比较 checkpoint 同处 square 几何，此处不启用。

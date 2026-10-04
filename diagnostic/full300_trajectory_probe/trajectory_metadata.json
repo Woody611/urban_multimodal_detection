@@ -1,0 +1,2408 @@
+{
+  "probe_target": "trainer.ema.ema",
+  "probe_mode": "eval",
+  "coordinate_source": "dataset_lab_bboxes_canvas_normalized",
+  "cells_file": "medium_cells_canvas.json",
+  "epochs": 300,
+  "observation_epochs": [
+    0,
+    1,
+    2,
+    5,
+    10,
+    275,
+    20,
+    150,
+    30,
+    289,
+    299,
+    175,
+    50,
+    200,
+    75,
+    225,
+    100,
+    250,
+    125
+  ],
+  "indexing": "0-based（csv = 0-based + 1，trainer.py:666）",
+  "sample_definition": "G86 (86) / CONTROL (1070 medium detected) / MISSED_NON86 (164)；共 1320",
+  "close_mosaic": 10,
+  "observation_timing": "after_normal_ema_update",
+  "observation_timing_evidence": {
+    "code_path": "trainer.py:344 self.epoch=epoch → ~380 batch loop optimizer_step() →587-595 ema.update() →454 on_fit_epoch_end",
+    "runtime": [
+      {
+        "epoch": 0,
+        "ema_updates_total": 109,
+        "ema_updates_this_epoch": 109,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 1,
+        "ema_updates_total": 155,
+        "ema_updates_this_epoch": 46,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 2,
+        "ema_updates_total": 184,
+        "ema_updates_this_epoch": 29,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 3,
+        "ema_updates_total": 209,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 4,
+        "ema_updates_total": 234,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 5,
+        "ema_updates_total": 259,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 6,
+        "ema_updates_total": 284,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 7,
+        "ema_updates_total": 309,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 8,
+        "ema_updates_total": 334,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 9,
+        "ema_updates_total": 359,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 10,
+        "ema_updates_total": 384,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 11,
+        "ema_updates_total": 409,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 12,
+        "ema_updates_total": 434,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 13,
+        "ema_updates_total": 459,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 14,
+        "ema_updates_total": 484,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 15,
+        "ema_updates_total": 509,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 16,
+        "ema_updates_total": 534,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 17,
+        "ema_updates_total": 559,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 18,
+        "ema_updates_total": 584,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 19,
+        "ema_updates_total": 609,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 20,
+        "ema_updates_total": 634,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 21,
+        "ema_updates_total": 659,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 22,
+        "ema_updates_total": 684,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 23,
+        "ema_updates_total": 709,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 24,
+        "ema_updates_total": 734,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 25,
+        "ema_updates_total": 759,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 26,
+        "ema_updates_total": 784,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 27,
+        "ema_updates_total": 809,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 28,
+        "ema_updates_total": 834,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 29,
+        "ema_updates_total": 859,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 30,
+        "ema_updates_total": 884,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 31,
+        "ema_updates_total": 909,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 32,
+        "ema_updates_total": 934,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 33,
+        "ema_updates_total": 959,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 34,
+        "ema_updates_total": 984,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 35,
+        "ema_updates_total": 1009,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 36,
+        "ema_updates_total": 1034,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 37,
+        "ema_updates_total": 1059,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 38,
+        "ema_updates_total": 1084,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 39,
+        "ema_updates_total": 1109,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 40,
+        "ema_updates_total": 1134,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 41,
+        "ema_updates_total": 1159,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 42,
+        "ema_updates_total": 1184,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 43,
+        "ema_updates_total": 1209,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 44,
+        "ema_updates_total": 1234,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 45,
+        "ema_updates_total": 1259,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 46,
+        "ema_updates_total": 1284,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 47,
+        "ema_updates_total": 1309,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 48,
+        "ema_updates_total": 1334,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 49,
+        "ema_updates_total": 1359,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 50,
+        "ema_updates_total": 1384,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 51,
+        "ema_updates_total": 1409,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 52,
+        "ema_updates_total": 1434,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 53,
+        "ema_updates_total": 1459,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 54,
+        "ema_updates_total": 1484,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 55,
+        "ema_updates_total": 1509,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 56,
+        "ema_updates_total": 1534,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 57,
+        "ema_updates_total": 1559,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 58,
+        "ema_updates_total": 1584,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 59,
+        "ema_updates_total": 1609,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 60,
+        "ema_updates_total": 1634,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 61,
+        "ema_updates_total": 1659,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 62,
+        "ema_updates_total": 1684,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 63,
+        "ema_updates_total": 1709,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 64,
+        "ema_updates_total": 1734,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 65,
+        "ema_updates_total": 1759,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 66,
+        "ema_updates_total": 1784,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 67,
+        "ema_updates_total": 1809,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 68,
+        "ema_updates_total": 1834,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 69,
+        "ema_updates_total": 1859,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 70,
+        "ema_updates_total": 1884,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 71,
+        "ema_updates_total": 1909,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 72,
+        "ema_updates_total": 1934,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 73,
+        "ema_updates_total": 1959,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 74,
+        "ema_updates_total": 1984,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 75,
+        "ema_updates_total": 2009,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 76,
+        "ema_updates_total": 2034,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 77,
+        "ema_updates_total": 2059,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 78,
+        "ema_updates_total": 2084,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 79,
+        "ema_updates_total": 2109,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 80,
+        "ema_updates_total": 2134,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 81,
+        "ema_updates_total": 2159,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 82,
+        "ema_updates_total": 2184,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 83,
+        "ema_updates_total": 2209,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 84,
+        "ema_updates_total": 2234,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 85,
+        "ema_updates_total": 2259,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 86,
+        "ema_updates_total": 2284,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 87,
+        "ema_updates_total": 2309,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 88,
+        "ema_updates_total": 2334,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 89,
+        "ema_updates_total": 2359,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 90,
+        "ema_updates_total": 2384,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 91,
+        "ema_updates_total": 2409,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 92,
+        "ema_updates_total": 2434,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 93,
+        "ema_updates_total": 2459,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 94,
+        "ema_updates_total": 2484,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 95,
+        "ema_updates_total": 2509,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 96,
+        "ema_updates_total": 2534,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 97,
+        "ema_updates_total": 2559,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 98,
+        "ema_updates_total": 2584,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 99,
+        "ema_updates_total": 2609,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 100,
+        "ema_updates_total": 2634,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 101,
+        "ema_updates_total": 2659,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 102,
+        "ema_updates_total": 2684,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 103,
+        "ema_updates_total": 2709,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 104,
+        "ema_updates_total": 2734,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 105,
+        "ema_updates_total": 2759,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 106,
+        "ema_updates_total": 2784,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 107,
+        "ema_updates_total": 2809,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 108,
+        "ema_updates_total": 2834,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 109,
+        "ema_updates_total": 2859,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 110,
+        "ema_updates_total": 2884,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 111,
+        "ema_updates_total": 2909,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 112,
+        "ema_updates_total": 2934,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 113,
+        "ema_updates_total": 2959,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 114,
+        "ema_updates_total": 2984,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 115,
+        "ema_updates_total": 3009,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 116,
+        "ema_updates_total": 3034,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 117,
+        "ema_updates_total": 3059,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 118,
+        "ema_updates_total": 3084,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 119,
+        "ema_updates_total": 3109,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 120,
+        "ema_updates_total": 3134,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 121,
+        "ema_updates_total": 3159,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 122,
+        "ema_updates_total": 3184,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 123,
+        "ema_updates_total": 3209,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 124,
+        "ema_updates_total": 3234,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 125,
+        "ema_updates_total": 3259,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 126,
+        "ema_updates_total": 3284,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 127,
+        "ema_updates_total": 3309,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 128,
+        "ema_updates_total": 3334,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 129,
+        "ema_updates_total": 3359,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 130,
+        "ema_updates_total": 3384,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 131,
+        "ema_updates_total": 3409,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 132,
+        "ema_updates_total": 3434,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 133,
+        "ema_updates_total": 3459,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 134,
+        "ema_updates_total": 3484,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 135,
+        "ema_updates_total": 3509,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 136,
+        "ema_updates_total": 3534,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 137,
+        "ema_updates_total": 3559,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 138,
+        "ema_updates_total": 3584,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 139,
+        "ema_updates_total": 3609,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 140,
+        "ema_updates_total": 3634,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 141,
+        "ema_updates_total": 3659,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 142,
+        "ema_updates_total": 3684,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 143,
+        "ema_updates_total": 3709,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 144,
+        "ema_updates_total": 3734,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 145,
+        "ema_updates_total": 3759,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 146,
+        "ema_updates_total": 3784,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 147,
+        "ema_updates_total": 3809,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 148,
+        "ema_updates_total": 3834,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 149,
+        "ema_updates_total": 3859,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 150,
+        "ema_updates_total": 3884,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 151,
+        "ema_updates_total": 3909,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 152,
+        "ema_updates_total": 3934,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 153,
+        "ema_updates_total": 3959,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 154,
+        "ema_updates_total": 3984,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 155,
+        "ema_updates_total": 4009,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 156,
+        "ema_updates_total": 4034,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 157,
+        "ema_updates_total": 4059,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 158,
+        "ema_updates_total": 4084,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 159,
+        "ema_updates_total": 4109,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 160,
+        "ema_updates_total": 4134,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 161,
+        "ema_updates_total": 4159,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 162,
+        "ema_updates_total": 4184,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 163,
+        "ema_updates_total": 4209,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 164,
+        "ema_updates_total": 4234,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 165,
+        "ema_updates_total": 4259,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 166,
+        "ema_updates_total": 4284,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 167,
+        "ema_updates_total": 4309,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 168,
+        "ema_updates_total": 4334,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 169,
+        "ema_updates_total": 4359,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 170,
+        "ema_updates_total": 4384,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 171,
+        "ema_updates_total": 4409,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 172,
+        "ema_updates_total": 4434,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 173,
+        "ema_updates_total": 4459,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 174,
+        "ema_updates_total": 4484,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 175,
+        "ema_updates_total": 4509,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 176,
+        "ema_updates_total": 4534,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 177,
+        "ema_updates_total": 4559,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 178,
+        "ema_updates_total": 4584,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 179,
+        "ema_updates_total": 4609,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 180,
+        "ema_updates_total": 4634,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 181,
+        "ema_updates_total": 4659,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 182,
+        "ema_updates_total": 4684,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 183,
+        "ema_updates_total": 4709,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 184,
+        "ema_updates_total": 4734,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 185,
+        "ema_updates_total": 4759,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 186,
+        "ema_updates_total": 4784,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 187,
+        "ema_updates_total": 4809,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 188,
+        "ema_updates_total": 4834,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 189,
+        "ema_updates_total": 4859,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 190,
+        "ema_updates_total": 4884,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 191,
+        "ema_updates_total": 4909,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 192,
+        "ema_updates_total": 4934,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 193,
+        "ema_updates_total": 4959,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 194,
+        "ema_updates_total": 4984,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 195,
+        "ema_updates_total": 5009,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 196,
+        "ema_updates_total": 5034,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 197,
+        "ema_updates_total": 5059,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 198,
+        "ema_updates_total": 5084,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 199,
+        "ema_updates_total": 5109,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 200,
+        "ema_updates_total": 5134,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 201,
+        "ema_updates_total": 5159,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 202,
+        "ema_updates_total": 5184,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 203,
+        "ema_updates_total": 5209,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 204,
+        "ema_updates_total": 5234,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 205,
+        "ema_updates_total": 5259,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 206,
+        "ema_updates_total": 5284,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 207,
+        "ema_updates_total": 5309,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 208,
+        "ema_updates_total": 5334,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 209,
+        "ema_updates_total": 5359,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 210,
+        "ema_updates_total": 5384,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 211,
+        "ema_updates_total": 5409,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 212,
+        "ema_updates_total": 5434,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 213,
+        "ema_updates_total": 5459,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 214,
+        "ema_updates_total": 5484,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 215,
+        "ema_updates_total": 5509,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 216,
+        "ema_updates_total": 5534,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 217,
+        "ema_updates_total": 5559,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 218,
+        "ema_updates_total": 5584,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 219,
+        "ema_updates_total": 5609,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 220,
+        "ema_updates_total": 5634,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 221,
+        "ema_updates_total": 5659,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 222,
+        "ema_updates_total": 5684,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 223,
+        "ema_updates_total": 5709,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 224,
+        "ema_updates_total": 5734,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 225,
+        "ema_updates_total": 5759,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 226,
+        "ema_updates_total": 5784,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 227,
+        "ema_updates_total": 5809,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 228,
+        "ema_updates_total": 5834,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 229,
+        "ema_updates_total": 5859,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 230,
+        "ema_updates_total": 5884,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 231,
+        "ema_updates_total": 5909,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 232,
+        "ema_updates_total": 5934,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 233,
+        "ema_updates_total": 5959,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 234,
+        "ema_updates_total": 5984,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 235,
+        "ema_updates_total": 6009,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 236,
+        "ema_updates_total": 6034,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 237,
+        "ema_updates_total": 6059,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 238,
+        "ema_updates_total": 6084,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 239,
+        "ema_updates_total": 6109,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 240,
+        "ema_updates_total": 6134,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 241,
+        "ema_updates_total": 6159,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 242,
+        "ema_updates_total": 6184,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 243,
+        "ema_updates_total": 6209,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 244,
+        "ema_updates_total": 6234,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 245,
+        "ema_updates_total": 6259,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 246,
+        "ema_updates_total": 6284,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 247,
+        "ema_updates_total": 6309,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 248,
+        "ema_updates_total": 6334,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 249,
+        "ema_updates_total": 6359,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 250,
+        "ema_updates_total": 6384,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 251,
+        "ema_updates_total": 6409,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 252,
+        "ema_updates_total": 6434,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 253,
+        "ema_updates_total": 6459,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 254,
+        "ema_updates_total": 6484,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 255,
+        "ema_updates_total": 6509,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 256,
+        "ema_updates_total": 6534,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 257,
+        "ema_updates_total": 6559,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 258,
+        "ema_updates_total": 6584,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 259,
+        "ema_updates_total": 6609,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 260,
+        "ema_updates_total": 6634,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 261,
+        "ema_updates_total": 6659,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 262,
+        "ema_updates_total": 6684,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 263,
+        "ema_updates_total": 6709,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 264,
+        "ema_updates_total": 6734,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 265,
+        "ema_updates_total": 6759,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 266,
+        "ema_updates_total": 6784,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 267,
+        "ema_updates_total": 6809,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 268,
+        "ema_updates_total": 6834,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 269,
+        "ema_updates_total": 6859,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 270,
+        "ema_updates_total": 6884,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 271,
+        "ema_updates_total": 6909,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 272,
+        "ema_updates_total": 6934,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 273,
+        "ema_updates_total": 6959,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 274,
+        "ema_updates_total": 6984,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 275,
+        "ema_updates_total": 7009,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 276,
+        "ema_updates_total": 7034,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 277,
+        "ema_updates_total": 7059,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 278,
+        "ema_updates_total": 7084,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 279,
+        "ema_updates_total": 7109,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 280,
+        "ema_updates_total": 7134,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 281,
+        "ema_updates_total": 7159,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 282,
+        "ema_updates_total": 7184,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 283,
+        "ema_updates_total": 7209,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 284,
+        "ema_updates_total": 7234,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 285,
+        "ema_updates_total": 7259,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 286,
+        "ema_updates_total": 7284,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 287,
+        "ema_updates_total": 7309,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 288,
+        "ema_updates_total": 7334,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 289,
+        "ema_updates_total": 7359,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 290,
+        "ema_updates_total": 7384,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 291,
+        "ema_updates_total": 7409,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 292,
+        "ema_updates_total": 7434,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 293,
+        "ema_updates_total": 7459,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 294,
+        "ema_updates_total": 7484,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 295,
+        "ema_updates_total": 7509,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 296,
+        "ema_updates_total": 7534,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 297,
+        "ema_updates_total": 7559,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 298,
+        "ema_updates_total": 7584,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      },
+      {
+        "epoch": 299,
+        "ema_updates_total": 7609,
+        "ema_updates_this_epoch": 25,
+        "batches": 200,
+        "after_normal_ema_update": true
+      }
+    ]
+  },
+  "early_stop": "NONE",
+  "state_restoration": [
+    {
+      "epoch": 0,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": false,
+      "rng_restored": true
+    },
+    {
+      "epoch": 1,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": false,
+      "rng_restored": true
+    },
+    {
+      "epoch": 2,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": false,
+      "rng_restored": true
+    },
+    {
+      "epoch": 5,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": false,
+      "rng_restored": true
+    },
+    {
+      "epoch": 10,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": false,
+      "rng_restored": true
+    },
+    {
+      "epoch": 20,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": false,
+      "rng_restored": true
+    },
+    {
+      "epoch": 30,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": false,
+      "rng_restored": true
+    },
+    {
+      "epoch": 50,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": false,
+      "rng_restored": true
+    },
+    {
+      "epoch": 75,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": false,
+      "rng_restored": true
+    },
+    {
+      "epoch": 100,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": false,
+      "rng_restored": true
+    },
+    {
+      "epoch": 125,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": false,
+      "rng_restored": true
+    },
+    {
+      "epoch": 150,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": false,
+      "rng_restored": true
+    },
+    {
+      "epoch": 175,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": false,
+      "rng_restored": true
+    },
+    {
+      "epoch": 200,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": false,
+      "rng_restored": true
+    },
+    {
+      "epoch": 225,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": false,
+      "rng_restored": true
+    },
+    {
+      "epoch": 250,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": false,
+      "rng_restored": true
+    },
+    {
+      "epoch": 275,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": false,
+      "rng_restored": true
+    },
+    {
+      "epoch": 289,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": false,
+      "rng_restored": true
+    },
+    {
+      "epoch": 299,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": false,
+      "rng_restored": true
+    }
+  ],
+  "logit_identity": [
+    {
+      "epoch": 0,
+      "n": 1320,
+      "max_abs_resid": 1.7762214438040207,
+      "max_rel_resid": 0.4387641644870816,
+      "tol_rel": 0.01
+    },
+    {
+      "epoch": 1,
+      "n": 1320,
+      "max_abs_resid": 3.1887226863851987,
+      "max_rel_resid": 0.6254398442808426,
+      "tol_rel": 0.01
+    },
+    {
+      "epoch": 2,
+      "n": 1320,
+      "max_abs_resid": 5.03678162586819,
+      "max_rel_resid": 0.6679678612298341,
+      "tol_rel": 0.01
+    },
+    {
+      "epoch": 5,
+      "n": 1320,
+      "max_abs_resid": 7.139438141471347,
+      "max_rel_resid": 0.78493340771,
+      "tol_rel": 0.01
+    },
+    {
+      "epoch": 10,
+      "n": 1320,
+      "max_abs_resid": 10.810840818953647,
+      "max_rel_resid": 0.8795880239555204,
+      "tol_rel": 0.01
+    },
+    {
+      "epoch": 20,
+      "n": 1320,
+      "max_abs_resid": 16.313692894208543,
+      "max_rel_resid": 0.9143029037764278,
+      "tol_rel": 0.01
+    },
+    {
+      "epoch": 30,
+      "n": 1320,
+      "max_abs_resid": 18.01094266362088,
+      "max_rel_resid": 0.9189579509554139,
+      "tol_rel": 0.01
+    },
+    {
+      "epoch": 50,
+      "n": 1320,
+      "max_abs_resid": 23.82891701938359,
+      "max_rel_resid": 0.912605109298264,
+      "tol_rel": 0.01
+    },
+    {
+      "epoch": 75,
+      "n": 1320,
+      "max_abs_resid": 20.441425810256412,
+      "max_rel_resid": 0.93520513199403,
+      "tol_rel": 0.01
+    },
+    {
+      "epoch": 100,
+      "n": 1320,
+      "max_abs_resid": 21.060286181021795,
+      "max_rel_resid": 0.9456972783066995,
+      "tol_rel": 0.01
+    },
+    {
+      "epoch": 125,
+      "n": 1320,
+      "max_abs_resid": 23.24897042325324,
+      "max_rel_resid": 0.9519308774877134,
+      "tol_rel": 0.01
+    },
+    {
+      "epoch": 150,
+      "n": 1320,
+      "max_abs_resid": 21.904036524848323,
+      "max_rel_resid": 0.9428788770521259,
+      "tol_rel": 0.01
+    },
+    {
+      "epoch": 175,
+      "n": 1320,
+      "max_abs_resid": 32.599457640251806,
+      "max_rel_resid": 0.9639628680500842,
+      "tol_rel": 0.01
+    },
+    {
+      "epoch": 200,
+      "n": 1320,
+      "max_abs_resid": 21.879164722606987,
+      "max_rel_resid": 0.9519088904995369,
+      "tol_rel": 0.01
+    },
+    {
+      "epoch": 225,
+      "n": 1320,
+      "max_abs_resid": 23.547982036693366,
+      "max_rel_resid": 0.9592634539773884,
+      "tol_rel": 0.01
+    },
+    {
+      "epoch": 250,
+      "n": 1320,
+      "max_abs_resid": 23.733845158333917,
+      "max_rel_resid": 0.9595695698101734,
+      "tol_rel": 0.01
+    },
+    {
+      "epoch": 275,
+      "n": 1320,
+      "max_abs_resid": 23.901425278154296,
+      "max_rel_resid": 0.9598416560967983,
+      "tol_rel": 0.01
+    },
+    {
+      "epoch": 289,
+      "n": 1320,
+      "max_abs_resid": 24.373973222366857,
+      "max_rel_resid": 0.9582098353758007,
+      "tol_rel": 0.01
+    },
+    {
+      "epoch": 299,
+      "n": 1320,
+      "max_abs_resid": 25.673933688938348,
+      "max_rel_resid": 0.9609234439357152,
+      "tol_rel": 0.01
+    }
+  ]
+}

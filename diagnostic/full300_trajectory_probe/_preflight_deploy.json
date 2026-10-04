@@ -1,0 +1,125 @@
+{
+  "coordinate_repair": {
+    "status": "PASS",
+    "source": "dataset_lab_bboxes_canvas_normalized",
+    "legacy_regression": {
+      "reference": "diagnostic\\p3_feature_space\\_v7_vectors.json",
+      "v1_rows_seen": 1320,
+      "exact_matches": 1320,
+      "max_abs_dx": 0.0049999999999954525,
+      "max_abs_dy": 0.0049999999999954525
+    },
+    "n": 1320,
+    "n_g86": 86,
+    "n_control": 1070,
+    "n_missed_non86": 164,
+    "n_images": 281
+  },
+  "ema_identity": {
+    "status": "PASS",
+    "weights": "runs\\urban_multimodal_det_yolo11_rgbid_sepstem_clahe\\weights\\best.pt",
+    "weights_sha256": "1cae45f75693f54146e35c5fa076c0a6f78ca1cfa95595de74d959f40fae4fda",
+    "ckpt_ema_key": "None",
+    "ckpt_epoch": -1,
+    "ckpt_best_fitness": null,
+    "model_dtypes": [
+      "torch.float16",
+      "torch.int64"
+    ],
+    "evidence": "strip_optimizer (torch_utils.py:610-611) 先 x['model']=x['ema'] 再 x['ema']=None; validator.py:118 model = trainer.ema.ema or trainer.model; trainer.py:524-525 存 'model': None / 'ema': deepcopy(ema.ema)"
+  },
+  "legacy_v1_regression": {
+    "status": "PASS",
+    "mode": "eval backbone + head.train()",
+    "n_keys": 1320,
+    "p3_max_abs_diff": 0.0,
+    "h_max_abs_diff": 0.0,
+    "logit_max_abs_diff": 1.9603185670291623e-06,
+    "tol_logit": 0.001,
+    "cell_coordinates_from": "medium_cells_canvas.json"
+  },
+  "deployment_baseline": {
+    "status": "PASS",
+    "mode": "model.eval()",
+    "n_records": 1320,
+    "weights_sha256": "1cae45f75693f54146e35c5fa076c0a6f78ca1cfa95595de74d959f40fae4fda",
+    "coordinate_source": "dataset_lab_bboxes_canvas_normalized",
+    "checkpoint_sha_had_no_retrain": true
+  },
+  "p3_logit_identity": {
+    "status": "PASS",
+    "identity": "CLS_OUT[gt_c, y, x] == W_gt · h + b_gt",
+    "n": 1320,
+    "max_residual": 9.314532485760196e-06,
+    "median_residual": 1.726778113830818e-06,
+    "note": "FP16 权重 + FP32 累加 ⇒ 残差应在 ~1e-5 量级"
+  },
+  "h_collection_sanity": {
+    "status": "PASS",
+    "legacy_v1": {
+      "G86": [
+        40.382489510666716,
+        40.89548277719445,
+        86
+      ],
+      "CONTROL": [
+        51.509989860168744,
+        52.17041711854069,
+        1070
+      ],
+      "ALL": [
+        49.85913884962795,
+        50.46083628231283,
+        1320
+      ]
+    },
+    "deployment": {
+      "G86": [
+        40.3797455609197,
+        40.37989252164763,
+        86
+      ],
+      "CONTROL": [
+        51.54521625088586,
+        52.48073812994965,
+        1070
+      ],
+      "ALL": [
+        50.09059213785922,
+        50.68646631946979,
+        1320
+      ]
+    },
+    "legacy_v1_reference_dump": {
+      "G86_median": 40.382,
+      "CONTROL_median": 51.51,
+      "ALL_median": 45.945,
+      "note": "diag/cls_representation_modality_audit 的 h_norm 中位数（= 用户所称 40/51）"
+    },
+    "note": "两者 cell 相同、权重相同；唯一差异是 head 的 train/eval。27/29 vs 40/51 的旧矛盾已由坐标修复解释（见 EMA_PREFLIGHT_P1_P5.md §5）。",
+    "ratio_deploy_over_legacy_G86": 0.99993,
+    "diff_deploy_minus_legacy_G86": -0.00274,
+    "ratio_deploy_over_legacy_CONTROL": 1.00068,
+    "diff_deploy_minus_legacy_CONTROL": 0.03523,
+    "ratio_deploy_over_legacy_ALL": 1.00464,
+    "diff_deploy_minus_legacy_ALL": 0.23145
+  },
+  "p4_non_intrusive": {
+    "status": "PASS",
+    "scope": "probe observation 本身不得额外修改 EMA/raw/optimizer/scheduler/RNG；正常 EMA update 造成的变化不在本项范围内",
+    "no_deepcopy": "未使用 deepcopy；采用 flags 快照→切 eval→只读观测→restore→校验",
+    "legacy_pass": {
+      "mode_flags_restored": true,
+      "bn_buffers_unchanged": true,
+      "params_unchanged": true,
+      "rng_restored": true
+    },
+    "deployment_pass": {
+      "mode_flags_restored": true,
+      "bn_buffers_unchanged": true,
+      "params_unchanged": true,
+      "rng_restored": true
+    },
+    "note": "真正的 in-training P4 必须在云端 in-process harness 里复跑（本机无训练进程）"
+  }
+}

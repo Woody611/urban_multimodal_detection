@@ -139,6 +139,13 @@ modality_dropout: {'enabled': False, 'ir_drop_prob': 0.0, 'depth_drop_prob': 0.0
 #   percentile: 1%/99% 分位数线性拉伸（原实现）
 #   clahe     : CLAHE(clipLimit=2.0, tileGridSize=(8,8))，与 percentile **互斥**（不是叠加）
 ir_encoding: percentile
+# 光度增强（Albumentations）概率覆盖 —— **默认 null = 完全保持既有行为**
+#   背景: build_transforms 按 channels 硬分派 -> 3ch: Albumentations(p=1.0) / 4ch: Albumentations4C(p=1.0)
+#         / 5ch(RGBID): Albumentations(p=0)。⇒ D′(5ch, 无光度增强) 与 3ch/4ch 单模态基线
+#         (有 Blur/MedianBlur/ToGray/CLAHE 各 p=.01) **在 augmentation 层面不可比**。
+#   用法: 在 train config 的 aug 段写 `albumentations_p: 0.0` ⇒ modality 基线强制关闭，
+#         与 D′ 对齐。null 时不覆盖任何东西。
+albumentations_p: null
 # OASA（方案 A · Pre-Mosaic Object-Aware Small-object Scale Aug）——默认关闭，对既有实验零影响
 #   位置: load_image → **OASA** → Mosaic → RandomPerspective → LetterBox
 #   gating: enabled 且 **实际 Mosaic 实例的 p>0**（close_mosaic 期自动 OFF）

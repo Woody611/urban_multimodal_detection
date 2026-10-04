@@ -1,0 +1,66 @@
+# ============================================================
+# ★ REPAIR STATUS (2026-10-03, Infrastructure Repair)
+#   STATUS = READY
+#   显式声明 ir_encoding: percentile；'Infrared' 分支已读该键。
+# ============================================================
+
+# ============================================================
+# M2b — IR-only，无 CLAHE（进程内置的 percentile 拉伸）
+# ============================================================
+# ⚠ 语义澄清：本 fork 的 IR 单模态分支**永远**做 1%/99% 分位数拉伸，
+#   因此"raw IR（完全不做对比度处理）"**在当前代码下不可配置**。
+#   M2b = 最接近 raw 的可运行配置 = D′ 的 non-CLAHE 对照。
+#   若确实需要"逐位原始 IR"，需要一次源码改动（把 percentile 也变成开关），
+#   本轮**不申请**，标记为 OPTIONAL SOURCE CHANGE。
+#
+# 与 D′ 的关系：D′ = IR + **CLAHE**。M2b = IR + percentile。
+#   ⇒ M2b 与 D′ 在 IR 编码上也不同，比较时必须在结论里声明。
+# ============================================================
+
+experiment_name: "urban_multimodal_det_modality_m2b_ir_percentile"
+seed: 42
+pretrained: "yolo11m.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 300
+patience: 0              # 与 D′ 一致：禁用早停，跑满预算
+batch_size: 8
+image_size: [1280, 1280]
+num_workers: 4
+
+learning_rate: 5.0e-3
+warmup_epochs: 3
+
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2           # 各 split 均已存在且**逐位同划分**（1600/400），幂等复用
+
+use_simotm: "Infrared"     # ⇒ [IR,IR,IR]，1%/99% percentile 拉伸
+pairs_rgb_ir: ["visible", "infrared"]   # 路径替换 visible -> infrared
+pairs_rgb_depth: ["visible", "depth"]   # 本模式不使用
+channels: 3
+ir_encoding: percentile   # 显式声明：本实验就是 D′ 的 non-CLAHE 对照
+
+aug:                     # 对齐 D′ 的"光度增强惰性"（D′ 为 5ch ⇒ RandomHSV 直接 return）
+  hsv_h: 0.0
+  hsv_s: 0.0
+  hsv_v: 0.0
+  albumentations_p: 0.0  # D′ 是 5ch ⇒ Albumentations(p=0)；3ch/4ch 默认 p=1.0，
+                         # 这里显式覆盖为 0 才能与 D′ 在 augmentation 层面对齐
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: false
+  resume_path: ""

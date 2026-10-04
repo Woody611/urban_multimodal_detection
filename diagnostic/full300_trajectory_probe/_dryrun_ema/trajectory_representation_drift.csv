@@ -1,0 +1,7 @@
+epoch,role,n,h_norm_median,dhh0_median,cos_hh0_median
+0,G86,13,43.7981,0.0,1.0
+0,CONTROL,25,50.9282,0.0,1.0
+0,MISSED_NON86,3,51.2392,0.0,1.0
+1,G86,13,43.7981,0.0,1.0
+1,CONTROL,25,50.9282,0.0,1.0
+1,MISSED_NON86,3,51.2392,0.0,1.0

@@ -1,0 +1,48 @@
+{
+  "observe_epochs_0based": [
+    0,
+    1
+  ],
+  "observe_epochs_csv": [
+    1,
+    2
+  ],
+  "case": "D",
+  "representation_effect_nats": 0.0,
+  "classifier_effect_nats": 0.0,
+  "first_divergence": {
+    "gap_widens_by_1.0nats": "not reached",
+    "gap_widens_by_2.0nats": "not reached",
+    "gap_widens_by_5.0nats": "not reached"
+  },
+  "separation": [
+    {
+      "epoch": 0,
+      "d_logit": -16.3627,
+      "d_feature": -16.4955,
+      "d_h_norm": -7.1301,
+      "d_cosH": -0.0,
+      "d_W_norm": 0.0,
+      "d_cosW": 0.0
+    },
+    {
+      "epoch": 1,
+      "d_logit": -16.3627,
+      "d_feature": -16.4955,
+      "d_h_norm": -7.1301,
+      "d_cosH": -0.0,
+      "d_W_norm": 0.0,
+      "d_cosW": 0.0
+    }
+  ],
+  "thresholds": {
+    "MATERIAL_NATS": 2.0,
+    "DIV_THRESH": [
+      1.0,
+      2.0,
+      5.0
+    ],
+    "CLOSE_EPS": 0.5
+  },
+  "limitations": "single trajectory, no intervention; temporal association only"
+}

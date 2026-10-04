@@ -1,0 +1,21 @@
+CLS REPRESENTATION / MODALITY AUDIT - INPUT MANIFEST
+============================================================================================
+
+best.pt     1cae45f75693f54146e35c5fa076c0a6f78ca1cfa95595de74d959f40fae4fda
+tal.py      aae7e8ac438f00cda88d7e151795b3f78270ec4ed56b883f413fd16233b7e527
+loss.py     0f092cf22a372f6d5c5e7197d7adde51cbb23c02ac4522978f42df5b23a6543b
+base.py     8bcf834930155bd58a99ccfc5e87113398f740aeb720b5827ff05ba45c5871d9
+train cfg   a4e329cfc3d220206448cdd3377c1b3f5126c50f13c907ada522d98725486e12
+model yaml  9b14f2946073338414b4441784b6df87a868b982be32ac8d50b6d1c4a17f3dd8
+frozen features977593ae0012610004077b7fa58cd2cdd9e2a59dc2d90044b5e65ab3b6db0496   diagnostic/p3_feature_space/_v7_vectors.json (54MB, 4960 rows)
+frozen predsdiagnostic/sepstem_clahe/best_full/results (400 txt)
+
+— 字段语义（本轮已用 ckpt 权重逐行验证）—
+p3            : model.model[23] 输出，P3 颈特征 256ch；由 _v7_extract.py:51 forward_hook 取得
+h             : Detect.cv3[0][-1] 的**输入** 256ch；_v7_extract.py:52 forward_pre_hook
+logit_decomp  : W_gt · h + b_gt  —— **精确等式**（W,b 取自 ckpt model.30.cv3.0.2）
+                验证：max|resid| = 2.3e-06 over 4960/4960 rows（float32 精度）
+采样位置      : GT center 映射到 stride-8 网格 cell（_v7_extract.py:73）
+domain        : T1 = train 图 augmentation OFF（2153 行）；V1 = val（2807 行 = 全部 val GT）
+sq / bin      : sq = sqrt(w_px*h_px) 于 **1280 输入空间**；bin 只分小目标 + '>=32' 兜底
+                ⇒ 无 'medium' 桶，需用 stem→图像尺寸反推 native 面积

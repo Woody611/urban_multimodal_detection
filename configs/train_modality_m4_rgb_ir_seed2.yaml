@@ -1,0 +1,79 @@
+# ============================================================
+# ★ M4 SEED REPLICATE (2026-10-04) —— 跑间方差探针，**不是候选实验**
+# ------------------------------------------------------------
+# 目的：Phase D/E 的所有结论（M4>M1 仅高 IoU 显著、M5<M1、D′≈M4）都建立在
+#       **每个条件 n=1（seed 42）** 上；全项目 9 个配置从未测过跑间方差。
+#       M4 是"IR contribution"与"D′≈M4"两条结论的共同承载体 ⇒ 它的 seed-2 最能降低决策不确定性。
+#
+# 与原配置 `configs/train_modality_m4_rgb_ir.yaml` 的**唯一差异**：seed 42 -> 2（+ experiment_name 改名）。
+#
+# ⚠ 本文件**故意**不通过 `scripts/validate_modality_contract.py`
+#   （合同门断言 `seed == 42`，那是给**候选配置**用的）。
+#   **它不是候选、不参与 Case 判定、不得用于提交。**
+# ============================================================
+
+# ============================================================
+# ★ REPAIR STATUS (2026-10-03, Infrastructure Repair)
+#   STATUS = READY
+#   ① 4ch stem 预训练迁移已实现（此前静默随机初始化）；
+#   ② use_simotm 改为 **RGBIR**（新分支）：IR 经 ir_encoding。既有 'RGBT' 的 IR 是 raw，无法表达 CLAHE。
+# ============================================================
+
+# ============================================================
+# M4 — RGB + IR 早期融合（4ch）
+# ============================================================
+# ⚠⚠ STATUS = BLOCKED（模型侧，SHARED-SOURCE）
+#   数据侧 OK：use_simotm='RGBT' ⇒ _merge_channels = [B,G,R,IR] 4ch（RGB 原彩 + IR 灰度）。
+#   模型侧：configs/yolo11m_modality4ch.yaml 的 4ch 单 stem **拿不到预训练**
+#   （_transfer_rgb_pretrained 只认 `in_channels == 5`，否则 return 0，无日志无 raise）。
+#   ⇒ 用它会得到一个"stem 随机初始化"的模型，与 D′ 不可比。
+#   最小修复见报告 §7 / §12。
+# ============================================================
+
+experiment_name: "urban_multimodal_det_modality_m4_rgb_ir_seed2"
+seed: 2
+pretrained: "yolo11m.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 300
+patience: 0              # 与 D′ 一致：禁用早停，跑满预算
+batch_size: 8
+image_size: [1280, 1280]
+num_workers: 4
+
+learning_rate: 5.0e-3
+warmup_epochs: 3
+
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2           # 各 split 均已存在且**逐位同划分**（1600/400），幂等复用
+
+use_simotm: "RGBIR"        # ⇒ [B,G,R,IR] 4ch，且 IR 经 ir_encoding（RGBT 的 IR 是 raw，无法表达 CLAHE）
+pairs_rgb_ir: ["visible", "infrared"]   # 第二模态 = infrared
+pairs_rgb_depth: ["visible", "depth"]   # 本模式不使用
+channels: 4
+ir_encoding: clahe        # 与 D′ 的 IR 编码一致（本实验只移除 Depth）
+
+aug:                     # 对齐 D′ 的"光度增强惰性"（D′ 为 5ch ⇒ RandomHSV 直接 return）
+  hsv_h: 0.0
+  hsv_s: 0.0
+  hsv_v: 0.0
+  albumentations_p: 0.0  # D′ 是 5ch ⇒ Albumentations(p=0)；3ch/4ch 默认 p=1.0，
+                         # 这里显式覆盖为 0 才能与 D′ 在 augmentation 层面对齐
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: false
+  resume_path: ""

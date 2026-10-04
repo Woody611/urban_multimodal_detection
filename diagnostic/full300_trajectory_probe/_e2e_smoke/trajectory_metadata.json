@@ -1,0 +1,47 @@
+{
+  "probe_target": "trainer.ema.ema",
+  "probe_mode": "eval",
+  "coordinate_source": "dataset_lab_bboxes_canvas_normalized",
+  "cells_file": "medium_cells_canvas.json",
+  "epochs": 300,
+  "observation_epochs": [
+    0,
+    1,
+    2
+  ],
+  "indexing": "0-based（csv = 0-based + 1，trainer.py:666）",
+  "sample_definition": "G86 (86) / CONTROL (1070 medium detected) / MISSED_NON86 (164)；共 1320",
+  "close_mosaic": 10,
+  "observation_timing": "after_normal_ema_update",
+  "observation_timing_evidence": {
+    "code_path": "trainer.py:344 self.epoch=epoch → ~380 batch loop optimizer_step() →587-595 ema.update() →454 on_fit_epoch_end",
+    "runtime": [
+      {
+        "epoch": 0,
+        "ema_updates_total": 4,
+        "ema_updates_this_epoch": 4,
+        "batches": 8,
+        "after_normal_ema_update": true
+      }
+    ]
+  },
+  "early_stop": "NONE",
+  "state_restoration": [
+    {
+      "epoch": 0,
+      "mode_flags_restored": true,
+      "bn_buffers_restored": true,
+      "params_untouched": true,
+      "rng_restored": true
+    }
+  ],
+  "logit_identity": [
+    {
+      "epoch": 0,
+      "n": 26,
+      "max_abs_resid": 6.317339867223382e-06,
+      "max_rel_resid": 3.110225910752086e-07,
+      "tol_rel": 0.01
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+# ============================================================
+# ★ REPAIR STATUS (2026-10-03, Infrastructure Repair)
+#   STATUS = READY
+#   'Infrared' 分支现在**读 ir_encoding**（base.py / loaders.py，训练+推理两侧）⇒ clahe 真正生效。
+#   验证：diagnostic/fusion_phase0_loader_tests.py C.1（Infrared+clahe != Infrared+percentile）
+# ============================================================
+
+# ============================================================
+# M2a — IR-only + CLAHE   （D′-matched IR 编码）
+# ============================================================
+# ⚠⚠ STATUS = BLOCKED —— 本配置**当前不会生效**，不要训练
+# ------------------------------------------------------------------
+# use_simotm='Infrared' 的分支体（ultralytics/data/base.py:280-294 与
+# ultralytics/data/loaders.py:535-561）把 IR 对比度处理**硬编码为 percentile**：
+#     lo, hi = np.percentile(im, (1.0, 99.0))
+# 并且**完全不读 `ir_encoding`**。RGBID 分支（base.py:333）才读。
+# ⇒ 即便本文件写了 `ir_encoding: clahe`，训练/推理都会静默按 percentile 跑，
+#   即本实验会退化成 M2b，而目录名却写着 clahe —— 与 2026-09-20 的
+#   ir_encoding 静默回落事故是**同一类**错误。
+#
+# 注意：scripts/train.py:638 的硬防呆只覆盖 use_simotm == "RGBID"，
+#       **不覆盖 "Infrared"** ⇒ 这里不会有任何报错。
+#
+# 最小修复（2 处、各 1 行，见报告 §6 / §12）：
+#   base.py    'Infrared' 分支：把硬编码 percentile 换成与 RGBID 分支相同的
+#              `ir_encoding = getattr(getattr(self, "hyp", None), "ir_encoding", "percentile")`
+#              二选一分派；
+#   loaders.py 'Infrared' 分支：同上，改用 `self.ir_encoding`（该字段**已经存在**，
+#              loaders.py:344 已定义，只是 Infrared 分支没用它）。
+#
+# 在修复之前：M2a 不进入 Batch-1，IR 的 D′-matched 基线用 M2b 暂代（并声明差异）。
+# ============================================================
+
+experiment_name: "urban_multimodal_det_modality_m2a_ir_clahe"
+seed: 42
+pretrained: "yolo11m.pt"
+
+device: "cuda"
+gpu_ids: [0]
+
+epochs: 300
+patience: 0              # 与 D′ 一致：禁用早停，跑满预算
+batch_size: 8
+image_size: [1280, 1280]
+num_workers: 4
+
+learning_rate: 5.0e-3
+warmup_epochs: 3
+
+optimizer:
+  type: "SGD"
+  momentum: 0.937
+  weight_decay: 5.0e-4
+
+scheduler:
+  type: "CosineAnnealingLR"
+
+amp: true
+val_ratio: 0.2           # 各 split 均已存在且**逐位同划分**（1600/400），幂等复用
+
+use_simotm: "Infrared"     # ⇒ [IR,IR,IR]，percentile 拉伸（见文件头：clahe 当前不生效）
+pairs_rgb_ir: ["visible", "infrared"]   # 路径替换 visible -> infrared
+pairs_rgb_depth: ["visible", "depth"]   # 本模式不使用
+channels: 3
+ir_encoding: clahe         # ⚠ 当前被 Ignored（见文件头）
+
+aug:                     # 对齐 D′ 的"光度增强惰性"（D′ 为 5ch ⇒ RandomHSV 直接 return）
+  hsv_h: 0.0
+  hsv_s: 0.0
+  hsv_v: 0.0
+  albumentations_p: 0.0  # D′ 是 5ch ⇒ Albumentations(p=0)；3ch/4ch 默认 p=1.0，
+                         # 这里显式覆盖为 0 才能与 D′ 在 augmentation 层面对齐
+
+checkpoint:
+  save_dir: "runs/${experiment_name}/weights"
+  save_interval: 10
+  save_best: true
+  save_last: true
+  resume: false
+  resume_path: ""

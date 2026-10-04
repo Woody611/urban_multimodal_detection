@@ -1,0 +1,115 @@
+{
+  "weights_dir": "D:\\gyt\\AIC\\urban_multimodal_detection\\runs\\urban_multimodal_det_yolo11_rgbid_sepstem_clahe\\weights",
+  "n_snapshots": 29,
+  "epochs": [
+    0,
+    10,
+    20,
+    30,
+    40,
+    50,
+    60,
+    70,
+    80,
+    90,
+    100,
+    110,
+    120,
+    130,
+    140,
+    150,
+    160,
+    170,
+    180,
+    190,
+    200,
+    220,
+    230,
+    240,
+    250,
+    260,
+    270,
+    280,
+    290
+  ],
+  "updates": [
+    109,
+    384,
+    634,
+    884,
+    1134,
+    1384,
+    1634,
+    1884,
+    2134,
+    2384,
+    2634,
+    2884,
+    3134,
+    3384,
+    3634,
+    3884,
+    4134,
+    4384,
+    4634,
+    4884,
+    5134,
+    5634,
+    5884,
+    6134,
+    6384,
+    6634,
+    6884,
+    7134,
+    7384
+  ],
+  "theoretical_bias_init": {
+    "8": -9.639522006701663,
+    "16": -8.253227645581772,
+    "32": -6.866933284461882
+  },
+  "pretrained_head": {
+    "path": "D:\\gyt\\AIC\\urban_multimodal_detection\\yolo11m.pt",
+    "n_cls_keys": 66,
+    "sample": [
+      "model.13.m.0.cv3.bn.bias",
+      "model.13.m.0.cv3.bn.weight",
+      "model.13.m.0.cv3.conv.weight",
+      "model.16.m.0.cv3.bn.bias",
+      "model.16.m.0.cv3.bn.weight",
+      "model.16.m.0.cv3.conv.weight"
+    ],
+    "shapes": {
+      "model.13.m.0.cv3.bn.bias": [
+        256
+      ],
+      "model.13.m.0.cv3.bn.weight": [
+        256
+      ],
+      "model.13.m.0.cv3.conv.weight": [
+        256,
+        256,
+        1,
+        1
+      ],
+      "model.16.m.0.cv3.bn.bias": [
+        128
+      ],
+      "model.16.m.0.cv3.bn.weight": [
+        128
+      ],
+      "model.16.m.0.cv3.conv.weight": [
+        128,
+        128,
+        1,
+        1
+      ]
+    }
+  },
+  "ema_formula": "decay(t)=0.9999*(1-exp(-t/2000))  [torch_utils.py:546]",
+  "ema_update_site": "Trainer.optimizer_step  trainer.py:595  -> 1 update per optimizer step",
+  "ckpt_semantics": "save_model trainer.py:520-537 : {'model': None, 'ema': fp16 EMA, 'optimizer': state_dict}",
+  "lr_sched": "lf(epoch)=((1-cos(epoch*pi/300))/2)*(lrf-1)+1 ; lr=lr0*lf  (cos_lr=True)",
+  "primary_branch": "model.30.cv3.0.2.weight",
+  "total_Wmean_movement": 0.319343968863513
+}

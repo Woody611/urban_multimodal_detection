@@ -1,0 +1,30 @@
+{
+  "gate": true,
+  "n_gt": 2807,
+  "m1_state": {
+    "TP": 2267,
+    "F3": 24,
+    "F0uF1uF2": 516
+  },
+  "dp_state": {
+    "TP": 2295,
+    "F3": 17,
+    "F0uF1uF2": 495
+  },
+  "dp_native_p3": {
+    "MATCHED@0.5": 2295,
+    "F0_no_raw_candidate": 301,
+    "F1_nms_disappearance": 160,
+    "F3_survives_official_fail": 39,
+    "F2_top100_disappearance": 12
+  },
+  "dprime_only": {
+    "F0uF1uF2": 118,
+    "F3": 11
+  },
+  "m1_only": {
+    "F0uF1uF2": 96,
+    "F3": 5
+  },
+  "caveat": "M1 F0/F1/F2 NOT AVAILABLE (no raw/pre-NMS dump); not separated, not inferred"
+}

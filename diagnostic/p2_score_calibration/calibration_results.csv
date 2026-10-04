@@ -1,0 +1,21 @@
+method,params,split,mAP50_95,mAP50,mAP75,d_mAP50_95
+raw,-,calibration,0.435131,0.679103,0.447956,
+power,gamma=0.5,calibration,0.435131,0.679103,0.447956,0.0
+power,gamma=0.75,calibration,0.435131,0.679103,0.447956,0.0
+power,gamma=1.0,calibration,0.435131,0.679103,0.447956,0.0
+power,gamma=1.25,calibration,0.435131,0.679103,0.447956,0.0
+power,gamma=1.5,calibration,0.435131,0.679103,0.447956,0.0
+power,gamma=2.0,calibration,0.435131,0.679103,0.447956,0.0
+temperature,T=0.5,calibration,0.435131,0.679103,0.447956,0.0
+temperature,T=0.75,calibration,0.435131,0.679103,0.447956,0.0
+temperature,T=1.0,calibration,0.435131,0.679103,0.447956,0.0
+temperature,T=1.25,calibration,0.435131,0.679103,0.447956,0.0
+temperature,T=1.5,calibration,0.435131,0.679103,0.447956,0.0
+temperature,T=2.0,calibration,0.435131,0.679103,0.447956,0.0
+class-power(best),cls=9 gamma=1.5,calibration,0.435174,0.679175,0.448021,4.2e-05
+class-power(worst),cls=3 gamma=1.25,calibration,0.434808,0.677939,0.447986,-0.000323
+class-bias,SKIPPED (no logits in prediction),calibration,,,,
+raw,-,holdout,0.601372,0.841107,0.621567,
+selected(post-hoc),frozen,holdout,0.601372,0.841107,0.621567,0.0
+raw,-,full_val,0.515281,0.778258,0.510963,
+selected(post-hoc),frozen,full_val,0.515311,0.778306,0.511008,3e-05
