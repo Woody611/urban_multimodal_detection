@@ -52,3 +52,23 @@ venv/
 # =====================
 .DS_Store
 Thumbs.db
+
+# =====================
+# rematch 交付包 —— **整包纳入**（必须放在文件末尾，最后匹配者胜）
+# =====================
+# ⚠ 上面的 `data/`(`:9`) 与 `weights/`(`:17`)、`*.pt`(`:18`) 都是**无锚定**规则，
+#   会连带吞掉 rematch 下的同名目录/文件。实测后果：commit 后
+#   `rematch/ultralytics/data/` 整目录（含 IR 增强实现 base.py、推理链 loaders.py）
+#   与 `rematch/weights/` 全部缺失 ⇒ GitHub 上的 rematch **跑不起来**。
+#   git 规则：父目录被排除时子文件无法单独重新纳入 ⇒ 必须先放行目录本身。
+#   故此处按「目录 → 内容 → 文件」三级显式重新纳入。
+!rematch/ultralytics/data/
+!rematch/ultralytics/data/**
+!rematch/weights/
+!rematch/weights/**
+!rematch/*.pt
+# 仅排除交付包内的缓存与临时备份（不放行这些）
+rematch/**/__pycache__/
+rematch/**/*.pyc
+rematch/**/*.bak_*
+rematch/**/*.orig

@@ -42,24 +42,37 @@ data/raw/
 
 ---
 
-## 2. 模型权重（直接放入包内，无需下载链接）
+## 2. 模型权重（**已随包提供，无需下载**）
 
-将权重直接放入 `rematch/weights/`（本包直接携带权重）：
+### 2.1 训练好的模型
 
-| 文件 | SHA-256 | 用途 |
-|---|---|---|
-| `best.pt` | `5b99b6e5b20dca9a73e1183c5fda1cba2aba2d48d26366bff0704f530e911478` | **本次提交所用权重** |
-| `last.pt` | `d2029dac8545a71e99e00d23dc2b4e32d733949b9a24c1c99e9f66720be2a455` | 第 300 epoch（对照） |
+| 文件 | 路径 | 大小 | SHA-256 | 用途 |
+|---|---|---:|---|---|
+| `best.pt` | `weights/best.pt` | 40,643,241 | `5b99b6e5b20dca9a73e1183c5fda1cba2aba2d48d26366bff0704f530e911478` | **本次提交所用权重** |
+| `last.pt` | `weights/last.pt` | 40,643,241 | `d2029dac8545a71e99e00d23dc2b4e32d733949b9a24c1c99e9f66720be2a455` | 第 300 epoch（对照） |
 
-### 2.1 复现训练还需两项**外部资源**（不随包提供）
+校验：
 
-| 资源 | 放置位置 | 获取方式 |
-|---|---|---|
-| **数据集** | `data/raw/{train,test}/{visible,infrared,depth}` | 赛题方提供；布局见 §1.2 |
-| **预训练骨干 `yolo11m.pt`** | 项目根目录（与 `configs/` 同级） | Ultralytics 官方发布：`https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11m.pt`（本实验所用副本 SHA-256 = `d5ffc1a674953a08e11a8d21e022781b1b23a19b730afc309290bd9fb5305b95`，40,684,120 字节） |
+```bash
+cd rematch && sha256sum weights/best.pt weights/last.pt
+```
 
-> `pretrained: "yolo11m.pt"` 写在两份训练配置里。缺该文件时 Ultralytics 会尝试联网下载；
-> 离线环境请预先放到项目根目录。**仅做推理/评测（§6.2 / §6.3）不需要它**，只需要 §2 的 `best.pt`。
+### 2.2 预训练骨干（复现**训练**时需要，推理/评测不需要）
+
+| 文件 | 路径 | 大小 | SHA-256 |
+|---|---|---:|---|
+| `yolo11m.pt` | `yolo11m.pt`（项目根目录，**与 `configs/` 同级，不在 `weights/`**） | 40,684,120 | `d5ffc1a674953a08e11a8d21e022781b1b23a19b730afc309290bd9fb5305b95` |
+
+由 `configs/train_*.yaml` 的 `pretrained: "yolo11m.pt"` 引用。**已随包提供**；
+Ultralytics 原版可从 `https://github.com/ultralytics/assets/releases/download/v8.3.0/yolo11m.pt` 获取。
+
+### 2.3 仍需自备的唯一资源：数据集
+
+| 资源 | 放置位置 |
+|---|---|
+| **数据集** | `data/raw/{train,test}/{visible,infrared,depth}`（布局见 §1.2） |
+
+> 数据集因体积与版权原因不随包提供；除此之外，本包**自包含**，离线可直接复跑。
 
 ---
 
@@ -186,6 +199,7 @@ pip install -r rematch/requirements.txt
 rematch/
 ├── README.md                    ← 本文档
 ├── requirements.txt             ← 环境依赖（已按实际 import 校正）
+├── yolo11m.pt                   ← 预训练骨干（复现训练需要；40.7 MB）
 │
 ├── ultralytics/                 ← ★ 本地 fork（算法核心，Ultralytics 8.3.75 改写版）
 │   ├── cfg/default.yaml         自定义键：ir_encoding / ir_gamma* / ir_noise* / modality_dropout / OASA ...
@@ -219,7 +233,9 @@ rematch/
 │   ├── verify_run_args.py       ★ 训练启动后 30 秒核对实际生效超参（可直接跑 run_record/args.yaml）
 │   └── diff_*.patch             本次代码改动的完整 diff（base.py / train.py）
 │
-├── weights/                     ← 直接放入 best.pt / last.pt（见 §2）
+├── weights/                     ← ★ 训练好的权重（已随包提供，见 §2.1）
+│   ├── best.pt                  ★ 本次提交所用权重（40.6 MB）
+│   └── last.pt                  第 300 epoch（对照）
 │
 ├── run_record/                  ← ★ 本次训练的实际运行记录（可自证超参）
 │   ├── args.yaml               训练时**实际解析**出的配置（非配置文件原文）
@@ -401,8 +417,9 @@ python scripts/make_candidate_submission.py \
     `--weights` / `--train_config` / `--source` / `--images` / `--labels`
     （§6 给出的命令均已显式传入，可直接复制执行）。
 
-12. **包内**不含**数据集与预训练骨干**（见 §2.1），这是有意为之（体积 + 版权）。
-    除此之外，`rematch/` 内每个文件都有明确用途，**没有占位或冗余文件**。
+12. **包内唯一未包含的资源是数据集**（体积 + 版权，见 §2.3）；训练权重与预训练骨干
+    `yolo11m.pt` **均已随包提供**。除此之外，`rematch/` 内每个文件都有明确用途，
+    **没有占位或冗余文件**。
 
 ---
 
@@ -423,7 +440,7 @@ python scripts/make_candidate_submission.py \
 | 交付权重与运行配置自洽 | ✅ `verify_run_args.py run_record/args.yaml` → `IR_AUG_ACTIVE = YES` |
 | 提交包未被破坏 | ✅ `submission.zip` sha256 `c704d545…`，1000 条目，CRC 无错 |
 
-⇒ **配合 §2.1 的两项外部资源（数据 + `yolo11m.pt`），本包可完整复跑本实验。**
+⇒ **权重与预训练骨干均已随包提供；只需再准备好数据集（§2.3），本包即可离线完整复跑本实验。**
 
 ---
 
