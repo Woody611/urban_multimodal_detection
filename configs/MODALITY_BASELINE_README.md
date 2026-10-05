@@ -40,16 +40,18 @@
 
 ## 1. 实验矩阵
 
+> Status 列已按顶部「Infrastructure Repair 已完成」更新（M1–M6 均 READY，M7=D′ incumbent）；§2 各小节中的 BLOCKED 说明为修复前的历史记录。
+
 | ID | Modalities | Config | Model YAML | channels | Fusion | Status |
 |---|---|---|---|---|---|---|
 | **M7** | RGB+IR+Depth | `train_rgbid_sepstem_clahe.yaml` | `yolo11m_sepstem.yaml` | 5 | D′ | **incumbent** |
 | **M1** | RGB | `train_modality_m1_rgb.yaml` | `yolo11m_modality3ch.yaml` | 3 | single | **READY WITH CAVEAT** |
-| **M2a** | IR + CLAHE | `train_modality_m2a_ir_clahe.yaml` | `yolo11m_modality3ch.yaml` | 3 | single | **BLOCKED** |
+| **M2a** | IR + CLAHE | `train_modality_m2a_ir_clahe.yaml` | `yolo11m_modality3ch.yaml` | 3 | single | **READY** |
 | **M2b** | IR + percentile | `train_modality_m2b_ir_percentile.yaml` | `yolo11m_modality3ch.yaml` | 3 | single | **READY WITH CAVEAT** |
 | **M3** | Depth | `train_modality_m3_depth.yaml` | `yolo11m_modality3ch.yaml` | 3 | single | **READY WITH CAVEAT** |
-| **M4** | RGB+IR | `train_modality_m4_rgb_ir.yaml` | `yolo11m_modality4ch.yaml` | 4 | early | **BLOCKED** |
-| **M5** | RGB+Depth | `train_modality_m5_rgb_depth.yaml` | `yolo11m_modality4ch.yaml` | 4 | early | **BLOCKED** |
-| **M6** | IR+Depth | `train_modality_m6_ir_depth.yaml` | `yolo11m_modality2ch.yaml` | 2 | early | **BLOCKED ×2** |
+| **M4** | RGB+IR | `train_modality_m4_rgb_ir.yaml` | `yolo11m_modality4ch.yaml` | 4 | early | **READY** |
+| **M5** | RGB+Depth | `train_modality_m5_rgb_depth.yaml` | `yolo11m_modality4ch.yaml` | 4 | early | **READY** |
+| **M6** | IR+Depth | `train_modality_m6_ir_depth.yaml` | `yolo11m_modality2ch.yaml` | 2 | early | **READY** |
 
 ---
 

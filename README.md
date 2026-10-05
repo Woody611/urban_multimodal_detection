@@ -1,8 +1,8 @@
 # 面向城市场景的视觉多模态目标检测
 
-> **当前状态（2026-09-14）**：主线基线为 **F1**（YOLO11m + RGB+Depth 中期融合，`imgsz=1024`，`lr0=0.005`），训练内置 `model.val()` 的 `best mAP@0.5:0.95 = 0.51955`（epoch 287）；上一版 E7（`lr0=0.01`）= 0.50878，F1 相对 E7 **+0.01077**。
-> **正式实验指标统一以 `model.val()` 为准**，`scripts/predict.py` 仅作推理/结果检查工具。推理侧优化（TTA / conf / NMS IoU）已探索完毕，当前优化重点为**训练阶段**。
-> 完整实验记录与结论见 [`docs/experiment_log.md`](docs/experiment_log.md)。
+> **当前状态（2026-10）**：主线已转到 **RGBID 三模态**，incumbent = **D′**（Separate-Stem 三路轻量 stem + Concat，`configs/yolo11m_sepstem.yaml`），official METRIC_A mAP@0.5:0.95 = **0.515281**、线上 **48.712**；复赛提交 D′+IRaug 线上 **48.951**。
+> 早期 **RGBD 中期融合** 线峰值 = **F4**（YOLO11m RGBD @ `imgsz=1280`），`model.val()` mAP@0.5:0.95 = **0.53273**。注意两套口径（`model.val()` vs official METRIC_A）**不可直接比较**，详见 §7.1。
+> 完整实验记录见 [`docs/experiment_log.md`](docs/experiment_log.md) 与 `reports/`、`diagnostic/` 下的各报告。
 
 ---
 
@@ -65,46 +65,42 @@ pip install -r requirements.txt
 Urban-Multimodal-Detection
 
 ├── configs
-│   ├── dataset.yaml           # ultralytics 数据配置 (path / train / val / test / nc / names)
-│   ├── train.yaml             # 训练超参，由 scripts/train.py 映射到 ultralytics
-│   ├── yolo11_visible.yaml    # YOLOv11 单模态 baseline 模型 (nc=12)
-│   ├── model.yaml             # 自定义模型设计（融合方案参考）
-│   └── model_fusion.yaml      # 三模态融合设计 (fusion_method 等)
+│   ├── dataset.yaml                     # ultralytics 数据配置 (path / train / val / test / nc / names)
+│   ├── train*.yaml                      # 各实验训练超参（train_e*.yaml / train_f*.yaml / train_modality_m*.yaml / train_rgbid_*.yaml 等）
+│   ├── yolo11*.yaml                     # 各模型配置（visible / midfusion_rgbd_* / earlyfusion / sepstem / modality{2,3,4}ch 等）
+│   ├── MODALITY_BASELINE_README.md      # M1–M7 模态基线矩阵说明
+│   ├── model.yaml / model_fusion.yaml   # 早期融合方案参考（未接入训练）
 │
 ├── data
 │   ├── raw
-│   │   ├── train
-│   │   │   ├── visible/       # 可见光 (RGB)
-│   │   │   ├── infrared/      # 红外
-│   │   │   ├── depth/         # 深度
-│   │   │   └── labels/        # YOLO 格式标注
-│   │   └── test
-│   │       ├── visible/
-│   │       ├── infrared/
-│   │       └── depth/
-│   └── processed              # train.py 切分生成的 visible_split/（不入库）
+│   │   ├── train/{visible,infrared,depth,labels}
+│   │   └── test/{visible,infrared,depth}
+│   └── processed                        # train.py 切分生成的 *_split_train/（不入库）
 │
 ├── docs
 │   ├── model_design.md
 │   └── experiment_log.md
 │
-├── experiments
+├── experiments                         # 各实验可复现材料（配置快照、结果审计）
 │   ├── README.md
-│   ├── baseline/              # 各实验材料（配置快照、metrics.json 等）
-│   └── fusion/
+│   ├── f4_1280/  f5_l1280/
+│   └── yolo11_rgbd_loss_ablation/       # Loss 消融（含 README.md 与 l2_result_audit.md）
+│
+├── reports                             # 各实验 / 终审报告（F4/F5/D′/复赛/冻结审计等）
+│
+├── diagnostic                          # 诊断与审计（模态归因、3-modality 就绪审计等）
 │
 ├── models
-│   ├── attention.py           # CrossModalAttention（未来融合模块）
-│   └── fusion.py              # ConcatFusion（未来融合模块）
+│   ├── attention.py                    # CrossModalAttention（未接入）
+│   └── fusion.py                       # ConcatFusion（未接入）
 │
-├── scripts
-│   ├── train.py
-│   ├── evaluate.py
-│   └── predict.py
+├── scripts                             # 训练/评测/推理/审计入口（train.py、evaluate.py、predict*.py、official_eval.py 等）
 │
-├── ultralytics                # 本地 fork（含 RGBT 多模态融合实现）
+├── ultralytics                         # 本地 fork（8.3.75，含 RGBT/RGBD/RGBID 多模态实现）
 │
-├── weights                    # 训练权重（已 gitignore）
+├── rematch                             # 复赛提交包（D′+IRaug，自包含，见 rematch/README.md）
+│
+├── weights                             # 训练权重（已 gitignore）
 │
 ├── README.md
 ├── requirements.txt
@@ -142,103 +138,65 @@ Urban-Multimodal-Detection
 
 ---
 
-# 7. 当前基线与评估口径（2026-09-13 更新）
+# 7. 当前基线与评估口径（2026-10 更新）
 
-> 本章为实验结论摘要。完整配置、逐项结果与分析见 [`docs/experiment_log.md`](docs/experiment_log.md)。
+> 本章为实验结论摘要。完整配置、逐项结果与分析见 [`docs/experiment_log.md`](docs/experiment_log.md)（E/F 系列）与 `reports/`、`diagnostic/` 下的各报告（F4/F5、Loss 消融、D/D′、M 系列、复赛）。
 
-## 7.1 当前主线基线：F1（E7 + lr0 减半）
+## 7.1 评估口径说明（重要）
 
-| 项目 | 值 |
-| :--- | :--- |
-| 实验 | **F1**（上一版 E7，见下方对照） |
-| 模型 | YOLO11m + RGB + Depth 中期融合（`configs/yolo11m_midfusion_rgbd_concat_res.yaml`，`ch=4`、P3/P4/P5、约 30.3M 参数） |
-| 输入 | 4 通道 `[R,G,B,D]`，`imgsz=1024` |
-| 数据 | 从 `train` 按 `val_ratio=0.2` + `seed=42` 在 stem 级别切分 → 1600 训练 / 400 验证 |
-| 训练 | SGD，`lr0=5e-3`（唯一变量：E7 的 `lr0=1e-2` 减半），`batch=8`，`epochs=300`，`patience=80`，AMP |
-| **best mAP@0.5:0.95** | **0.51955**（epoch 287） |
-| best mAP@0.5 | 0.76883 |
-| 权重 | `runs/urban_multimodal_det_e7_lr0half/weights/best.pt` |
+- **E / F 系列**（RGBD 中期融合）：指标统一以训练内置 `model.val()` 的 `best mAP@0.5:0.95` 为准（`conf=0.001`、`iou=0.7`、`max_det=300`、`rect=False`）。
+- **D′ / M 系列**（RGBID 三模态、模态基线）：指标统一以 `scripts/official_eval.py` 的 **official METRIC_A** 为准（top-100、IoU 0.50–0.95、101 点插值），用于跨配置横向比较与线上对标。
+- 两套口径**不可直接比较**：`model.val()` mAP 与 official METRIC_A 是不同度量。`scripts/predict*.py` 定位为推理 / 结果检查工具，不作为正式指标来源。
 
-| 对照 | E7（lr0=0.01） | F1（lr0=0.005） | Δ |
-| :--- | :---: | :---: | :---: |
-| best mAP@0.5:0.95 | 0.50878 @ ep257 | 0.51955 @ ep287 | **+0.01077** |
-| best mAP@0.5 | 0.75573 | 0.76883 | +0.01310 |
-| 末窗口 box gap（分叉） | 0.8453 | 0.8288 | −0.0165 |
+## 7.2 实验演进主线
 
-关键配置结论：**depth 通道 resize 保持 `INTER_LINEAR`、padding 保持 114**。depth 中的 0 本身带有「无深度信号」语义（JPG 中约 73%、PNG 中约 5.78% 的像素为 0），padding=0 会让模型在图像边缘学到虚假的 depth 梯度；114 是 depth 的离群值，天然充当「忽略此 padding」的哨兵。相关变体（`INTER_NEAREST`、padding=0）均已实验证伪。
+### F 系列（RGBD 中期融合，`model.val()` 口径）
 
-## 7.2 评估口径约定
+| 实验 | 唯一变量 | best mAP@0.5:0.95 | 结论 |
+| :--- | :--- | :---: | :--- |
+| F1 | lr0 0.01→0.005（@1024） | 0.51955 | 确立新基线（旧基线 E7 = 0.50878） |
+| F2 | SGD→AdamW | 无产物 | 未采用 |
+| F3a | lr0 0.005→0.004 | — | 证伪 |
+| **F4** | **imgsz 1024→1280** | **0.53273** | **RGBD 线峰值（+0.01318）** |
+| F5 | YOLO11m→l @1280 | 0.52619 | 容量杠杆证伪 |
 
-1. **正式实验指标统一以 `model.val()`（训练内置 val）的结果为准**：`conf=0.001`、`iou=0.7`、`max_det=300`、`rect=False`。
-2. **`scripts/predict.py` 定位为推理 / 结果检查工具**（产出提交 TXT 与 `submission.zip`、做输出自检），**不作为正式排行榜指标来源**。
-3. 两种流程已完成一致性验证：在同一批 398 张有效图 / 2807 个 GT 上，`predict.py` mAP@0.5:0.95 = 0.49898，`model.val()` = 0.49787，**差值 +0.00111**；Precision / Recall / mAP@0.5 / mAP@0.75 差异均在 0.0016 以内。可认为两种评估流程基本一致。
+> depth 通道结论：resize 保持 `INTER_LINEAR`、padding 保持 **114**（depth 中的 0 有「无深度信号」语义）。相关变体（`INTER_NEAREST`、padding=0）均已证伪。
 
-> 📌 **复现说明**：7.2 / 7.3 中属于 `predict.py` 侧的数字，由 `scripts/predict.py` 输出、`scripts/phase2_map.py` 复算而得；其依赖的预测 TXT 位于 `.gitignore` 的 `submissions/` 临时目录，已清理，**需重跑推理才能复算**。完整复现命令见 [`docs/experiment_log.md`](docs/experiment_log.md) 的「复现说明」。`model.val()` 侧数字可用 `scripts/phase2_val_ref.py` 直接复现；E7 训练指标来自 `runs/*/results.csv`，始终可复现。
+### Loss 消融（基于 F4，唯一变量 box/cls/dfl）
+
+| 实验 | 权重 | best mAP@0.5:0.95 | Δ vs F4 |
+| :--- | :--- | :---: | :---: |
+| F4（默认） | box=7.5 / cls=0.5 / dfl=1.5 | 0.53273 | — |
+| L1 | box=10.0 | 0.52093 | −0.01180 |
+| L2 | dfl=2.0 | 0.51894 | −0.01379 |
+
+结论：**默认损失权重为当前最优，loss 权重不是提升杠杆**（见 `experiments/yolo11_rgbd_loss_ablation/`）。
+
+### RGBID 三模态（official METRIC_A 口径）
+
+- D = 单层 `Conv(5→64,3,2)` early fusion（`configs/yolo11m_earlyfusion.yaml`）；
+- **D′ = 三路轻量 Stem（48/8/8）+ Concat（`configs/yolo11m_sepstem.yaml`）＝ incumbent**，official mAP@0.5:0.95 = **0.515281**、线上 **48.712**（详见 `reports/RGBID_SEPSTEM_CLAHE_FINAL_REPORT.md`）。
+
+### M1–M7 模态基线矩阵（Fusion Phase 0）
+
+单/双/三模态基线以支撑模态归因，见 `configs/MODALITY_BASELINE_README.md`：M1–M6 均 READY（M4 = 0.50597），M7 = D′（incumbent）。
+
+### 复赛（rematch）
+
+D′ + IR-specific gamma/noise 增强：线上 **48.951**（vs D′ 48.712，+0.239）；但本地两口径均为负（official −0.00100 / fork −0.00299，`rematch/submission/RESULTS.md` 判 **NOT SUPPORTED**），线上差异无法与单次轨迹扰动区分。详见 `rematch/README.md`。
 
 ## 7.3 已探索并明确不再优先的方向（inference-side）
 
 | 方向 | 结果 | 结论 |
 | :--- | :--- | :--- |
-| **TTA**（原图 + 水平翻转） | mAP@0.5:0.95 **0.48724** vs 无 TTA **0.49898**，**−0.01174** | **未证明有稳定增益，为负向**。有害指纹：Precision 升、Recall 降、mAP@0.75 暴跌 −0.049（双重 NMS 过度抑制）。比赛提交使用无 TTA 结果 |
-| **conf 阈值调参** | 0.001 → 0.01 约 +0.026 | 属**纯推理置信阈值调整**，按项目约定**不计入模型提升** |
-| **NMS IoU 调参** | IoU 0.6 vs 0.7 仅 **+0.00207** | **低于 +0.005 门槛，不采用**。主线固定 `iou=0.7` |
+| TTA（原图 + 水平翻转） | mAP@0.5:0.95 −0.01174 | 负向，不采用 |
+| conf 阈值调参 | 0.001→0.01 约 +0.026 | 属纯推理调整，不计入模型提升 |
+| NMS IoU 调参 | +0.00207 | 低于 +0.005 门槛，不采用 |
 
-**结论：不再优先优化 inference-side，也不用修改 conf / IoU / NMS 等推理参数来人为追求更高指标。**
+**结论：不再优先优化 inference-side，也不通过修改 conf / IoU / NMS 等推理参数来人为追求更高指标。**
 
-## 7.4 当前优化重点（training-side）：Phase 6-A
+## 7.4 当前状态与下一步
 
-E7 训练曲线分析显示：`best` 出现在 epoch 257，此后进入平台期且 train/val 明显分叉（box loss gap 由 0.599 扩大到 0.845）；同时 `close_mosaic=10` 所关闭 mosaic 的**末 10 轮（ep291–300）出现陡降台阶**，均值 0.49303 vs 前 10 轮 0.50433，**净损约 −0.0113**。
-
-因此进行严格单变量 A/B 实验：
-
-```
-E7 baseline（close_mosaic = 10）
-        ↓
-Phase 6-A：唯一变量 close_mosaic: 10 → 0
-        ↓
-其余训练条件（模型结构 / loss / optimizer / lr / epochs / patience / batch /
-imgsz / seed / 数据集与切分 / RGB-Depth 预处理 / 其它数据增强）全部保持 E7 不变
-```
-
-| 项目 | 值 |
-| :--- | :--- |
-| 实验配置 | `configs/train_e7_close_mosaic0.yaml` |
-| 输出目录 | `runs/urban_multimodal_det_e7_close_mosaic0/`（独立目录，不覆盖 E7） |
-| 启动命令 | `python scripts/train.py --model_config configs/yolo11m_midfusion_rgbd_concat_res.yaml --train_config configs/train_e7_close_mosaic0.yaml` |
-| 状态 | **已完成，证伪** |
-
-### 结果与结论
-
-| 指标 | E7（`close_mosaic=10`） | E7m0（`close_mosaic=0`） |
-| :--- | :---: | :---: |
-| **best mAP@0.5:0.95** | **0.50878** @ ep257 | **0.50878** @ ep257 |
-| ep250–290 平台均值 | 0.50493 | 0.50493 |
-| **ep291–300 末 10 轮均值** | **0.49303**（陡降） | **0.50457**（持平） |
-
-- **逐 epoch 对照**：ep1–290 完全一致，仅 ep291–300（`close_mosaic=10` 关闭 mosaic 的那 10 轮）不同。
-- **权重逐张量对照**：两个 `best.pt` 的 913 个模型张量逐 bit 相同（最大绝对差 0.0）。
-- **结论**：`close_mosaic=0` **不提升 mAP**（0.50878 → 0.50878）。最优 epoch 都在 257，远早于 mosaic 关闭点（291），关不关 mosaic 都碰不到 best。Phase 5 的「末 10 轮陡降」确系 `close_mosaic` 造成，但发生在 best 之后，对上报指标无影响。`close_mosaic=0` 只抹平了尾巴曲线，是**曲线形状效果，不是指标提升**。
-
-> ⚠️ 该实验**禁止混入** TTA、conf、IoU、NMS 参数、学习率、patience、epochs、模型结构、数据集等因素，以保证与 E7 的可比性。
-
-## 7.5 实验逻辑链
-
-```
-E7 baseline（mAP@0.5:0.95 = 0.50878）
-        ↓
-predict.py / model.val() 一致性验证（差值 +0.00111）
-        ↓
-确认评估流程没有造成明显指标偏差
-        ↓
-TTA 未证明有稳定 mAP@0.5:0.95 增益（实测 −0.01174）
-        ↓
-不再优先优化 inference-side
-        ↓
-转向 training-side optimization
-        ↓
-Phase 6-A：close_mosaic = 0 单变量 A/B 实验（证伪，best 0.50878 不变）
-        ↓
-Phase 6-B-F1：lr0 减半（0.01 → 0.005）→ 正向 +0.01077，新基线 0.51955
-        ↓
-Phase 6-B-F2：optimizer SGD → AdamW（待跑）
-```
+- **主线已从 RGBD 中期融合转到 RGBID 三模态**（D′ 为 incumbent，复赛提交 D′+IRaug）。
+- 3-modality 下一步（M4-preserving minimal residual Depth adapter）**当前不可执行**：`_transfer_rgb_pretrained` 无对应 remap 分支，且合同门有盲区。见 `diagnostic/FINAL_3MODALITY_READINESS_AUDIT.md`（结论 NOT READY）。
+- 已证伪 / 关闭的杠杆：P2 检测层、容量（F5）、loss 权重（L1/L2）、TTA、conf/IoU/NMS。
