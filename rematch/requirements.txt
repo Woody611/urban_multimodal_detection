@@ -1,0 +1,57 @@
+# ============================================================
+# 城市多模态目标检测 —— 运行环境依赖
+# ============================================================
+# ⚠️ 重要：本项目**不使用 PyPI 上的 ultralytics**，而是使用随包提供的
+#    **本地 fork**（./ultralytics/，版本号 8.3.75）。请**不要** pip install ultralytics，
+#    否则可能与本地 fork 冲突/遮蔽。运行脚本时工作目录须为项目根目录
+#    （scripts/*.py 会把项目根插入 sys.path 首位，从而导入本地 fork）。
+#
+# 本文件由两组**实测可用**的环境反推：
+#   [A] 训练环境（云端 GPU，实跑本实验所用）
+#         Python 3.10.8 · torch 2.1.2+cu121 · CUDA 12.1 · NVIDIA A100-PCIE-40GB
+#   [B] 推理/评测环境（CPU-only 亦可，本项目官方口径评测全部在 CPU 上复现）
+#         Python 3.8.15 · torch 2.4.1+cpu · opencv-python 5.0.0
+# 两组都能跑通 train / predict / official_eval。下面用范围约束，不锁死小版本。
+# ============================================================
+
+# ---- 深度学习框架 ------------------------------------------------
+# 训练：建议 CUDA 版（如 torch==2.1.2+cu121）；仅做推理/评测用 CPU 版即可
+torch>=2.1,<2.5
+torchvision>=0.16,<0.20
+
+# ---- 图像 / 数值 -------------------------------------------------
+numpy>=1.24,<2.0
+opencv-python>=4.8          # 5.0.0 实测可用
+Pillow>=9.0
+scipy>=1.10
+
+# ---- 本地 ultralytics fork 的硬依赖 ------------------------------
+# 这些是 ./ultralytics/ 里直接 import 的第三方包，缺失会 ImportError
+timm>=0.9                   # nn/tasks.py, nn/modules/*
+einops>=0.7                 # nn/modules/attention.py
+efficientnet_pytorch>=0.7   # nn/modules/attention.py
+thop>=0.1                   # nn/tasks.py, utils/torch_utils.py
+psutil>=5.9                 # data/base.py
+
+# ---- 配置 / 数据 / 可视化 / 进度 --------------------------------
+pyyaml>=6.0
+pandas>=1.5                 # 结果表 results.csv 处理
+matplotlib>=3.5             # results.png 等绘图
+tqdm>=4.64
+
+# ---- 可选（缺失时可正常运行，但行为会略有差异）--------------------
+# albumentations: ultralytics/data/augment.py 中 try/except ImportError 保护。
+#   本方案的 5 通道配置下 Albumentations 的 p=0（完全不生效），因此**非必需**。
+#   ⚠ 但注意：装了它会让 Albumentations.__call__ 每样本多消耗一次 random 抽样
+#     （功能不变，只是 RNG 流不同）⇒ 跨机器的逐位复现会失效。详见 README 注意事项。
+# albumentations>=1.3
+#
+# py-cpuinfo: utils/torch_utils.py 中 try/except 保护，仅用于打印 CPU 型号。
+# py-cpuinfo
+
+# ---- 说明：已移除的依赖 -------------------------------------------
+# 旧版 requirements.txt 里的 scikit-learn **在本项目代码中没有任何 import**
+# （全仓库 0 处引用），已删除。
+# onnx / onnxruntime / openvino / coremltools / tensorflow / paddle / ncnn / MNN /
+# clearml / comet_ml / mlflow / neptune / dvclive / lvis / mss 等均为 ultralytics
+# 的**可选导出/回调集成**，本项目训练与提交链路一律不用，未列入。
