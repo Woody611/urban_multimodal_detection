@@ -1,0 +1,149 @@
+{
+  "tool": "ir_stats.py",
+  "clahe": {
+    "clipLimit": 2.0,
+    "tileGridSize": [
+      8,
+      8
+    ]
+  },
+  "source": "data/processed/rgbid_split_train/images",
+  "sampling": "linspace over sorted filenames, SAMPLE_N=200",
+  "note": "IR_raw = cv2.imread(...,IMREAD_GRAYSCALE); CLAHE via ultralytics.data.base.apply_ir_encoding",
+  "train": {
+    "n_images_total": 1600,
+    "n_images_sampled": 200,
+    "file_dtype_imread_unchanged": "uint8",
+    "file_shape_imread_unchanged": [
+      360,
+      640,
+      3
+    ],
+    "file_dtype_imread_grayscale": "uint8",
+    "file_shape_imread_grayscale": [
+      360,
+      640,
+      1
+    ],
+    "IR_raw": {
+      "n_pixels": 385228800,
+      "min": 0,
+      "max": 255,
+      "mean": 114.21643965352538,
+      "std": 60.73795872239138,
+      "pctl": {
+        "p01": 0,
+        "p05": 0,
+        "p25": 76,
+        "p50": 117,
+        "p75": 158,
+        "p95": 210,
+        "p99": 232
+      },
+      "per_image_mean": {
+        "n": 200,
+        "min": 49.14386284722222,
+        "max": 166.1299749228395,
+        "mean": 110.52945953896604,
+        "std": 22.40050552752417,
+        "p05": 62.12733897569444,
+        "p50": 113.41592375578703,
+        "p95": 143.7270012056327
+      }
+    },
+    "IR_after_CLAHE": {
+      "n_pixels": 385228800,
+      "min": 0,
+      "max": 255,
+      "mean": 114.58492972228453,
+      "std": 60.155478563082376,
+      "pctl": {
+        "p01": 3,
+        "p05": 3,
+        "p25": 74,
+        "p50": 117,
+        "p75": 159,
+        "p95": 211,
+        "p99": 234
+      },
+      "per_image_mean": {
+        "n": 200,
+        "min": 57.32042534722222,
+        "max": 153.8500429205247,
+        "mean": 111.51809523292825,
+        "std": 17.859929174796488,
+        "p05": 71.61121788194444,
+        "p50": 114.0095363136574,
+        "p95": 138.0032368344907
+      }
+    }
+  },
+  "val": {
+    "n_images_total": 400,
+    "n_images_sampled": 200,
+    "file_dtype_imread_unchanged": "uint8",
+    "file_shape_imread_unchanged": [
+      360,
+      640,
+      3
+    ],
+    "file_dtype_imread_grayscale": "uint8",
+    "file_shape_imread_grayscale": [
+      360,
+      640,
+      1
+    ],
+    "IR_raw": {
+      "n_pixels": 392601600,
+      "min": 0,
+      "max": 255,
+      "mean": 112.39838884253146,
+      "std": 60.21741407194286,
+      "pctl": {
+        "p01": 0,
+        "p05": 0,
+        "p25": 75,
+        "p50": 114,
+        "p75": 156,
+        "p95": 209,
+        "p99": 233
+      },
+      "per_image_mean": {
+        "n": 200,
+        "min": 46.49443142361111,
+        "max": 155.6940417631173,
+        "mean": 109.71930507571375,
+        "std": 20.331184344118306,
+        "p05": 66.95528059895834,
+        "p50": 109.88509741512345,
+        "p95": 141.62506377797067
+      }
+    },
+    "IR_after_CLAHE": {
+      "n_pixels": 392601600,
+      "min": 0,
+      "max": 255,
+      "mean": 112.78406754837474,
+      "std": 59.910183164098754,
+      "pctl": {
+        "p01": 3,
+        "p05": 3,
+        "p25": 72,
+        "p50": 114,
+        "p75": 157,
+        "p95": 211,
+        "p99": 235
+      },
+      "per_image_mean": {
+        "n": 200,
+        "min": 57.303988715277775,
+        "max": 147.67126929012346,
+        "mean": 110.6464010947145,
+        "std": 15.942053056304701,
+        "p05": 79.26185433545524,
+        "p50": 111.172647810571,
+        "p95": 131.87597960069442
+      }
+    }
+  }
+}

@@ -10,15 +10,15 @@
   67cb9fe02757fd59  scripts/train.py
   9d704300143a5786  scripts/predict_rect.py
   e82128abc082ed05  scripts/official_eval.py
-  283c28f006bbe834  scripts/validate_modality_contract.py
-  3178dae235f1384f  scripts/pretrained_coverage.py
+  e08c36340b5c45c5  scripts/validate_modality_contract.py
+  e56507d66d09605c  scripts/pretrained_coverage.py
   9b14f29460733384  configs/yolo11m_sepstem.yaml
   edc95f4665ead847  configs/yolo11m_earlyfusion.yaml
   871d9d0da0122453  configs/yolo11m_modality4ch.yaml
   58906628b858274c  configs/yolo11m_modality3ch.yaml
   6e7bfb1555a3c68d  configs/yolo11m_modality2ch.yaml
   d5ffc1a674953a08  yolo11m.pt
-  HEAD=5f1a8d5802aa49adf35e8fa6fb112a1030b3e6d3
+  HEAD=878cbcdeb40c92590b593e5b993885ce41735223
   GITIGNORED (invisible to git status): ['ultralytics/data/base.py', 'ultralytics/data/loaders.py', 'yolo11m.pt']
 
   prototypes written to C:\Users\45548\AppData\Local\Temp\f3m_audit  (NOT promoted into configs/)

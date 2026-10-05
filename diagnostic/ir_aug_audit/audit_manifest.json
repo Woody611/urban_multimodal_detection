@@ -1,0 +1,24 @@
+{
+  "generated_utc": "2026-10-04T16:09:55.963246Z",
+  "head": "878cbcdeb40c92590b593e5b993885ce41735223",
+  "files": {
+    "configs/yolo11m_sepstem.yaml": "9b14f2946073338414b4441784b6df87a868b982be32ac8d50b6d1c4a17f3dd8",
+    "configs/train_rgbid_sepstem_clahe.yaml": "a4e329cfc3d220206448cdd3377c1b3f5126c50f13c907ada522d98725486e12",
+    "configs/train_rgbid_sepstem_clahe_iraug.yaml": "e40f01b7cb3b0569a3e3f78e97f06944d8b2ed9b5fde869087f76b9daad7227e",
+    "configs/dataset.yaml": "fd326f30f53a0e7abcb974e44c48891e9eef041d38967477cb01a32b99466599",
+    "ultralytics/data/base.py": "d7d2315ed4391c9724fafaf080bd7c7e8bc401de162084e0cf805e71304cdb88",
+    "ultralytics/data/loaders.py": "56c07c8520cf5b255516afb30621fecbf3ebc5dc4c658a8dd9689ade537c3362",
+    "ultralytics/data/augment.py": "abfc90f53f75f7ad5a5c13e842847e6e6cbc8bcdab8b1be57e88f7cff801282b",
+    "ultralytics/data/dataset.py": "0aba2bc14793ab85ac477d0eab0cf4083adcd585569a9f99021e8ae03278c938",
+    "ultralytics/cfg/default.yaml": "f119165d27d6bdc1e40d5bf18a1891893313e422f249cafb62bf15cfd2dc04d8",
+    "ultralytics/nn/tasks.py": "79c8dbab9cd810d2609e7ff162d856beea8ab8e19b7ee6a933fb83ec1a617efd",
+    "ultralytics/models/yolo/detect/train.py": "71096a9e044652a51f51b2bfc60ae7c78c255e92fd15e99efb1386019109e0cd",
+    "scripts/train.py": "d368f6c65cdeb206102d9f702604c680ba56d62caa074423a7c5e16fddb93212",
+    "scripts/predict_rect.py": "9d704300143a5786f7b74450f35e6c656d55c82812ca34d0e7b830d96034f524",
+    "scripts/predict.py": "ffc1edd08aa0d22b2e007ef76a83b7358ddb12e623aeafd1788a7d11236e1f13",
+    "scripts/official_eval.py": "e82128abc082ed05f39dd2ef40f7d36680944911f1940a3f0a2f35eb38321783",
+    "scripts/preflight_check_train_config.py": "fda7296594a2ac47c188a0c3fb41dc2f411cc5989abf82945b13ac001f7e6cff",
+    "runs/urban_multimodal_det_yolo11_rgbid_sepstem_clahe/weights/best.pt": "1cae45f75693f54146e35c5fa076c0a6f78ca1cfa95595de74d959f40fae4fda",
+    "configs/train_modality_m4_rgb_ir_seed2.yaml": "e7e88a89d59a0a9d4decdb93470dc40f228d4435f6baebb7b84cba1090032814"
+  }
+}

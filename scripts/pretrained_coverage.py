@@ -285,6 +285,15 @@ def manifest(net, src) -> list[dict[str, Any]]:
             hits = [n for n, c in stock_index.get(tuple(v.shape), ()) if torch.equal(v, c)]
             if hits:
                 rec["status"] = f"UNEXPECTED_STOCK_COPY:{hits[0]}"
+
+        # brief §7 schema: surface the source tensor's shape and an explicit equality
+        # verdict. exact_equal is None only for NEW_RANDOM (legitimately fresh, nothing
+        # to compare against); it is False for every non-EXACT pretrained status.
+        _sv = src.get(rec["source_name"]) if rec.get("source_name") else None
+        rec["source_shape"] = tuple(_sv.shape) if _sv is not None and hasattr(_sv, "shape") else None
+        rec["exact_equal"] = (
+            None if rec["kind"] == KIND_NEW else rec["status"] in ("EXACT", "DERIVED", "ZERO_OK")
+        )
         recs.append(rec)
     return recs
 

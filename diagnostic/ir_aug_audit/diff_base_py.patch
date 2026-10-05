@@ -1,0 +1,134 @@
+--- diagnostic/ir_aug_audit/_before/ultralytics_data_base.py	2026-10-04 23:23:10.186173700 +0800
++++ ultralytics/data/base.py	2026-10-04 23:29:11.345615700 +0800
+@@ -86,6 +86,116 @@
+     return im
+ 
+ 
++# ============================================================
++# IR-specific photometric augmentation（gamma + Gaussian noise）—— **仅训练**
++# ------------------------------------------------------------
++# 位置：`load_and_preprocess_image` 的 **RGBID 分支**，紧接 `apply_ir_encoding` 之后、
++#       `_merge_channels_rgbid` 之前。作用对象是 **单通道 IR**，因此在结构上
++#       不可能影响 RGB / Depth（它们在 merge 之前根本没参与）。
++#
++# 该数组正是模型看到的 IR 表示：
++#   原图 → CLAHE(uint8) → [本函数] → merge 5ch → resize → mosaic/几何 → /255 → stem
++#
++# train-only 保证（三重、可证）：
++#   1. `augment=False`（val dataset / 任何非训练 Dataset）→ 立即 return；
++#   2. 推理路径 `loaders.py::LoadImagesAndVideos` **根本不调用本函数**（它走自己的
++#      inline IR 分支）⇒ 推理/提交不经此处；
++#   3. 四个新键在 `default.yaml` 的默认值 = 恒等且关闭 ⇒ 未显式配置的实验
++#      **不消耗任何 RNG**，逐位不变。
++#
++# 数值域（**锁死**，见 ir_aug_audit 报告）：
++#   IR 进入本函数时 = uint8 单通道，值域 [0, 255]。
++#   gamma：x = im/255 ∈ [0,1] → x**gamma → clip([0,1]) → ×255 → uint8。
++#   noise：`ir_noise_std` 的单位是 **归一化 [0,1] 域**（= 灰度级 σ = ir_noise_std × 255）。
++#          内部实现为 im/255 + N(0, std) → clip → ×255 → uint8。
++#   两处 clip 都是 [0,255]（uint8 饱和），不会产生 NaN/Inf。
++# ============================================================
++IR_AUG_STATS = {"calls": 0, "gamma_applied": 0, "noise_applied": 0,
++                "skipped_disabled": 0, "skipped_nonaugment": 0,
++                "gamma_draws": [], "noise_std_used": []}
++IR_AUG_STATS_CAP = 4096
++
++
++def _ir_gamma_range(cfg):
++    """解析 ir_gamma → (lo, hi) float tuple；非法/缺省 → (1.0, 1.0) = 恒等。"""
++    g = getattr(cfg, "ir_gamma", None)
++    if g is None:
++        return 1.0, 1.0
++    if isinstance(g, (int, float)):
++        v = float(g)
++        return v, v
++    if isinstance(g, (list, tuple)) and len(g) == 2:
++        return float(g[0]), float(g[1])
++    raise ValueError(f"ir_gamma must be a float or a 2-element [lo, hi], got {g!r}")
++
++
++def apply_ir_augmentation(im, cfg, augment, stats=None):
++    """对**已是 uint8 单通道**的 IR 图做 train-only 光度增强（gamma + Gaussian noise）。
++
++    Args:
++        im (np.ndarray): (H, W) 或 (H, W, 1) uint8，**CLAHE 之后**的 IR。
++        cfg: hyp 命名空间（含 ir_gamma / ir_gamma_probability / ir_noise_std /
++             ir_noise_probability）；None 或键缺失 = 全部关闭。
++        augment (bool): 训练模式标志；False 时**立即返回且不消耗 RNG**。
++        stats (dict | None): 可选计数器（诊断用）。
++
++    Returns:
++        np.ndarray: 与输入**同 shape / 同 dtype** 的 uint8 数组。
++    """
++    if stats is None:
++        stats = IR_AUG_STATS  # 默认写模块级计数器（供 preflight / 审计取证）
++    if not augment:
++        stats["skipped_nonaugment"] += 1
++        return im
++    if cfg is None:
++        stats["skipped_disabled"] += 1
++        return im
++
++    g_lo, g_hi = _ir_gamma_range(cfg)
++    g_p = float(getattr(cfg, "ir_gamma_probability", 0.0) or 0.0)
++    n_std = float(getattr(cfg, "ir_noise_std", 0.0) or 0.0)
++    n_p = float(getattr(cfg, "ir_noise_probability", 0.0) or 0.0)
++
++    do_g = g_p > 0.0 and not (g_lo == g_hi == 1.0)
++    do_n = n_std > 0.0 and n_p > 0.0
++    if not (do_g or do_n):
++        stats["skipped_disabled"] += 1
++        return im
++
++    # 只接受单通道 IR；否则原样返回（防御性，不应发生）
++    if not (im.ndim == 2 or (im.ndim == 3 and im.shape[2] == 1)):
++        return im
++
++    shape = im.shape
++    stats["calls"] += 1
++
++    # 概率判定：do_g / do_n 为 False 时**短路、不消耗 RNG**（保证关闭配置下的 RNG 序列不变）
++    apply_g = do_g and (random.random() < g_p)
++    apply_n = do_n and (random.random() < n_p)
++    if not (apply_g or apply_n):
++        return im
++
++    gamma = random.uniform(g_lo, g_hi) if apply_g else None
++    x = im.astype(np.float32) / 255.0            # [0,1]
++    if apply_g:
++        x = np.power(x, gamma)                    # gamma<1 提亮中间调 / >1 压暗
++    if apply_n:
++        x = x + np.random.normal(0.0, n_std, size=x.shape).astype(np.float32)
++    x = np.clip(x, 0.0, 1.0)                      # 饱和（uint8 边界）
++    out = np.clip(x * 255.0, 0, 255).astype(np.uint8)
++
++    if apply_g:
++        stats["gamma_applied"] += 1
++        if len(stats["gamma_draws"]) < IR_AUG_STATS_CAP:
++            stats["gamma_draws"].append(round(float(gamma), 6))
++    if apply_n:
++        stats["noise_applied"] += 1
++        if len(stats["noise_std_used"]) < IR_AUG_STATS_CAP:
++            stats["noise_std_used"].append(float(n_std))
++    assert out.shape == shape and out.dtype == np.uint8, (out.shape, out.dtype, shape)
++    return out
++
++
+ def apply_modality_dropout(im, cfg, augment):
+     """按配置随机丢弃 IR 或 Depth（仅训练）。val/test 原样返回。
+ 
+@@ -399,6 +509,14 @@
+             ir_encoding = getattr(getattr(self, "hyp", None), "ir_encoding", "percentile") or "percentile"
+             im_infrared = apply_ir_encoding(im_infrared, ir_encoding)
+ 
++            # ---- IR-specific 光度增强（gamma + noise）—— **仅训练** ----
++            # 位置刻意选在 CLAHE **之后**：这一数组就是模型实际看到的 IR 表示
++            # （随后 merge → resize → /255）。augment=False 时为**零 RNG 开销的 passthrough**
++            # ⇒ val/推理逐位不变；推理路径（loaders.py）根本不经过本函数。
++            im_infrared = apply_ir_augmentation(
++                im_infrared, getattr(self, "hyp", None), getattr(self, "augment", False)
++            )
++
+             # 深度统一到 uint8 单通道（16-bit mm 深度映射到 [0,255]；8-bit 直接取灰度）
+             if im_depth.ndim == 3:
+                 im_depth = im_depth[..., 0]

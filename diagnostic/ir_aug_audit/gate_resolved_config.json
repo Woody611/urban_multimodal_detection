@@ -1,0 +1,64 @@
+{
+  "n_resolved_keys": 131,
+  "resolved_data_path": {
+    "baseline": "D:\\gyt\\AIC\\urban_multimodal_detection\\data\\processed\\rgbid_split_train\\dataset.yaml",
+    "iraug": "D:\\gyt\\AIC\\urban_multimodal_detection\\data\\processed\\rgbid_split_train\\dataset.yaml"
+  },
+  "raw_kwargs_diff": {
+    "ir_gamma": {
+      "baseline": "<absent>",
+      "iraug": [
+        0.75,
+        1.35
+      ]
+    },
+    "ir_gamma_probability": {
+      "baseline": "<absent>",
+      "iraug": 0.35
+    },
+    "ir_noise_probability": {
+      "baseline": "<absent>",
+      "iraug": 0.2
+    },
+    "ir_noise_std": {
+      "baseline": "<absent>",
+      "iraug": 0.015
+    },
+    "name": {
+      "baseline": "urban_multimodal_det_yolo11_rgbid_sepstem_clahe",
+      "iraug": "urban_multimodal_det_yolo11_rgbid_sepstem_clahe_iraug"
+    }
+  },
+  "resolved_diff": {
+    "ir_gamma": {
+      "baseline": [
+        1.0,
+        1.0
+      ],
+      "iraug": [
+        0.75,
+        1.35
+      ]
+    },
+    "ir_gamma_probability": {
+      "baseline": 0.0,
+      "iraug": 0.35
+    },
+    "ir_noise_probability": {
+      "baseline": 0.0,
+      "iraug": 0.2
+    },
+    "ir_noise_std": {
+      "baseline": 0.0,
+      "iraug": 0.015
+    },
+    "name": {
+      "baseline": "urban_multimodal_det_yolo11_rgbid_sepstem_clahe",
+      "iraug": "urban_multimodal_det_yolo11_rgbid_sepstem_clahe_iraug"
+    }
+  },
+  "unexpected_diff": {},
+  "keys_only_in_baseline": {},
+  "keys_only_in_iraug": {},
+  "PASS": true
+}
