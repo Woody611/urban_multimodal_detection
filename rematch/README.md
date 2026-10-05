@@ -2,7 +2,7 @@
 
 > **提交方案**：`D′ + IR-specific gamma/noise augmentation`
 > **线上得分**：**48.951**（同一测试集上，D′ 基线为 48.712）
-> 本文档面向评审/复现者，包含方案说明、权重下载、运行配置、文件清单、运行命令与注意事项。
+> 本文档面向评审/复现者，包含方案说明、模型权重、运行配置、文件清单、运行命令与注意事项。
 
 ---
 
@@ -42,11 +42,9 @@ data/raw/
 
 ---
 
-## 2. 模型权重下载链接
+## 2. 模型权重（直接放入包内，无需下载链接）
 
-> ### ⬇️ **`<待填写 —— 模型权重下载地址>`**
->
-> 下载后放到 `rematch/weights/`，见 [`weights/README.md`](weights/README.md)。
+将权重直接放入 `rematch/weights/`（本包直接携带权重）：
 
 | 文件 | SHA-256 | 用途 |
 |---|---|---|
@@ -221,8 +219,7 @@ rematch/
 │   ├── verify_run_args.py       ★ 训练启动后 30 秒核对实际生效超参（可直接跑 run_record/args.yaml）
 │   └── diff_*.patch             本次代码改动的完整 diff（base.py / train.py）
 │
-├── weights/                     ← 放入下载的 best.pt / last.pt（见 §2）
-│   └── README.md
+├── weights/                     ← 直接放入 best.pt / last.pt（见 §2）
 │
 ├── run_record/                  ← ★ 本次训练的实际运行记录（可自证超参）
 │   ├── args.yaml               训练时**实际解析**出的配置（非配置文件原文）
