@@ -1,0 +1,337 @@
+{
+  "census": {
+    "n_train": 1600,
+    "val_n": 400,
+    "total_gt": 11570,
+    "small_gt": 1392,
+    "small_ratio": 0.12031114952463268,
+    "images_with_small": 401,
+    "mean_small_per_image": 0.87,
+    "median_small_per_image": 0.0,
+    "max_small_per_image": 35,
+    "small_image_fraction": 0.250625,
+    "n_classes_present": 12
+  },
+  "size_px": {
+    "native_sqrt_p50": 24.09160188683318,
+    "n_small_native": 1392,
+    "n_small_at1280": 2803
+  },
+  "class_small": [
+    {
+      "cls": 0,
+      "name": "person",
+      "small": 703,
+      "all": 4426,
+      "frac": 0.1588341617713511
+    },
+    {
+      "cls": 1,
+      "name": "bicycle",
+      "small": 17,
+      "all": 107,
+      "frac": 0.1588785046728972
+    },
+    {
+      "cls": 2,
+      "name": "car",
+      "small": 107,
+      "all": 2328,
+      "frac": 0.04596219931271478
+    },
+    {
+      "cls": 3,
+      "name": "boat",
+      "small": 30,
+      "all": 514,
+      "frac": 0.058365758754863814
+    },
+    {
+      "cls": 4,
+      "name": "uav",
+      "small": 124,
+      "all": 659,
+      "frac": 0.18816388467374812
+    },
+    {
+      "cls": 5,
+      "name": "light",
+      "small": 79,
+      "all": 550,
+      "frac": 0.14363636363636365
+    },
+    {
+      "cls": 6,
+      "name": "garbage_can",
+      "small": 97,
+      "all": 1283,
+      "frac": 0.07560405300077942
+    },
+    {
+      "cls": 7,
+      "name": "tricycle",
+      "small": 22,
+      "all": 70,
+      "frac": 0.3142857142857143
+    },
+    {
+      "cls": 8,
+      "name": "animal",
+      "small": 56,
+      "all": 1211,
+      "frac": 0.046242774566473986
+    },
+    {
+      "cls": 9,
+      "name": "sign",
+      "small": 39,
+      "all": 225,
+      "frac": 0.17333333333333334
+    },
+    {
+      "cls": 10,
+      "name": "seat",
+      "small": 118,
+      "all": 174,
+      "frac": 0.6781609195402298
+    },
+    {
+      "cls": 11,
+      "name": "ball",
+      "small": 0,
+      "all": 23,
+      "frac": 0.0
+    }
+  ],
+  "optimizer": {
+    "steps_per_epoch": 200,
+    "total": 60000,
+    "designA": {
+      "1.25": 213,
+      "1.5": 225,
+      "1.75": 238,
+      "2.0": 251
+    }
+  },
+  "exposure": {
+    "baseline": {
+      "centre_small_frac": 0.250625,
+      "slot_small_frac": 0.24815625,
+      "small_gt_per_sample": 3.56865625,
+      "gain": 1.0,
+      "dup_frac": 0.9875,
+      "buf_small_frac": 0.24817463562174522,
+      "samples": 32000
+    },
+    "w=1.25": {
+      "centre_small_frac": 0.298875,
+      "slot_small_frac": 0.30059375,
+      "small_gt_per_sample": 4.34496875,
+      "gain": 1.2175363626014692,
+      "dup_frac": 0.9875,
+      "buf_small_frac": 0.30064182967102754,
+      "samples": 32000
+    },
+    "w=1.5": {
+      "centre_small_frac": 0.33359375,
+      "slot_small_frac": 0.33321875,
+      "small_gt_per_sample": 4.78271875,
+      "gain": 1.340201581477622,
+      "dup_frac": 0.9875,
+      "buf_small_frac": 0.33315207036707734,
+      "samples": 32000
+    },
+    "w=1.75": {
+      "centre_small_frac": 0.371125,
+      "slot_small_frac": 0.3725703125,
+      "small_gt_per_sample": 5.256625,
+      "gain": 1.472998415019659,
+      "dup_frac": 0.9875,
+      "buf_small_frac": 0.3724894417629874,
+      "samples": 32000
+    },
+    "w=2.0": {
+      "centre_small_frac": 0.40565625,
+      "slot_small_frac": 0.40259375,
+      "small_gt_per_sample": 5.83246875,
+      "gain": 1.6343599218893667,
+      "dup_frac": 0.9875,
+      "buf_small_frac": 0.40251293979423347,
+      "samples": 32000
+    }
+  },
+  "class_bias": [
+    {
+      "cls": 0,
+      "name": "person",
+      "base": 57871,
+      "w15": 80659,
+      "d15": 39.37723557567694,
+      "w20": 96294,
+      "d20": 66.39422163086866
+    },
+    {
+      "cls": 1,
+      "name": "bicycle",
+      "base": 1015,
+      "w15": 1491,
+      "d15": 46.896551724137936,
+      "w20": 1867,
+      "d20": 83.94088669950739
+    },
+    {
+      "cls": 2,
+      "name": "car",
+      "base": 9429,
+      "w15": 9919,
+      "d15": 5.196733481811422,
+      "w20": 13380,
+      "d20": 41.902640789055035
+    },
+    {
+      "cls": 3,
+      "name": "boat",
+      "base": 2259,
+      "w15": 2965,
+      "d15": 31.252766710934043,
+      "w20": 3970,
+      "d20": 75.74147853032316
+    },
+    {
+      "cls": 4,
+      "name": "uav",
+      "base": 9920,
+      "w15": 12918,
+      "d15": 30.22177419354839,
+      "w20": 15085,
+      "d20": 52.06653225806453
+    },
+    {
+      "cls": 5,
+      "name": "light",
+      "base": 7423,
+      "w15": 9691,
+      "d15": 30.553684494139844,
+      "w20": 12839,
+      "d20": 72.96241411828102
+    },
+    {
+      "cls": 6,
+      "name": "garbage_can",
+      "base": 7565,
+      "w15": 10680,
+      "d15": 41.176470588235304,
+      "w20": 13162,
+      "d20": 73.98545935228024
+    },
+    {
+      "cls": 7,
+      "name": "tricycle",
+      "base": 1895,
+      "w15": 2120,
+      "d15": 11.87335092348285,
+      "w20": 2771,
+      "d20": 46.22691292875989
+    },
+    {
+      "cls": 8,
+      "name": "animal",
+      "base": 5130,
+      "w15": 5716,
+      "d15": 11.423001949317735,
+      "w20": 6298,
+      "d20": 22.768031189083814
+    },
+    {
+      "cls": 9,
+      "name": "sign",
+      "base": 3114,
+      "w15": 4372,
+      "d15": 40.39820166987798,
+      "w20": 6046,
+      "d20": 94.155427103404
+    },
+    {
+      "cls": 10,
+      "name": "seat",
+      "base": 8576,
+      "w15": 12516,
+      "d15": 45.94216417910448,
+      "w20": 14927,
+      "d20": 74.0555037313433
+    },
+    {
+      "cls": 11,
+      "name": "ball",
+      "base": 0,
+      "w15": 0,
+      "d15": NaN,
+      "w20": 0,
+      "d20": NaN
+    }
+  ],
+  "total_class_exposure": {
+    "person": {
+      "base": 363022,
+      "w20": 449970
+    },
+    "bicycle": {
+      "base": 8506,
+      "w20": 11299
+    },
+    "car": {
+      "base": 186844,
+      "w20": 180401
+    },
+    "boat": {
+      "base": 43071,
+      "w20": 38119
+    },
+    "uav": {
+      "base": 52017,
+      "w20": 60807
+    },
+    "light": {
+      "base": 44230,
+      "w20": 62728
+    },
+    "garbage_can": {
+      "base": 103534,
+      "w20": 105027
+    },
+    "tricycle": {
+      "base": 5478,
+      "w20": 6567
+    },
+    "animal": {
+      "base": 100346,
+      "w20": 99477
+    },
+    "sign": {
+      "base": 17917,
+      "w20": 22115
+    },
+    "seat": {
+      "base": 13343,
+      "w20": 20565
+    },
+    "ball": {
+      "base": 1857,
+      "w20": 1734
+    }
+  },
+  "criterion_sensitivity": {
+    "images_native": 401,
+    "images_1280": 611,
+    "inst_native": 1392,
+    "inst_1280": 2803
+  },
+  "argv": {
+    "SMALL_MAX_AREA": 1024.0,
+    "BATCH": 8,
+    "EPOCHS": 300,
+    "BUFFER_MAX": 64,
+    "N_EP_SIM": 20,
+    "SEED": 42
+  }
+}

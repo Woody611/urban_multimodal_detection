@@ -1,0 +1,17 @@
+=== AFTER SHA256 ===
+d7d2315ed4391c9724fafaf080bd7c7e8bc401de162084e0cf805e71304cdb88 *ultralytics/data/base.py
+d368f6c65cdeb206102d9f702604c680ba56d62caa074423a7c5e16fddb93212 *scripts/train.py
+f119165d27d6bdc1e40d5bf18a1891893313e422f249cafb62bf15cfd2dc04d8 *ultralytics/cfg/default.yaml
+
+=== BEFORE SHA256 ===
+bf380a22d2491f73ebde18f474f35f14f8df4e2ceb13c26f366dc23613976afe *ultralytics/data/base.py
+67cb9fe02757fd59bf738d9f72600a80f0cdb410870e9e3a509f7c893a9b90dd *scripts/train.py
+cf06d3a61a5cc9a9cfc501244b5cfeac4446672a1f5c899ef9f08fc2a9e3d3d4 *ultralytics/cfg/default.yaml
+
+=== SHAs of artifacts that MUST be unchanged ===
+1cae45f75693f54146e35c5fa076c0a6f78ca1cfa95595de74d959f40fae4fda *runs/urban_multimodal_det_yolo11_rgbid_sepstem_clahe/weights/best.pt
+a4e329cfc3d220206448cdd3377c1b3f5126c50f13c907ada522d98725486e12 *configs/train_rgbid_sepstem_clahe.yaml
+9b14f2946073338414b4441784b6df87a868b982be32ac8d50b6d1c4a17f3dd8 *configs/yolo11m_sepstem.yaml
+
+=== M4 seed2 config SHA (must be untouched) ===
+e7e88a89d59a0a9d4decdb93470dc40f228d4435f6baebb7b84cba1090032814 *configs/train_modality_m4_rgb_ir_seed2.yaml

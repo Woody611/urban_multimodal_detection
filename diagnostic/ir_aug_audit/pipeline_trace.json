@@ -1,0 +1,96 @@
+{
+  "sample": "00000004.jpg",
+  "note": "真实代码路径；imread = ultralytics.utils.patches.imread",
+  "stage0_imread": {
+    "visible": {
+      "shape": [
+        360,
+        640,
+        3
+      ],
+      "dtype": "uint8",
+      "min": 0,
+      "max": 255,
+      "mean": 122.2289
+    },
+    "infrared_GRAYSCALE": {
+      "shape": [
+        360,
+        640,
+        1
+      ],
+      "dtype": "uint8",
+      "min": 0,
+      "max": 246,
+      "mean": 55.3047
+    },
+    "depth_UNCHANGED": {
+      "shape": [
+        360,
+        640,
+        3
+      ],
+      "dtype": "uint8",
+      "min": 0,
+      "max": 255,
+      "mean": 39.3134
+    }
+  },
+  "stage1_apply_ir_encoding": {
+    "in": {
+      "shape": [
+        360,
+        640,
+        1
+      ],
+      "dtype": "uint8",
+      "min": 0,
+      "max": 246,
+      "mean": 55.3047
+    },
+    "out_clahe": {
+      "shape": [
+        360,
+        640
+      ],
+      "dtype": "uint8",
+      "min": 2,
+      "max": 251,
+      "mean": 66.7316
+    }
+  },
+  "stage2_depth_to_uint8": {
+    "shape": [
+      360,
+      640
+    ],
+    "dtype": "uint8",
+    "min": 0,
+    "max": 255,
+    "mean": 39.3134
+  },
+  "stage3_merge": {
+    "ok": true,
+    "shape": [
+      360,
+      640,
+      5
+    ],
+    "dtype": "uint8",
+    "min": 0,
+    "max": 255,
+    "mean": 94.5463
+  },
+  "stage5_load_and_preprocess_image": {
+    "ok": true,
+    "shape": [
+      360,
+      640,
+      5
+    ],
+    "dtype": "uint8",
+    "min": 0,
+    "max": 255,
+    "mean": 94.5463
+  }
+}

@@ -2,7 +2,7 @@
   "CUDA_USED": "NO",
   "THRESHOLD": 0.8,
   "baseline": {
-    "HEAD": "5f1a8d5802aa49adf35e8fa6fb112a1030b3e6d3",
+    "HEAD": "878cbcdeb40c92590b593e5b993885ce41735223",
     "branch": "yyy",
     "sha256_16": {
       "ultralytics/models/yolo/detect/train.py": "71096a9e044652a5",
@@ -14,8 +14,8 @@
       "scripts/train.py": "67cb9fe02757fd59",
       "scripts/predict_rect.py": "9d704300143a5786",
       "scripts/official_eval.py": "e82128abc082ed05",
-      "scripts/validate_modality_contract.py": "283c28f006bbe834",
-      "scripts/pretrained_coverage.py": "3178dae235f1384f",
+      "scripts/validate_modality_contract.py": "e08c36340b5c45c5",
+      "scripts/pretrained_coverage.py": "e56507d66d09605c",
       "configs/yolo11m_sepstem.yaml": "9b14f29460733384",
       "configs/yolo11m_earlyfusion.yaml": "edc95f4665ead847",
       "configs/yolo11m_modality4ch.yaml": "871d9d0da0122453",

@@ -1,0 +1,119 @@
+{
+  "gates": {
+    "G1_config_parse": {
+      "pass": true,
+      "ir_gamma": [
+        0.75,
+        1.35
+      ],
+      "ir_gamma_probability": 0.35,
+      "ir_noise_std": 0.015,
+      "ir_noise_probability": 0.2
+    },
+    "G2_dataset_load": {
+      "pass": true,
+      "n": 1599
+    },
+    "G3_train_transform": {
+      "pass": true,
+      "tensor_shape": [
+        5,
+        1280,
+        1280
+      ],
+      "dtype": "torch.uint8",
+      "n_boxes": 17
+    },
+    "G4_ir_aug_executes": {
+      "pass": true,
+      "calls": 119,
+      "gamma_applied": 41,
+      "noise_applied": 26,
+      "skipped_nonaugment": 0
+    },
+    "G5_rgb_unchanged": {
+      "pass": true
+    },
+    "G6_depth_unchanged": {
+      "pass": true
+    },
+    "G12_shape_unchanged": {
+      "pass": true,
+      "shape": [
+        360,
+        640,
+        5
+      ],
+      "dtype": "uint8"
+    },
+    "G7_val_unchanged": {
+      "pass": true,
+      "max_abs_diff": 0.0
+    },
+    "G7b_val_augment_flag": {
+      "pass": true,
+      "val_augment": false,
+      "val_transforms": "Compose"
+    },
+    "G8_inference_no_ref": {
+      "pass": true,
+      "references_in_loaders_py": 0
+    },
+    "G9_determinism": {
+      "pass": true,
+      "identical": true
+    },
+    "G9b_ir_aug_determinism": {
+      "pass": true,
+      "identical": true,
+      "changed": true
+    },
+    "G10_identity_exact": {
+      "pass": true,
+      "n_samples": 4,
+      "max_abs_diff": 0,
+      "mean_abs_diff": 0.0
+    },
+    "G11_no_nan_inf": {
+      "pass": true
+    },
+    "G13_channel_order": {
+      "pass": true,
+      "measured_order": [
+        "R",
+        "G",
+        "B",
+        "IR",
+        "D"
+      ],
+      "ir_index": 3,
+      "depth_index": 4,
+      "note": "tensor 名 (D′=改动前同一函数) —— config 注释里的 [B,G,R,IR,D] 与实现不一致，见报告"
+    }
+  },
+  "load_calls_per_sample": 0.9916666666666667,
+  "measured": {
+    "n_samples": 120,
+    "preprocess_calls_per_sample": 0.9916666666666667,
+    "gamma_rate_measured": 0.3416666666666667,
+    "gamma_rate_nominal": 0.35,
+    "noise_rate_measured": 0.21666666666666667,
+    "noise_rate_nominal": 0.2,
+    "gamma_draw_mean": 1.06629356097561,
+    "gamma_draw_min": 0.780324,
+    "gamma_draw_max": 1.346474
+  },
+  "ir_channel_changed_under_active_aug": true,
+  "identity": {
+    "n_samples": 4,
+    "max_abs_diff": 0,
+    "mean_abs_diff": 0.0
+  },
+  "IR_AUG_STATS_after": {
+    "calls": 132,
+    "gamma_applied": 45,
+    "noise_applied": 30,
+    "skipped_disabled": 9,
+    "skipped_nonaugment": 2
+  }
+}

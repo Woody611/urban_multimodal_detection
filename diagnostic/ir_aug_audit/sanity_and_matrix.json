@@ -1,0 +1,1139 @@
+{
+  "tool": "sanity_and_matrix.py",
+  "synthetic": {
+    "gamma_0.5": {
+      "black": {
+        "in_min": 0,
+        "in_max": 0,
+        "out_min": 0,
+        "out_max": 0,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": true,
+        "mean_in": 0.0,
+        "mean_out": 0.0
+      },
+      "dark_gray": {
+        "in_min": 32,
+        "in_max": 32,
+        "out_min": 90,
+        "out_max": 90,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 32.0,
+        "mean_out": 90.0
+      },
+      "mid_gray": {
+        "in_min": 128,
+        "in_max": 128,
+        "out_min": 180,
+        "out_max": 180,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 128.0,
+        "mean_out": 180.0
+      },
+      "bright_gray": {
+        "in_min": 224,
+        "in_max": 224,
+        "out_min": 238,
+        "out_max": 238,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 224.0,
+        "mean_out": 238.0
+      },
+      "white": {
+        "in_min": 255,
+        "in_max": 255,
+        "out_min": 255,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": true,
+        "mean_in": 255.0,
+        "mean_out": 255.0
+      },
+      "gradient": {
+        "in_min": 0,
+        "in_max": 255,
+        "out_min": 0,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          256
+        ],
+        "finite": true,
+        "monotone": true,
+        "identity_exact": false,
+        "mean_in": 127.5,
+        "mean_out": 169.273
+      },
+      "all_values": {
+        "in_min": 0,
+        "in_max": 255,
+        "out_min": 0,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          16,
+          16
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 127.5,
+        "mean_out": 169.273
+      }
+    },
+    "gamma_0.75": {
+      "black": {
+        "in_min": 0,
+        "in_max": 0,
+        "out_min": 0,
+        "out_max": 0,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": true,
+        "mean_in": 0.0,
+        "mean_out": 0.0
+      },
+      "dark_gray": {
+        "in_min": 32,
+        "in_max": 32,
+        "out_min": 53,
+        "out_max": 53,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 32.0,
+        "mean_out": 53.0
+      },
+      "mid_gray": {
+        "in_min": 128,
+        "in_max": 128,
+        "out_min": 152,
+        "out_max": 152,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 128.0,
+        "mean_out": 152.0
+      },
+      "bright_gray": {
+        "in_min": 224,
+        "in_max": 224,
+        "out_min": 231,
+        "out_max": 231,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 224.0,
+        "mean_out": 231.0
+      },
+      "white": {
+        "in_min": 255,
+        "in_max": 255,
+        "out_min": 255,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": true,
+        "mean_in": 255.0,
+        "mean_out": 255.0
+      },
+      "gradient": {
+        "in_min": 0,
+        "in_max": 255,
+        "out_min": 0,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          256
+        ],
+        "finite": true,
+        "monotone": true,
+        "identity_exact": false,
+        "mean_in": 127.5,
+        "mean_out": 145.113
+      },
+      "all_values": {
+        "in_min": 0,
+        "in_max": 255,
+        "out_min": 0,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          16,
+          16
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 127.5,
+        "mean_out": 145.113
+      }
+    },
+    "gamma_0.85": {
+      "black": {
+        "in_min": 0,
+        "in_max": 0,
+        "out_min": 0,
+        "out_max": 0,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": true,
+        "mean_in": 0.0,
+        "mean_out": 0.0
+      },
+      "dark_gray": {
+        "in_min": 32,
+        "in_max": 32,
+        "out_min": 43,
+        "out_max": 43,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 32.0,
+        "mean_out": 43.0
+      },
+      "mid_gray": {
+        "in_min": 128,
+        "in_max": 128,
+        "out_min": 141,
+        "out_max": 141,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 128.0,
+        "mean_out": 141.0
+      },
+      "bright_gray": {
+        "in_min": 224,
+        "in_max": 224,
+        "out_min": 228,
+        "out_max": 228,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 224.0,
+        "mean_out": 228.0
+      },
+      "white": {
+        "in_min": 255,
+        "in_max": 255,
+        "out_min": 255,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": true,
+        "mean_in": 255.0,
+        "mean_out": 255.0
+      },
+      "gradient": {
+        "in_min": 0,
+        "in_max": 255,
+        "out_min": 0,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          256
+        ],
+        "finite": true,
+        "monotone": true,
+        "identity_exact": false,
+        "mean_in": 127.5,
+        "mean_out": 137.332
+      },
+      "all_values": {
+        "in_min": 0,
+        "in_max": 255,
+        "out_min": 0,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          16,
+          16
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 127.5,
+        "mean_out": 137.332
+      }
+    },
+    "gamma_1.0": {
+      "black": {
+        "in_min": 0,
+        "in_max": 0,
+        "out_min": 0,
+        "out_max": 0,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": true,
+        "mean_in": 0.0,
+        "mean_out": 0.0
+      },
+      "dark_gray": {
+        "in_min": 32,
+        "in_max": 32,
+        "out_min": 32,
+        "out_max": 32,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": true,
+        "mean_in": 32.0,
+        "mean_out": 32.0
+      },
+      "mid_gray": {
+        "in_min": 128,
+        "in_max": 128,
+        "out_min": 128,
+        "out_max": 128,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": true,
+        "mean_in": 128.0,
+        "mean_out": 128.0
+      },
+      "bright_gray": {
+        "in_min": 224,
+        "in_max": 224,
+        "out_min": 224,
+        "out_max": 224,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": true,
+        "mean_in": 224.0,
+        "mean_out": 224.0
+      },
+      "white": {
+        "in_min": 255,
+        "in_max": 255,
+        "out_min": 255,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": true,
+        "mean_in": 255.0,
+        "mean_out": 255.0
+      },
+      "gradient": {
+        "in_min": 0,
+        "in_max": 255,
+        "out_min": 0,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          256
+        ],
+        "finite": true,
+        "monotone": true,
+        "identity_exact": true,
+        "mean_in": 127.5,
+        "mean_out": 127.5
+      },
+      "all_values": {
+        "in_min": 0,
+        "in_max": 255,
+        "out_min": 0,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          16,
+          16
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": true,
+        "mean_in": 127.5,
+        "mean_out": 127.5
+      }
+    },
+    "gamma_1.2": {
+      "black": {
+        "in_min": 0,
+        "in_max": 0,
+        "out_min": 0,
+        "out_max": 0,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": true,
+        "mean_in": 0.0,
+        "mean_out": 0.0
+      },
+      "dark_gray": {
+        "in_min": 32,
+        "in_max": 32,
+        "out_min": 21,
+        "out_max": 21,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 32.0,
+        "mean_out": 21.0
+      },
+      "mid_gray": {
+        "in_min": 128,
+        "in_max": 128,
+        "out_min": 111,
+        "out_max": 111,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 128.0,
+        "mean_out": 111.0
+      },
+      "bright_gray": {
+        "in_min": 224,
+        "in_max": 224,
+        "out_min": 218,
+        "out_max": 218,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 224.0,
+        "mean_out": 218.0
+      },
+      "white": {
+        "in_min": 255,
+        "in_max": 255,
+        "out_min": 255,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": true,
+        "mean_in": 255.0,
+        "mean_out": 255.0
+      },
+      "gradient": {
+        "in_min": 0,
+        "in_max": 255,
+        "out_min": 0,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          256
+        ],
+        "finite": true,
+        "monotone": true,
+        "identity_exact": false,
+        "mean_in": 127.5,
+        "mean_out": 115.457
+      },
+      "all_values": {
+        "in_min": 0,
+        "in_max": 255,
+        "out_min": 0,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          16,
+          16
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 127.5,
+        "mean_out": 115.457
+      }
+    },
+    "gamma_1.35": {
+      "black": {
+        "in_min": 0,
+        "in_max": 0,
+        "out_min": 0,
+        "out_max": 0,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": true,
+        "mean_in": 0.0,
+        "mean_out": 0.0
+      },
+      "dark_gray": {
+        "in_min": 32,
+        "in_max": 32,
+        "out_min": 15,
+        "out_max": 15,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 32.0,
+        "mean_out": 15.0
+      },
+      "mid_gray": {
+        "in_min": 128,
+        "in_max": 128,
+        "out_min": 100,
+        "out_max": 100,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 128.0,
+        "mean_out": 100.0
+      },
+      "bright_gray": {
+        "in_min": 224,
+        "in_max": 224,
+        "out_min": 214,
+        "out_max": 214,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 224.0,
+        "mean_out": 214.0
+      },
+      "white": {
+        "in_min": 255,
+        "in_max": 255,
+        "out_min": 255,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": true,
+        "mean_in": 255.0,
+        "mean_out": 255.0
+      },
+      "gradient": {
+        "in_min": 0,
+        "in_max": 255,
+        "out_min": 0,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          256
+        ],
+        "finite": true,
+        "monotone": true,
+        "identity_exact": false,
+        "mean_in": 127.5,
+        "mean_out": 108.086
+      },
+      "all_values": {
+        "in_min": 0,
+        "in_max": 255,
+        "out_min": 0,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          16,
+          16
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 127.5,
+        "mean_out": 108.086
+      }
+    },
+    "gamma_2.0": {
+      "black": {
+        "in_min": 0,
+        "in_max": 0,
+        "out_min": 0,
+        "out_max": 0,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": true,
+        "mean_in": 0.0,
+        "mean_out": 0.0
+      },
+      "dark_gray": {
+        "in_min": 32,
+        "in_max": 32,
+        "out_min": 4,
+        "out_max": 4,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 32.0,
+        "mean_out": 4.0
+      },
+      "mid_gray": {
+        "in_min": 128,
+        "in_max": 128,
+        "out_min": 64,
+        "out_max": 64,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 128.0,
+        "mean_out": 64.0
+      },
+      "bright_gray": {
+        "in_min": 224,
+        "in_max": 224,
+        "out_min": 196,
+        "out_max": 196,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 224.0,
+        "mean_out": 196.0
+      },
+      "white": {
+        "in_min": 255,
+        "in_max": 255,
+        "out_min": 255,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          32
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": true,
+        "mean_in": 255.0,
+        "mean_out": 255.0
+      },
+      "gradient": {
+        "in_min": 0,
+        "in_max": 255,
+        "out_min": 0,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          32,
+          256
+        ],
+        "finite": true,
+        "monotone": true,
+        "identity_exact": false,
+        "mean_in": 127.5,
+        "mean_out": 84.734
+      },
+      "all_values": {
+        "in_min": 0,
+        "in_max": 255,
+        "out_min": 0,
+        "out_max": 255,
+        "out_dtype": "uint8",
+        "out_shape": [
+          16,
+          16
+        ],
+        "finite": true,
+        "monotone": null,
+        "identity_exact": false,
+        "mean_in": 127.5,
+        "mean_out": 84.734
+      }
+    },
+    "noise_0.0": {
+      "in": {
+        "n": 1024,
+        "min": 128.0,
+        "max": 128.0,
+        "mean": 128.0,
+        "std": 0.0,
+        "p01": 128.0,
+        "p50": 128.0,
+        "p99": 128.0
+      },
+      "out": {
+        "n": 1024,
+        "min": 128.0,
+        "max": 128.0,
+        "mean": 128.0,
+        "std": 0.0,
+        "p01": 128.0,
+        "p50": 128.0,
+        "p99": 128.0
+      },
+      "out_dtype": "uint8",
+      "finite": true,
+      "exact_identity": true,
+      "measured_sigma_grays": 0.0,
+      "expected_sigma_grays": 0.0
+    },
+    "noise_0.015": {
+      "in": {
+        "n": 1024,
+        "min": 128.0,
+        "max": 128.0,
+        "mean": 128.0,
+        "std": 0.0,
+        "p01": 128.0,
+        "p50": 128.0,
+        "p99": 128.0
+      },
+      "out": {
+        "n": 1024,
+        "min": 114.0,
+        "max": 138.0,
+        "mean": 127.55078125,
+        "std": 3.7548613509220865,
+        "p01": 119.0,
+        "p50": 128.0,
+        "p99": 136.0
+      },
+      "out_dtype": "uint8",
+      "finite": true,
+      "exact_identity": false,
+      "measured_sigma_grays": 3.7549,
+      "expected_sigma_grays": 3.825
+    },
+    "noise_0.05": {
+      "in": {
+        "n": 1024,
+        "min": 128.0,
+        "max": 128.0,
+        "mean": 128.0,
+        "std": 0.0,
+        "p01": 128.0,
+        "p50": 128.0,
+        "p99": 128.0
+      },
+      "out": {
+        "n": 1024,
+        "min": 82.0,
+        "max": 163.0,
+        "mean": 127.6318359375,
+        "std": 12.443002949874419,
+        "p01": 99.0,
+        "p50": 128.0,
+        "p99": 155.0
+      },
+      "out_dtype": "uint8",
+      "finite": true,
+      "exact_identity": false,
+      "measured_sigma_grays": 12.443,
+      "expected_sigma_grays": 12.75
+    }
+  },
+  "gamma_range": {
+    "natural_image_to_image_exposure": {
+      "per_image_mean_p05": 0.18147390857338905,
+      "per_image_mean_p50": 0.2501499131321907,
+      "per_image_mean_p95": 0.4881391376256942,
+      "p95_over_p05_exposure_ratio": 2.6898585116895086
+    },
+    "gamma_induced_exposure_ratio": {
+      "0.5": {
+        "exposure_ratio_at_median_image": 1.735,
+        "over_files_mean": 1.6244,
+        "over_files_p05": 1.3623,
+        "over_files_p95": 1.8483
+      },
+      "0.6": {
+        "exposure_ratio_at_median_image": 1.544,
+        "over_files_mean": 1.4596,
+        "over_files_p05": 1.2727,
+        "over_files_p95": 1.6242
+      },
+      "0.75": {
+        "exposure_ratio_at_median_image": 1.3043,
+        "over_files_mean": 1.2559,
+        "over_files_p05": 1.1565,
+        "over_files_p95": 1.3463
+      },
+      "0.85": {
+        "exposure_ratio_at_median_image": 1.1702,
+        "over_files_mean": 1.1429,
+        "over_files_p05": 1.089,
+        "over_files_p95": 1.1927
+      },
+      "1.0": {
+        "exposure_ratio_at_median_image": 1.0,
+        "over_files_mean": 1.0,
+        "over_files_p05": 1.0,
+        "over_files_p95": 1.0
+      },
+      "1.2": {
+        "exposure_ratio_at_median_image": 0.8188,
+        "over_files_mean": 0.8478,
+        "over_files_p05": 0.7985,
+        "over_files_p95": 0.8996
+      },
+      "1.35": {
+        "exposure_ratio_at_median_image": 0.7095,
+        "over_files_mean": 0.7554,
+        "over_files_p05": 0.6843,
+        "over_files_p95": 0.8352
+      },
+      "1.5": {
+        "exposure_ratio_at_median_image": 0.618,
+        "over_files_mean": 0.6773,
+        "over_files_p05": 0.5922,
+        "over_files_p95": 0.7785
+      },
+      "2.0": {
+        "exposure_ratio_at_median_image": 0.4032,
+        "over_files_mean": 0.4897,
+        "over_files_p05": 0.3835,
+        "over_files_p95": 0.6295
+      }
+    }
+  },
+  "interaction": {
+    "baseline": {
+      "IR_raw": {
+        "n": 1843200,
+        "min": 0.0,
+        "max": 255.0,
+        "mean": 60.29110731336806,
+        "std": 47.31378280038418,
+        "p01": 0.0,
+        "p50": 53.0,
+        "p99": 187.0
+      },
+      "IR_after_CLAHE": {
+        "n": 1843200,
+        "min": 2.0,
+        "max": 255.0,
+        "mean": 70.501728515625,
+        "std": 51.29865940611571,
+        "p01": 2.0,
+        "p50": 66.0,
+        "p99": 206.0
+      },
+      "IR_model_input_[0,1]": {
+        "n": 7372800,
+        "min": 0.007843137718737125,
+        "max": 0.9843137264251709,
+        "mean": 0.2763488448139923,
+        "std": 0.19981506377090905,
+        "p01": 0.007843137718737125,
+        "p50": 0.25882354378700256,
+        "p99": 0.8039215803146362
+      },
+      "ir_aug_stats": {
+        "calls": 0,
+        "gamma_applied": 0,
+        "noise_applied": 0,
+        "skipped_disabled": 0,
+        "skipped_nonaugment": 0
+      },
+      "saturation_frac_above1": 0.0,
+      "saturation_frac_below0": 0.0
+    },
+    "gamma_only": {
+      "IR_raw": {
+        "n": 1843200,
+        "min": 0.0,
+        "max": 255.0,
+        "mean": 60.29110731336806,
+        "std": 47.31378280038418,
+        "p01": 0.0,
+        "p50": 53.0,
+        "p99": 187.0
+      },
+      "IR_after_CLAHE": {
+        "n": 1843200,
+        "min": 2.0,
+        "max": 255.0,
+        "mean": 70.501728515625,
+        "std": 51.29865940611571,
+        "p01": 2.0,
+        "p50": 66.0,
+        "p99": 206.0
+      },
+      "IR_model_input_[0,1]": {
+        "n": 7372800,
+        "min": 0.01568627543747425,
+        "max": 0.9843137264251709,
+        "mean": 0.32335351985363814,
+        "std": 0.2096846245857659,
+        "p01": 0.01568627543747425,
+        "p50": 0.3176470696926117,
+        "p99": 0.8313725590705872
+      },
+      "ir_aug_stats": {
+        "calls": 8,
+        "gamma_applied": 8,
+        "noise_applied": 0,
+        "skipped_disabled": 0,
+        "skipped_nonaugment": 0
+      },
+      "saturation_frac_above1": 0.0,
+      "saturation_frac_below0": 0.0
+    },
+    "noise_only": {
+      "IR_raw": {
+        "n": 1843200,
+        "min": 0.0,
+        "max": 255.0,
+        "mean": 60.29110731336806,
+        "std": 47.31378280038418,
+        "p01": 0.0,
+        "p50": 53.0,
+        "p99": 187.0
+      },
+      "IR_after_CLAHE": {
+        "n": 1843200,
+        "min": 2.0,
+        "max": 255.0,
+        "mean": 70.501728515625,
+        "std": 51.29865940611571,
+        "p01": 2.0,
+        "p50": 66.0,
+        "p99": 206.0
+      },
+      "IR_model_input_[0,1]": {
+        "n": 7372800,
+        "min": 0.0,
+        "max": 0.9882352948188782,
+        "mean": 0.2747230225046309,
+        "std": 0.19954062182138485,
+        "p01": 0.0,
+        "p50": 0.2549019753932953,
+        "p99": 0.800000011920929
+      },
+      "ir_aug_stats": {
+        "calls": 8,
+        "gamma_applied": 0,
+        "noise_applied": 8,
+        "skipped_disabled": 0,
+        "skipped_nonaugment": 0
+      },
+      "saturation_frac_above1": 0.0,
+      "saturation_frac_below0": 0.0
+    },
+    "gamma_noise": {
+      "IR_raw": {
+        "n": 1843200,
+        "min": 0.0,
+        "max": 255.0,
+        "mean": 60.29110731336806,
+        "std": 47.31378280038418,
+        "p01": 0.0,
+        "p50": 53.0,
+        "p99": 187.0
+      },
+      "IR_after_CLAHE": {
+        "n": 1843200,
+        "min": 2.0,
+        "max": 255.0,
+        "mean": 70.501728515625,
+        "std": 51.29865940611571,
+        "p01": 2.0,
+        "p50": 66.0,
+        "p99": 206.0
+      },
+      "IR_model_input_[0,1]": {
+        "n": 7372800,
+        "min": 0.0,
+        "max": 0.9843137264251709,
+        "mean": 0.2399850383238304,
+        "std": 0.18979808771258894,
+        "p01": 0.0,
+        "p50": 0.21176470816135406,
+        "p99": 0.7764706015586853
+      },
+      "ir_aug_stats": {
+        "calls": 8,
+        "gamma_applied": 8,
+        "noise_applied": 8,
+        "skipped_disabled": 0,
+        "skipped_nonaugment": 0
+      },
+      "saturation_frac_above1": 0.0,
+      "saturation_frac_below0": 0.0
+    }
+  },
+  "boundary": {
+    "clahe_only": {
+      "frac_pixels_at_0": 9e-06,
+      "frac_pixels_at_255": 0.000642
+    },
+    "gamma_only": {
+      "frac_pixels_at_0": 0.024947,
+      "frac_pixels_at_255": 0.000642
+    },
+    "noise_only": {
+      "frac_pixels_at_0": 0.063843,
+      "frac_pixels_at_255": 0.000728
+    },
+    "gamma_noise": {
+      "frac_pixels_at_0": 0.045711,
+      "frac_pixels_at_255": 0.000764
+    },
+    "clahe_headroom": {
+      "p01_median": 2.0,
+      "p99_median": 231.0,
+      "noise_sigma_grays": 3.8249999999999997,
+      "RAW_ir_frac_pixels_at_0": 0.19899352575231483,
+      "note": "raw IR 本身就有大量全黑像素；噪声把它们推回 0 属于回到原始分布，不是新伪影"
+    }
+  }
+}

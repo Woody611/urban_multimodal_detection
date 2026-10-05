@@ -1,0 +1,150 @@
+{
+  "gates": {
+    "§6_exact_insertion_path": {
+      "pass": true,
+      "ast_order": [
+        "apply_ir_encoding",
+        "apply_ir_augmentation",
+        "_resize_images_3",
+        "_merge_channels_rgbid"
+      ]
+    },
+    "§7_channel_identity": {
+      "pass": true,
+      "identity": {
+        "vis_B": true,
+        "vis_G": true,
+        "vis_R": true,
+        "IR": true,
+        "Depth": true
+      },
+      "tensor_order": [
+        "R",
+        "G",
+        "B",
+        "IR",
+        "D"
+      ]
+    },
+    "§8_no_double_augmentation": {
+      "pass": true,
+      "call_sites": 1,
+      "albumentations": [
+        {
+          "p": 0,
+          "transform_is_none": true
+        }
+      ],
+      "calls_per_sample": 1.0
+    },
+    "§9_train_only_isolation": {
+      "pass": true,
+      "val_identical": true,
+      "predict_identical": true,
+      "train_fires": true
+    },
+    "§10_identity_determinism": {
+      "pass": true,
+      "A": true,
+      "B": true,
+      "C": true,
+      "D_changed": true,
+      "D_valid": "True"
+    },
+    "§11_numerical_safety": {
+      "pass": true,
+      "nan": 0,
+      "inf": 0,
+      "dtype": 0,
+      "shape": 0,
+      "sigma_grays": 3.8465,
+      "noise_domain": "normalized [0,1]"
+    },
+    "§12_probability_runtime": {
+      "pass": true,
+      "N": 400,
+      "preprocess_calls": 400,
+      "gamma_fired": 155,
+      "gamma_rate": 0.3875,
+      "noise_fired": 80,
+      "noise_rate": 0.2,
+      "both_fired": 33,
+      "both_expected_under_independence": 28.0,
+      "gamma_draw_min": 0.757105,
+      "gamma_draw_max": 1.349265
+    }
+  },
+  "gate6_ast_order": {
+    "branch_line": 488,
+    "call_order": [
+      [
+        510,
+        "apply_ir_encoding"
+      ],
+      [
+        516,
+        "apply_ir_augmentation"
+      ],
+      [
+        528,
+        "_resize_images_3"
+      ],
+      [
+        529,
+        "_merge_channels_rgbid"
+      ]
+    ]
+  },
+  "gate6_runtime": {
+    "aug_input_equals_CLAHE_output": true,
+    "aug_input_equals_RAW_ir": false,
+    "aug_output_reaches_merge": true
+  },
+  "gate7_tensor_order": [
+    "R",
+    "G",
+    "B",
+    "IR",
+    "D"
+  ],
+  "gate7_identity": {
+    "vis_B": true,
+    "vis_G": true,
+    "vis_R": true,
+    "IR": true,
+    "Depth": true
+  },
+  "gate7_ab": {
+    "rgb_unchanged_active_aug": true,
+    "depth_unchanged_active_aug": true,
+    "ir_differs": true
+  },
+  "gate8": {
+    "n_call_sites": 1,
+    "loaders_hit": false,
+    "albumentations": [
+      {
+        "p": 0,
+        "transform_is_none": true
+      }
+    ],
+    "calls_per_sample": 1.0
+  },
+  "gate9": {
+    "val_identical": true,
+    "predict_identical": true,
+    "train_fires": true
+  },
+  "gate12": {
+    "N": 400,
+    "preprocess_calls": 400,
+    "gamma_fired": 155,
+    "gamma_rate": 0.3875,
+    "noise_fired": 80,
+    "noise_rate": 0.2,
+    "both_fired": 33,
+    "both_expected_under_independence": 28.0,
+    "gamma_draw_min": 0.757105,
+    "gamma_draw_max": 1.349265
+  }
+}
