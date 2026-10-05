@@ -1,0 +1,81 @@
+{
+  "candidate": "rgbid_sepstem_clahe_iraug_candidate",
+  "created": "2026-10-05T14:08:28+08:00",
+  "purpose": "D′ + IR-specific gamma/noise augmentation 的线上确认（本地两口径同号为负，用一次提交取线上信号）",
+  "uploaded": false,
+  "weights": "runs/urban_multimodal_det_yolo11_rgbid_sepstem_clahe_iraug/weights/best.pt",
+  "weights_sha256": "5b99b6e5b20dca9a73e1183c5fda1cba2aba2d48d26366bff0704f530e911478",
+  "train_config": "configs/train_rgbid_sepstem_clahe_iraug.yaml",
+  "train_config_sha256": "e40f01b7cb3b0569a3e3f78e97f06944d8b2ed9b5fde869087f76b9daad7227e",
+  "predict_rect_sha256": "9d704300143a5786f7b74450f35e6c656d55c82812ca34d0e7b830d96034f524",
+  "infer_cmd": "python scripts/predict_rect.py --mode rect --weights runs/urban_multimodal_det_yolo11_rgbid_sepstem_clahe_iraug/weights/best.pt --train_config configs/train_rgbid_sepstem_clahe_iraug.yaml --source data/raw/test/visible --output submissions/rgbid_sepstem_clahe_iraug_candidate",
+  "settings": {
+    "mode": "rect",
+    "conf": 0.001,
+    "iou": 0.7,
+    "imgsz": 1280,
+    "max_det": 300,
+    "max_boxes": 100,
+    "use_simotm": "RGBID",
+    "channels": 5,
+    "ir_encoding": "clahe",
+    "device": "cpu"
+  },
+  "validation": {
+    "check_submission.py": "ALL PASS (10/10)",
+    "make_candidate_submission.py": "PASS with --accept-degenerate-wh",
+    "degenerate_wh_rows": 102,
+    "degenerate_wh_precedent": "冻结 pipeline (predict.py::_format_lines -> scale_boxes) 既有行为；RGBID test 155 行 / F4 test 72 行，线上已评分过"
+  },
+  "n_txt": 1000,
+  "n_boxes": 11518,
+  "empty_txt": 18,
+  "over_cap": 0,
+  "images_at_100_box_cap": 3,
+  "zip_bytes": 359925,
+  "zip_sha256": "c704d545798828b1c92ac93bcba31aa4ba544f28219bd0f6171a657e6a1b8ff5",
+  "zip_entries": 1000,
+  "zip_crc_errors": 0,
+  "zip_vs_incumbent": {
+    "identical_files": 6,
+    "different_files": 994,
+    "of": 1000
+  },
+  "local_eval_400val": {
+    "official_metric_A": {
+      "dprime_best": 0.51528,
+      "iraug_best": 0.51428,
+      "delta": -0.001
+    },
+    "fork_metric": {
+      "dprime_best": 0.56609,
+      "iraug_best": 0.5631,
+      "delta": -0.00299
+    },
+    "control_note": "D′ 控制组逐位复现 incumbent（official 0.51528 / fork 0.56609）⇒ 评测链可信",
+    "noise_band_sd": "≈0.003-0.004（该 val）"
+  },
+  "training_integrity": {
+    "epochs": 300,
+    "epochs_completed": 300,
+    "nan_inf": 0,
+    "train_args_ir_gamma": [
+      0.75,
+      1.35
+    ],
+    "ir_gamma_probability": 0.35,
+    "ir_noise_std": 0.015,
+    "ir_noise_probability": 0.2,
+    "ir_encoding": "clahe",
+    "seed": 42,
+    "resume": false,
+    "median_epoch_sec": 138.9,
+    "dprime_median_epoch_sec": 131.6,
+    "aug_overhead_pct": 5.5,
+    "best_epoch_train_internal": 260,
+    "note": "训练期 threading traceback 来自 @threaded plot_images（daemon，仅画 val_batch*.jpg），不影响训练"
+  },
+  "verdict": "本地两口径同号为负、幅度在噪声带内 ⇒ 假设 NOT SUPPORTED。本包仅用于线上取信号，非改进候选。",
+  "if_online_positive": "则意味着同族内两口径同时失灵（fork 此前 4/4 同号线上），需重审判据口径，而非直接翻案 IR augmentation",
+  "discipline": "不得据此扫 gamma 范围/概率/noise σ；单种子在 sd≈0.003 的噪声带内分辨不了 0.001-0.003 的效应"
+}
